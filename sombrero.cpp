@@ -2,20 +2,22 @@
 
 using namespace std;
 
+// Body Class
 class Body {
-	double x, y;
-	double xVelocity, yVelocity;
-	double mass;
-public:
-	Body(double xPos, double yPos, double bodyMass, double xVel, double yVel);
+		double x, y;
+		double xVelocity, yVelocity;
+		double mass;
 
-	double GetMass() { return mass; };
-	double GetX() { return x; };
-	double GetY() { return y; };
-	void SetPosition(double xPos, double yPos) { x = xPos; y = yPos; };
-	double GetXVelocity() { return xVelocity; };
-	double GetYVelocity() { return yVelocity; };
-	void SetVelocity(double xVel, double yVel) { xVelocity = xVel; yVelocity = yVel; };
+	public:
+		Body(double xPos, double yPos, double bodyMass, double xVel, double yVel);
+
+		double GetMass() { return mass; };
+		double GetX() { return x; };
+		double GetY() { return y; };
+		void SetPosition(double xPos, double yPos) { x = xPos; y = yPos; };
+		double GetXVelocity() { return xVelocity; };
+		double GetYVelocity() { return yVelocity; };
+		void SetVelocity(double xVel, double yVel) { xVelocity = xVel; yVelocity = yVel; };
 };
 
 Body::Body(double xPos, double yPos, double bodyMass, double xVel, double yVel) {
@@ -27,17 +29,16 @@ Body::Body(double xPos, double yPos, double bodyMass, double xVel, double yVel) 
 }
 
 int main() {
-	Body body = Body(1.0, 2.0, 30.0, 0.0, 0.0);
+	int bodyCount = 2;
+	Body * bodyArray [bodyCount];
 
-	cout << "Mass: " << body.GetMass() << endl;
-	cout << "x: " << body.GetX() << ", y: " << body.GetY() << endl;
-	cout << "xVelocity: " << body.GetXVelocity() << ", yVelocity: " << body.GetYVelocity() << endl;
+	for (int i = 0; i < bodyCount; i++)
+	{
+		bodyArray[i] = new Body(0.0, i, 10.0, 0.0, 0.0);
+	}
 
-	cout << "Setting Position to (10.0, -3.0)" << endl;
-
-	body.SetPosition(10.0, -3.0);
-
-	cout << "x: " << body.GetX() << ", y: " << body.GetY() << endl;
+	cout << bodyArray[0]->GetX() << endl;
+	cout << bodyArray[1]->GetY() << endl;
 
 	return 0;
 }
