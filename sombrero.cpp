@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 // Real World Units (https://www.iau.org/public/themes/measuring/)
 #define AU 149597870700 // Astronomical Unit - Average Earth-Sun Distance
@@ -39,17 +40,62 @@ Body::Body(double xPos, double yPos, double bodyMass, double xVel, double yVel) 
 	yVelocity = yVel;
 }
 
+// Output Class
+class Output {
+		string fileName;
+		string fileContents;
+
+	public:
+		Output(string filename, int bodyCount, int width, int height, string positionUnits, double scale, string massUnits);
+
+		void AddBody(Body * body);
+		void Save();
+};
+
+Output::Output(string filename, int bodyCount, int width, int height, string positionUnits, double scale, string massUnits) {
+	fileName = filename;
+	fileContents = "";
+
+	// Add details about the simulation
+	// bodyCount, width, height, units (xy - m,au,lyr,pc,mpc), scale, units (mass - kg,m)
+	fileContents += to_string(bodyCount) + ",";
+	fileContents += to_string(width) + ",";
+	fileContents += to_string(height) + ",";
+	fileContents += positionUnits + ",";
+	fileContents += to_string(scale) + ",";
+	fileContents += massUnits + "\n";
+}
+
+void Output::AddBody(Body * body) {
+	// x,y,mass,xV,yV
+	fileContents += to_string(body->GetX()) + ",";
+	fileContents += to_string(body->GetY()) + ",";
+	fileContents += to_string(body->GetMass()) + ",";
+	fileContents += to_string(body->GetXVelocity()) + ",";
+	fileContents += to_string(body->GetYVelocity()) + "\n";
+}
+
+void Output::Save() {
+	ofstream outputFile(fileName, ios::out);
+	outputFile << fileContents;
+	outputFile.close();
+}
+
 int main() {
-	int bodyCount = 2;
+	int bodyCount = 3;
+	int width = 100, height = 100;
+
+	Output dataOutput = Output("save.txt", bodyCount, width, height, "m", 1.0, "kg");
+
 	Body * bodyArray [bodyCount];
 
 	for (int i = 0; i < bodyCount; i++)
 	{
-		bodyArray[i] = new Body(AU, i, 5.0e24, 1.0e3, 0.0);
+		bodyArray[i] = new Body(AU * i, i, 5.0e24, 1.0e3, 0.0);
+		dataOutput.AddBody(bodyArray[i]);
 	}
 
-	cout << bodyArray[0]->GetX() << endl;
-	cout << bodyArray[1]->GetY() << endl;
+	dataOutput.Save();
 
 	return 0;
 }
