@@ -50,6 +50,7 @@ class Output {
 		Output(string filename, int bodyCount, int width, int height, string positionUnits, double scale, string massUnits);
 
 		void AddBody(Body * body);
+		void AddAllBodies(int bodyCount, Body * bodyArray []);
 		void Save();
 };
 
@@ -80,6 +81,13 @@ void Output::Save() {
 	ofstream outputFile(fileName, ios::out);
 	outputFile << fileContents;
 	outputFile.close();
+}
+
+void Output::AddAllBodies(int bodyCount, Body * bodyArray []) {
+	for (int i = 0; i < bodyCount; i++)
+	{
+		AddBody(bodyArray[i]);
+	}
 }
 
 void LoadFromFile(string filename, int & bodyCount, int & width, int & height, string & positionUnits, double & scale, string & massUnits, Body * bodyArray []) {
@@ -149,11 +157,8 @@ int main() {
 	cout << massUnits << endl;
 
 	Output dataOutput = Output("save1.txt", bodyCount, width, height, "m", 1.0, "kg");
-
-	for (int i = 0; i < bodyCount; i++)
-	{
-		dataOutput.AddBody(bodyArray[i]);
-	}
+	dataOutput.AddAllBodies(bodyCount, bodyArray);
+	dataOutput.Save();
 
 	/*
 	for (int i = 0; i < bodyCount; i++)
@@ -162,8 +167,6 @@ int main() {
 		dataOutput.AddBody(bodyArray[i]);
 	}
 	*/
-
-	dataOutput.Save();
 
 	return 0;
 }
