@@ -296,6 +296,12 @@ void LoadBodiesFromFile(string filename, Body * bodyArray []) {
 	}
 }
 
+void CleanUpBodyArray(Body * bodyArray [], int bodyCount) {
+	for (int i = 0; i < bodyCount; i++)
+	{
+		delete bodyArray[i];
+	}
+}
 
 int main() {
 	int bodyCount;
@@ -312,7 +318,7 @@ int main() {
 	img.DrawAllBodies(bodyCount, bodyArray, 255, 255, 255);
 	img.Save();
 
-	// TODO :: Must remember to delete the bodyArray, as it is created using the * new * keyword.
+	CleanUpBodyArray(bodyArray, bodyCount);
 
 	return 0;
 }
