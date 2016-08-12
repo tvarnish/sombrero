@@ -348,6 +348,32 @@ void Video::Open() {
 	system( ("open " + outputFileName).c_str() );
 }
 
+int NumberLength(int number) {
+	string numberString = to_string(number);
+	return numberString.length();
+}
+
+string PadWithZeroes(int frameNumber, int maxCount) {
+	// Get Lengths of numbers
+	int maxCountLength = NumberLength(maxCount - 1);
+	int frameNumberLength = NumberLength(frameNumber);
+
+	string paddedValue = to_string(frameNumber);
+
+	if (frameNumberLength < maxCountLength)
+	{
+		int difference = maxCountLength - frameNumberLength;
+		paddedValue = "";
+		for (int i = 0; i < difference; i++)
+		{
+			paddedValue += "0";
+		}
+		paddedValue += to_string(frameNumber);
+	}
+
+	return paddedValue;
+}
+
 int main() {
 	//int bodyCount;
 	int width = 100, height = 100;
@@ -363,9 +389,7 @@ int main() {
 
 	for (int i = 0; i < 100; i++)
 	{
-		string filename = "images/frame_";
-		if (i < 10) filename += "0";
-		filename += to_string(i) + ".ppm";
+		string filename = "images/frame_" + PadWithZeroes(i, 100) + ".ppm";
 
 		Image img = Image(filename, width, height);
 		img.DrawText("Hello World", 10, 10, 0, 255, 0);
