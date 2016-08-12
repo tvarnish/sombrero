@@ -178,7 +178,6 @@ void Image::DrawText(string text, int x, int y, int r, int g, int b) {
 		if (tolower(text[i]) >= 97 && tolower(text[i]) <= 122)
 		{
 			int index = tolower(text[i]) - 97;
-			cout << index << endl;
 			DrawTextArray(fontAlphabet[index], x, y, r, g, b);
 		}
 
@@ -303,22 +302,80 @@ void CleanUpBodyArray(Body * bodyArray [], int bodyCount) {
 	}
 }
 
+class Video {
+		string outputFileName;
+		string imageFolder;
+		string imagePrefix;
+		string width;
+		string height;
+
+	public:
+		Video(string imgFolder, string imgPrefix, int w, int h);
+		void ClearImageFolder();
+		void Build(string outputFName, int frameCount);
+		void Open();
+};
+
+Video::Video(string imgFolder, string imgPrefix, int w, int h) {
+	imageFolder = imgFolder;
+	imagePrefix = imgPrefix;
+
+	width = to_string(w);
+	height = to_string(h);
+}
+
+void Video::ClearImageFolder() {
+	system( ("rm " + imageFolder + "*.ppm").c_str() );
+}
+
+void Video::Build(string outputFName, int frameCount) {
+	outputFileName = outputFName;
+	int framerate = 10;
+
+	string command = "/usr/local/bin/ffmpeg ";
+	command += "-loglevel panic ";
+	command += "-r " + to_string(framerate) + " ";
+	command += "-s " + width + "x" + height + " ";
+	command += "-i " + imageFolder + imagePrefix + "%02d.ppm "; // TODO :: Add %03d thingy.
+	command += "-vcodec libx264 -crf 25 -pix_fmt yuv420p ";
+	command += "-y ";
+	command += outputFileName;
+
+	system( command.c_str() );
+}
+
+void Video::Open() {
+	system( ("open " + outputFileName).c_str() );
+}
+
 int main() {
-	int bodyCount;
-	int width, height;
+	//int bodyCount;
+	int width = 100, height = 100;
 	string positionUnits, massUnits;
-	double scale;
+	//double scale;
 
-	LoadParametersFromFile("save1.txt", bodyCount, width, height, positionUnits, scale, massUnits);
-	Body * bodyArray [bodyCount];
-	LoadBodiesFromFile("save1.txt", bodyArray);
+	//LoadParametersFromFile("save1.txt", bodyCount, width, height, positionUnits, scale, massUnits);
+	//Body * bodyArray [bodyCount];
+	//LoadBodiesFromFile("save1.txt", bodyArray);
 
-	Image img = Image("demo.ppm", width, height);
-	img.DrawText("Hello World", 2, 20, 255, 255, 255);
-	img.DrawAllBodies(bodyCount, bodyArray, 255, 255, 255);
-	img.Save();
+	Video video = Video("images/", "frame_", width, height);
+	video.ClearImageFolder();
 
-	CleanUpBodyArray(bodyArray, bodyCount);
+	for (int i = 0; i < 100; i++)
+	{
+		string filename = "images/frame_";
+		if (i < 10) filename += "0";
+		filename += to_string(i) + ".ppm";
+
+		Image img = Image(filename, width, height);
+		img.DrawText("Hello World", 10, 10, 0, 255, 0);
+		img.pixels[50][i].SetColour(255, 255, 255);
+		img.Save();
+	}
+
+	video.Build("output.mp4", 100);
+
+	//CleanUpBodyArray(bodyArray, bodyCount);
 
 	return 0;
 }
