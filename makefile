@@ -1,5 +1,5 @@
 CC=g++
-SOURCES=sombrero.cpp
+SOURCES=sombrero.cpp libs/font.cpp
 TARGET=sombrero
 
 all:

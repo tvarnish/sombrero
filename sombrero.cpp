@@ -3,6 +3,8 @@
 #include <sstream>
 #include <vector>
 
+#include "libs/font.h"
+
 // Real World Units (https://www.iau.org/public/themes/measuring/)
 #define AU 149597870700 // Astronomical Unit - Average Earth-Sun Distance
 #define LYR 9.4607305e15 // Lightyear
@@ -146,6 +148,8 @@ class Pixel {
 		int R;
 		int G;
 		int B;
+
+		void SetColour(int r, int g, int b) { R = r; G = g; B = b; };
 };
 
 class Image {
@@ -153,12 +157,15 @@ class Image {
 		int height;
 		string fileName;
 
+		void DrawTextArray(int textArray [5][5], int xStart, int yStart, int r, int g, int b);
+
 	public:
 		vector< vector<Pixel> > pixels;
 
 		Image(string filename, int w, int h);
 		void DrawBody(Body * body, int r, int g, int b);
 		void DrawAllBodies(int bodyCount, Body * bodyArray [], int r, int g, int b);
+		void DrawText(string text, int x, int y, int r, int g, int b);
 		void Save();
 };
 
@@ -186,15 +193,72 @@ Image::Image(string filename, int w, int h) {
 }
 
 void Image::DrawBody(Body * body, int r, int g, int b) {
-	pixels[body->GetY()][body->GetX()].R = r;
-	pixels[body->GetY()][body->GetX()].G = g;
-	pixels[body->GetY()][body->GetX()].B = b;
+	pixels[body->GetY()][body->GetX()].SetColour(r, g, b);
 }
 
 void Image::DrawAllBodies(int bodyCount, Body * bodyArray [], int r, int g, int b) {
 	for (int i = 0; i < bodyCount; i++)
 	{
 		DrawBody(bodyArray[i], r, g, b);
+	}
+}
+
+void Image::DrawTextArray(int textArray [5][5], int xStart, int yStart, int r, int g, int b) {
+	for (int y = 0; y < 5; y++)
+	{
+		for (int x = 0; x < 5; x++)
+		{
+			if (textArray[y][x] == 0)
+			{
+				pixels[y + yStart][x + xStart].SetColour(0, 0, 0);
+			}
+			else
+			{
+				pixels[y + yStart][x + xStart].SetColour(r, g, b);
+			}
+		}
+	}
+}
+
+void Image::DrawText(string text, int x, int y, int r, int g, int b) {
+	for (int i = 0; i < text.length(); i++)
+	{
+		// Handle Alphabet
+		if (tolower(text[i]) >= 97 && tolower(text[i]) <= 122)
+		{
+			int index = tolower(text[i]) - 97;
+			cout << index << endl;
+			DrawTextArray(fontAlphabet[index], x, y, r, g, b);
+		}
+
+		// Handle Numbers
+		else if (tolower(text[i]) >= 48 && tolower(text[i]) <= 50)
+		{
+			int index = tolower(text[i]) - 48;
+			DrawTextArray(fontNumbers[index], x, y, r, g, b);
+		}
+
+		// Handle Punctuation
+		else
+		{
+			switch (text[i])
+			{
+			case '.':
+				DrawTextArray(fontPERIOD, x, y, r, g, b);
+				break;
+			case ':':
+				DrawTextArray(fontCOLON, x, y, r, g, b);
+				break;
+			case '-':
+				DrawTextArray(fontHYPHEN, x, y, r, g, b);
+				break;
+
+			default:
+				break;
+			}
+		}
+
+		x += fontWidth + kerning;
 	}
 }
 
@@ -219,7 +283,7 @@ void Image::Save() {
 
 int main() {
 	int bodyCount = 3;
-	int width = 100, height = 100;
+	int width, height;
 	string positionUnits, massUnits;
 	double scale;
 
@@ -228,6 +292,7 @@ int main() {
 	LoadFromFile("save1.txt", bodyCount, width, height, positionUnits, scale, massUnits, bodyArray);
 
 	Image img = Image("demo.ppm", width, height);
+	img.DrawText("Hello World", 2, 20, 255, 255, 255);
 	img.DrawAllBodies(bodyCount, bodyArray, 255, 255, 255);
 	// OUTPUT:
 	// R G
