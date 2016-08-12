@@ -93,56 +93,6 @@ void Output::AddAllBodies(int bodyCount, Body * bodyArray []) {
 	}
 }
 
-void LoadFromFile(string filename, int & bodyCount, int & width, int & height, string & positionUnits, double & scale, string & massUnits, Body * bodyArray []) {
-	ifstream inputFile(filename);
-	string fileLine;
-
-	// Read in setup parameters
-	getline(inputFile, fileLine);
-	stringstream setup(fileLine);
-	string parameter;
-	string parameterArray [6];
-	int i = 0;
-
-	while (getline(setup, parameter, ','))
-	{
-		parameterArray[i] = parameter;
-		i++;
-	}
-
-	bodyCount = stoi(parameterArray[0]);
-	width = stoi(parameterArray[1]);
-	height = stoi(parameterArray[2]);
-	positionUnits = parameterArray[3];
-	scale = stod(parameterArray[4]);
-	massUnits = parameterArray[5];
-
-	// Read in body details
-	int bodyIndex = 0;
-
-	while (getline(inputFile, fileLine))
-	{
-		stringstream bodyDetails(fileLine);
-		string detailArray [5];
-		i = 0;
-
-		while (getline(bodyDetails, parameter, ','))
-		{
-			detailArray[i] = parameter;
-			i++;
-		}
-
-		double x = stod(detailArray[0]);
-		double y = stod(detailArray[1]);
-		double mass = stod(detailArray[2]);
-		double xVelocity = stod(detailArray[3]);
-		double yVelocity = stod(detailArray[4]);
-
-		bodyArray[bodyIndex] = new Body(x, y, mass, xVelocity, yVelocity);
-		bodyIndex++;
-	}
-}
-
 class Pixel {
 	public:
 		int R;
@@ -288,32 +238,79 @@ void Image::CleanUp() {
 	pixels.shrink_to_fit();
 }
 
+void LoadParametersFromFile(string filename, int & bodyCount, int & width, int & height, string & positionUnits, double & scale, string & massUnits) {
+	ifstream inputFile(filename);
+	string fileLine;
+
+	// Read in setup parameters
+	getline(inputFile, fileLine);
+	stringstream setup(fileLine);
+	string parameter;
+	string parameterArray [6];
+	int i = 0;
+
+	while (getline(setup, parameter, ','))
+	{
+		parameterArray[i] = parameter;
+		i++;
+	}
+
+	bodyCount = stoi(parameterArray[0]);
+	width = stoi(parameterArray[1]);
+	height = stoi(parameterArray[2]);
+	positionUnits = parameterArray[3];
+	scale = stod(parameterArray[4]);
+	massUnits = parameterArray[5];
+}
+
+void LoadBodiesFromFile(string filename, Body * bodyArray []) {
+	ifstream inputFile(filename);
+	string fileLine;
+	getline(inputFile, fileLine); // Skip first line
+
+	// Read in body details
+	string parameter;
+	int bodyIndex = 0;
+	int i;
+
+	while (getline(inputFile, fileLine))
+	{
+		stringstream bodyDetails(fileLine);
+		string detailArray [5];
+		i = 0;
+
+		while (getline(bodyDetails, parameter, ','))
+		{
+			detailArray[i] = parameter;
+			i++;
+		}
+
+		double x = stod(detailArray[0]);
+		double y = stod(detailArray[1]);
+		double mass = stod(detailArray[2]);
+		double xVelocity = stod(detailArray[3]);
+		double yVelocity = stod(detailArray[4]);
+
+		bodyArray[bodyIndex] = new Body(x, y, mass, xVelocity, yVelocity);
+		bodyIndex++;
+	}
+}
+
+
 int main() {
-	int bodyCount = 3;
+	int bodyCount;
 	int width, height;
 	string positionUnits, massUnits;
 	double scale;
 
+	LoadParametersFromFile("save1.txt", bodyCount, width, height, positionUnits, scale, massUnits);
 	Body * bodyArray [bodyCount];
-
-	LoadFromFile("save1.txt", bodyCount, width, height, positionUnits, scale, massUnits, bodyArray);
+	LoadBodiesFromFile("save1.txt", bodyArray);
 
 	Image img = Image("demo.ppm", width, height);
 	img.DrawText("Hello World", 2, 20, 255, 255, 255);
 	img.DrawAllBodies(bodyCount, bodyArray, 255, 255, 255);
-	// OUTPUT:
-	// R G
-	// B *
-	// so, img[y][x]
 	img.Save();
-
-	/*
-	for (int i = 0; i < bodyCount; i++)
-	{
-		bodyArray[i] = new Body(AU * i, i, 5.0e24, 1.0e3, 0.0);
-		dataOutput.AddBody(bodyArray[i]);
-	}
-	*/
 
 	// TODO :: Must remember to delete the bodyArray, as it is created using the * new * keyword.
 
