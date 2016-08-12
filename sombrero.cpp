@@ -167,6 +167,7 @@ class Image {
 		void DrawAllBodies(int bodyCount, Body * bodyArray [], int r, int g, int b);
 		void DrawText(string text, int x, int y, int r, int g, int b);
 		void Save();
+		void CleanUp();
 };
 
 Image::Image(string filename, int w, int h) {
@@ -279,6 +280,12 @@ void Image::Save() {
 	}
 
 	imageFile.close();
+	CleanUp();
+}
+
+void Image::CleanUp() {
+	pixels.clear();
+	pixels.shrink_to_fit();
 }
 
 int main() {
