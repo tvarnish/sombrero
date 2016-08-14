@@ -7,6 +7,7 @@
 #include "libs/body.h"
 #include "libs/image.h"
 #include "libs/video.h"
+#include "libs/output.h"
 #include "libs/misc.h"
 
 #include "libs/units.h"
