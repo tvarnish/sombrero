@@ -1,4 +1,5 @@
 #include "video.h"
+#include "misc.h"
 
 #include <iostream>
 
@@ -18,13 +19,13 @@ void Video::ClearImageFolder() {
 
 void Video::Build(string outputFName, int frameCount) {
 	outputFileName = outputFName;
-	int framerate = 10;
+	int framerate = 60;
 
 	string command = "/usr/local/bin/ffmpeg ";
 	command += "-loglevel panic ";
 	command += "-r " + to_string(framerate) + " ";
 	command += "-s " + width + "x" + height + " ";
-	command += "-i " + imageFolder + imagePrefix + "%02d.ppm "; // TODO :: Add %03d thingy.
+	command += "-i " + imageFolder + imagePrefix + "%0" + to_string(NumberLength(frameCount)) + "d.ppm ";
 	command += "-vcodec libx264 -crf 25 -pix_fmt yuv420p ";
 	command += "-y ";
 	command += outputFileName;

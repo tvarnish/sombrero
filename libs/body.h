@@ -6,6 +6,7 @@ class Body {
 		double x, y;
 		double xVelocity, yVelocity;
 		double mass;
+		double xForce, yForce;
 
 	public:
 		Body(double xPos, double yPos, double bodyMass, double xVel, double yVel);
@@ -17,6 +18,11 @@ class Body {
 		double GetXVelocity() { return xVelocity; };
 		double GetYVelocity() { return yVelocity; };
 		void SetVelocity(double xVel, double yVel) { xVelocity = xVel; yVelocity = yVel; };
+
+		void AddForce(double force, double angle);
+		void ResetForce();
+
+		void Update(double dt);
 };
 
 #endif

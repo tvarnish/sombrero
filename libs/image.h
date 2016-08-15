@@ -22,13 +22,14 @@ class Image {
 		std::string fileName;
 
 		void DrawTextArray(int textArray [5][5], int xStart, int yStart, int r, int g, int b);
+		int Scale(double coordinate, std::string positionUnits, double scale);
 
 	public:
 		std::vector< std::vector<Pixel> > pixels;
 
 		Image(std::string filename, int w, int h);
-		void DrawBody(Body * body, int r, int g, int b);
-		void DrawAllBodies(int bodyCount, Body * bodyArray [], int r, int g, int b);
+		void DrawBody(int x, int y, int r, int g, int b);
+		void DrawAllBodies(int bodyCount, Body * bodyArray [], int r, int g, int b, std::string positionUnits, double scale);
 		void DrawText(std::string text, int x, int y, int r, int g, int b);
 		void Save();
 		void CleanUp();

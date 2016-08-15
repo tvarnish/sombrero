@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <cmath>
 
 #include "libs/font.h"
 #include "libs/body.h"
@@ -15,31 +16,79 @@
 using namespace std;
 
 int main() {
-	//int bodyCount;
-	int width = 100, height = 100;
+	int bodyCount;
+	int width, height;
 	string positionUnits, massUnits;
-	//double scale;
+	double scale;
 
-	//LoadParametersFromFile("save1.txt", bodyCount, width, height, positionUnits, scale, massUnits);
-	//Body * bodyArray [bodyCount];
-	//LoadBodiesFromFile("save1.txt", bodyArray);
+	double dt = DAY;
+	double elapsedTime = 0;
+	int totalFrames = 365;
 
-	Video video = Video("images/", "frame_", width, height);
+	LoadParametersFromFile("savefiles/save.txt", bodyCount, width, height, positionUnits, scale, massUnits);
+	Body * bodyArray [bodyCount];
+	LoadBodiesFromFile("savefiles/save.txt", bodyArray, positionUnits, massUnits);
+
+	// Debug
+
+	Video video = Video("images/", "image_", width, height);
 	video.ClearImageFolder();
 
-	for (int i = 0; i < 100; i++)
-	{
-		string filename = "images/frame_" + PadWithZeroes(i, 100) + ".ppm";
+	cout << "Running simulation..." << endl;
 
-		Image img = Image(filename, width, height);
-		img.DrawText("Hello World", 10, 10, 0, 255, 0);
-		img.pixels[50][i].SetColour(255, 255, 255);
-		img.Save();
+	for (int frameNumber = 0; frameNumber < totalFrames; frameNumber++)
+	{
+		for (int a = 0; a < bodyCount; a++)
+		{
+			bodyArray[a]->ResetForce();
+
+			for (int b = 0; b < bodyCount; b++)
+			{
+				if (a != b)
+				{
+					// N-Body Code
+					// Calculate distance
+					double xDistance = bodyArray[a]->GetX() - bodyArray[b]->GetX();
+					double yDistance = bodyArray[a]->GetY() - bodyArray[b]->GetY();
+					double totalDistance = sqrt(pow(xDistance, 2) + pow(yDistance, 2));
+
+					// Calculate angle
+					double angle = atan2(yDistance, xDistance);
+
+					// Calculate force
+					double force = GR * ((bodyArray[a]->GetMass() * bodyArray[b]->GetMass()) / (pow(totalDistance, 2)));
+
+					// Add force to total
+					bodyArray[a]->AddForce(force, angle);
+				}
+			}
+		}
+
+		// Update all the bodies
+		for (int i = 0; i < bodyCount; i++)
+		{
+			bodyArray[i]->Update(dt);
+		}
+
+		// Update elapsedTime
+		elapsedTime += dt;
+
+		// Generate Image
+		string imageFileName = "images/image_" + PadWithZeroes(frameNumber, totalFrames) + ".ppm";
+		Image image = Image(imageFileName, width, height);
+		image.DrawAllBodies(bodyCount, bodyArray, 255, 255, 255, positionUnits, scale);
+		image.DrawText("Frame: " + to_string(frameNumber + 1), 10, 10, 0, 255, 0);
+		image.DrawText("Time: " + to_string((int)elapsedTime), 10, 16, 0, 255, 0);
+		image.Save();
+		image.CleanUp();
 	}
 
-	video.Build("output.mp4", 100);
+	cout << "Building Video..." << endl;
+	video.Build("result.mp4", totalFrames);
 
-	//CleanUpBodyArray(bodyArray, bodyCount);
+	CleanUpBodyArray(bodyArray, bodyCount);
+
+	cout << "Done!" << endl;
 
 	return 0;
 }

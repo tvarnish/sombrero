@@ -1,5 +1,6 @@
 #include "misc.h"
 #include "body.h"
+#include "units.h"
 
 #include <fstream>
 #include <sstream>
@@ -31,7 +32,7 @@ void LoadParametersFromFile(string filename, int & bodyCount, int & width, int &
 	massUnits = parameterArray[5];
 }
 
-void LoadBodiesFromFile(string filename, Body * bodyArray []) {
+void LoadBodiesFromFile(string filename, Body * bodyArray [], string positionUnits, string massUnits) {
 	ifstream inputFile(filename);
 	string fileLine;
 	getline(inputFile, fileLine); // Skip first line
@@ -58,6 +59,34 @@ void LoadBodiesFromFile(string filename, Body * bodyArray []) {
 		double mass = stod(detailArray[2]);
 		double xVelocity = stod(detailArray[3]);
 		double yVelocity = stod(detailArray[4]);
+
+		// Handle Position Units
+		if (positionUnits == "AU")
+		{
+			x *= AU;
+			y *= AU;
+		}
+		else if (positionUnits == "LYR")
+		{
+			x *= LYR;
+			y *= LYR;
+		}
+		else if (positionUnits == "PC")
+		{
+			x *= PC;
+			y *= PC;
+		}
+		else if (positionUnits == "MPC")
+		{
+			x *= MPC;
+			y *= MPC;
+		}
+
+		// Handle Mass Units
+		if (massUnits == "M")
+		{
+			mass *= M;
+		}
 
 		bodyArray[bodyIndex] = new Body(x, y, mass, xVelocity, yVelocity);
 		bodyIndex++;

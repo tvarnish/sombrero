@@ -1,6 +1,7 @@
 #include "image.h"
 #include "body.h"
 #include "font.h"
+#include "units.h"
 
 #include <fstream>
 
@@ -29,14 +30,31 @@ Image::Image(string filename, int w, int h) {
 	}
 }
 
-void Image::DrawBody(Body * body, int r, int g, int b) {
-	pixels[body->GetY()][body->GetX()].SetColour(r, g, b);
+void Image::DrawBody(int x, int y, int r, int g, int b) {
+	pixels[y][x].SetColour(r, g, b);
 }
 
-void Image::DrawAllBodies(int bodyCount, Body * bodyArray [], int r, int g, int b) {
+int Image::Scale(double coordinate, string positionUnits, double scale) {
+	int position = (int)(coordinate / AU * scale);
+	return position;
+}
+
+void Image::DrawAllBodies(int bodyCount, Body * bodyArray [], int r, int g, int b, string positionUnits, double scale) {
+	int midX = width / 2;
+	int midY = height / 2;
+
 	for (int i = 0; i < bodyCount; i++)
 	{
-		DrawBody(bodyArray[i], r, g, b);
+		int x = Scale(bodyArray[i]->GetX(), positionUnits, scale) + midX;
+		int y = -Scale(bodyArray[i]->GetY(), positionUnits, scale) + midY;
+
+		bool xCoordinateValid = x < width && x >= 0;
+		bool yCoordinateValid = y < height && y >= 0;
+
+		if (xCoordinateValid && yCoordinateValid)
+		{
+			DrawBody(x, y, r, g, b);
+		}
 	}
 }
 
@@ -68,7 +86,7 @@ void Image::DrawText(string text, int x, int y, int r, int g, int b) {
 		}
 
 		// Handle Numbers
-		else if (tolower(text[i]) >= 48 && tolower(text[i]) <= 50)
+		else if (tolower(text[i]) >= 48 && tolower(text[i]) <= 57)
 		{
 			int index = tolower(text[i]) - 48;
 			DrawTextArray(fontNumbers[index], x, y, r, g, b);

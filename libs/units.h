@@ -12,4 +12,6 @@
 #define YR 365.25 * DAY // Year in Seconds
 #define M 1.9891e30 // Mass of the Sun
 
+#define GR 6.67e-11 // Gravitational constant, GR because of image.h
+
 #endif
