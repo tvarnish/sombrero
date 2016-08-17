@@ -25,13 +25,13 @@ int main() {
 	double elapsedTime = 0;
 	int totalFrames = 365;
 
-	LoadParametersFromFile("../init/save.txt", bodyCount, width, height, positionUnits, scale, massUnits);
+	LoadParametersFromFile("init/save.txt", bodyCount, width, height, positionUnits, scale, massUnits);
 	Body * bodyArray [bodyCount];
-	LoadBodiesFromFile("../init/save.txt", bodyArray, positionUnits, massUnits);
+	LoadBodiesFromFile("init/save.txt", bodyArray, positionUnits, massUnits);
 
 	// Debug
 
-	Video video = Video("../images/", "image_", width, height);
+	Video video = Video("images/", "image_", width, height);
 	video.ClearImageFolder();
 
 	cout << "Running simulation..." << endl;
@@ -74,7 +74,7 @@ int main() {
 		elapsedTime += dt;
 
 		// Generate Image
-		string imageFileName = "../images/image_" + PadWithZeroes(frameNumber, totalFrames) + ".ppm";
+		string imageFileName = "images/image_" + PadWithZeroes(frameNumber, totalFrames) + ".ppm";
 		Image image = Image(imageFileName, width, height);
 		image.DrawAllBodies(bodyCount, bodyArray, 255, 255, 255, positionUnits, scale);
 		image.DrawText("Frame: " + to_string(frameNumber + 1), 10, 10, 0, 255, 0);
@@ -84,7 +84,7 @@ int main() {
 	}
 
 	cout << "Building Video..." << endl;
-	video.Build("../result.mp4", totalFrames);
+	video.Build("result.mp4", totalFrames);
 
 	CleanUpBodyArray(bodyArray, bodyCount);
 

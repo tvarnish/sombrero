@@ -2,8 +2,11 @@ CXX = g++
 CXXFLAGS = -Wall
 EXEC = sombrero
 
-build/sombrero: build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o
-	$(CXX) $(CXXFLAGS) -o build/$(EXEC) build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o
+# Make sure that there is a build directory, so that the output files can be generated.
+MAKEDIR = mkdir -p build
+
+sombrero: build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o
+	$(CXX) $(CXXFLAGS) -o $(EXEC) build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o
 
 build/sombrero.o: src/sombrero.cpp src/lib/font.h src/lib/body.h src/lib/image.h src/lib/video.h src/lib/output.h src/lib/misc.h
 	$(CXX) $(CXXFLAGS) -c src/sombrero.cpp -o build/sombrero.o
@@ -28,3 +31,10 @@ build/misc.o: src/lib/misc.cpp src/lib/misc.h src/lib/body.h
 
 clean:
 	-rm build/$(EXEC) build/*.o
+
+# Run make setup for development and testing purposes.
+setup:
+	$(MAKEDIR)
+	make
+
+# Run make install for everything else.
