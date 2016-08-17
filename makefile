@@ -2,29 +2,29 @@ CXX = g++
 CXXFLAGS = -Wall
 EXEC = sombrero
 
-sombrero: sombrero.o font.o body.o image.o video.o output.o misc.o
-	$(CXX) $(CXXFLAGS) -o $(EXEC) sombrero.o font.o body.o image.o video.o output.o misc.o
+sombrero: build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o
+	$(CXX) $(CXXFLAGS) -o build/$(EXEC) build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o
 
-sombrero.o: sombrero.cpp libs/font.h libs/body.h libs/image.h libs/video.h libs/output.h libs/misc.h
-	$(CXX) $(CXXFLAGS) -c sombrero.cpp
+sombrero.o: src/sombrero.cpp src/lib/font.h src/lib/body.h src/lib/image.h src/lib/video.h src/lib/output.h src/lib/misc.h
+	$(CXX) $(CXXFLAGS) -c src/sombrero.cpp
 
-font.o: libs/font.cpp libs/font.h
-	$(CXX) $(CXXFLAGS) -c libs/font.cpp
+font.o: src/lib/font.cpp src/lib/font.h
+	$(CXX) $(CXXFLAGS) -c src/lib/font.cpp
 
-body.o: libs/body.cpp libs/body.h
-	$(CXX) $(CXXFLAGS) -c libs/body.cpp
+body.o: src/lib/body.cpp src/lib/body.h
+	$(CXX) $(CXXFLAGS) -c src/lib/body.cpp
 
-image.o: libs/image.cpp libs/image.h libs/body.h libs/font.h
-	$(CXX) $(CXXFLAGS) -c libs/image.cpp
+image.o: src/lib/image.cpp src/lib/image.h src/lib/body.h src/lib/font.h
+	$(CXX) $(CXXFLAGS) -c src/lib/image.cpp
 
-video.o: libs/video.cpp libs/video.h
-	$(CXX) $(CXXFLAGS) -c libs/video.cpp
+video.o: src/lib/video.cpp src/lib/video.h
+	$(CXX) $(CXXFLAGS) -c src/lib/video.cpp
 
-output.o: libs/output.cpp libs/output.h libs/body.h
-	$(CXX) $(CXXFLAGS) -c libs/output.cpp
+output.o: src/lib/output.cpp src/lib/output.h src/lib/body.h
+	$(CXX) $(CXXFLAGS) -c src/lib/output.cpp
 
-misc.o: libs/misc.cpp libs/misc.h libs/body.h
-	$(CXX) $(CXXFLAGS) -c libs/misc.cpp
+misc.o: src/lib/misc.cpp src/lib/misc.h src/lib/body.h
+	$(CXX) $(CXXFLAGS) -c src/lib/misc.cpp
 
 clean:
-	-rm $(EXEC) *.o
+	-rm build/$(EXEC) build/*.o
