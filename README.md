@@ -4,10 +4,10 @@ Sombrero is my A-Level Computer Science project, focused on simulating the N-Bod
 ## Getting Started
 These instructions will get a copy of the project running on your local machine, for development and testing purposes.
 
-# Prerequisites
+### Prerequisites
 In order to produce the output `.mp4` files, you will need to have installed ffmpeg.
 
-# Installing from source
+### Installing from source
 To download a copy of the repository, you will need to type the following command:
 
 ```git clone https://github.com/tvarnish/sombrero.git
