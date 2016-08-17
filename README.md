@@ -10,7 +10,8 @@ In order to produce the output `.mp4` files, you will need to have installed ffm
 ### Installing from source
 To download a copy of the repository, you will need to type the following command:
 
-```git clone https://github.com/tvarnish/sombrero.git
+```
+git clone https://github.com/tvarnish/sombrero.git
 cd sombrero/
 make setup
 ```
@@ -18,20 +19,23 @@ make setup
 ## Usage
 Once Sombrero has been installed from source, and you are in the `sombrero/` directory, run the software using:
 
-```./sombrero
+```
+./sombrero
 ```
 
 ## Initialisation files
 Here is an example of an init file (this specific example will simulate the orbit of the Earth around the Sun!):
 
-```2,600,600,AU,100,kg
+```
+2,600,600,AU,100,kg
 0,0,1.9891e30,0.0,0.0
 -1,0,5.972e24,0.0,30e3
 ```
 
 The first line describes the main parameters of the simulation, and the following lines describe each of the celestial bodies to be simulated. The first line is set out as follows:
 
-```Number of Bodies, Width, Height, Position Units, Scale, Mass Units
+```
+Number of Bodies, Width, Height, Position Units, Scale, Mass Units
 ```
 
 The `Width` and `Height` variables define the width and height of the output `.mp4` file.
