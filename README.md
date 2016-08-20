@@ -8,7 +8,7 @@ These instructions will get a copy of the project running on your local machine,
 In order to produce the output `.mp4` files, you will need to have installed ffmpeg.
 
 ### Installing from source
-To download a copy of the repository, you will need to type the following command:
+To download a copy of the repository, you will need to type the following commands:
 
 ```
 git clone https://github.com/tvarnish/sombrero.git
