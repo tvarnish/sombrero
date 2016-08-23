@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall
+CXXFLAGS = -Wall -std=c++0x
 EXEC = sombrero
 
 # Make sure that there is a build directory, so that the output files can be generated.
