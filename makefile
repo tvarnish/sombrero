@@ -3,7 +3,8 @@ CXXFLAGS = -Wall -std=c++0x
 EXEC = sombrero
 
 # Make sure that there is a build directory, so that the output files can be generated.
-MAKEDIR = mkdir -p build
+MAKEDIR_BUILD = mkdir -p build
+MAKEDIR_IMAGE = mkdir -p images
 
 sombrero: build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o
 	$(CXX) $(CXXFLAGS) -o $(EXEC) build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o
@@ -34,7 +35,8 @@ clean:
 
 # Run make setup for development and testing purposes.
 setup:
-	$(MAKEDIR)
+	$(MAKEDIR_BUILD)
+	$(MAKEDIR_IMAGE)
 	make
 
 # Run make install for everything else.
