@@ -21,7 +21,8 @@ void Video::Build(string outputFName, int frameCount) {
 	outputFileName = outputFName;
 	int framerate = 60;
 
-	string command = "/usr/local/bin/ffmpeg ";
+	//string command = "/usr/local/bin/ffmpeg ";
+	string command = "avconv ";
 	command += "-loglevel panic ";
 	command += "-r " + to_string(framerate) + " ";
 	command += "-s " + width + "x" + height + " ";
