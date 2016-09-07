@@ -5,7 +5,11 @@ Sombrero is my A-Level Computer Science project, focused on simulating the N-Bod
 These instructions will get a copy of the project running on your local machine, for development and testing purposes.
 
 ### Prerequisites
-In order to produce the output `.mp4` files, you will need to have installed ffmpeg.
+In order to produce the output `.mp4` files, you will need to have installed `avconv`.
+
+```
+sudo apt-get install libav-tools
+```
 
 ### Installing from source
 To download a copy of the repository, you will need to type the following commands:
