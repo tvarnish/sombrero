@@ -76,26 +76,28 @@ void Image::DrawTextArray(int textArray [5][5], int xStart, int yStart, int r, i
 }
 
 void Image::DrawText(string text, int x, int y, int r, int g, int b) {
-	for (int i = 0; i < text.length(); i++)
+	for (size_t i = 0; i < text.length(); i++)
 	{
+		int c = (int)i;
+		
 		// Handle Alphabet
-		if (tolower(text[i]) >= 97 && tolower(text[i]) <= 122)
+		if (tolower(text[c]) >= 97 && tolower(text[c]) <= 122)
 		{
-			int index = tolower(text[i]) - 97;
+			int index = tolower(text[c]) - 97;
 			DrawTextArray(fontAlphabet[index], x, y, r, g, b);
 		}
 
 		// Handle Numbers
-		else if (tolower(text[i]) >= 48 && tolower(text[i]) <= 57)
+		else if (tolower(text[c]) >= 48 && tolower(text[c]) <= 57)
 		{
-			int index = tolower(text[i]) - 48;
+			int index = tolower(text[c]) - 48;
 			DrawTextArray(fontNumbers[index], x, y, r, g, b);
 		}
 
 		// Handle Punctuation
 		else
 		{
-			switch (text[i])
+			switch (text[c])
 			{
 			case '.':
 				DrawTextArray(fontPERIOD, x, y, r, g, b);
