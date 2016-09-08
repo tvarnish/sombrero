@@ -31,7 +31,7 @@ build/misc.o: src/lib/misc.cpp src/lib/misc.h src/lib/body.h
 	$(CXX) $(CXXFLAGS) -c src/lib/misc.cpp -o build/misc.o
 
 clean:
-	-rm build/$(EXEC) build/*.o
+	-rm build/*.o
 
 # Run make setup for development and testing purposes.
 setup:
