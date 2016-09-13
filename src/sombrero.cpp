@@ -15,26 +15,47 @@
 
 using namespace std;
 
-int main() {
+int main(int argc, char * argv[]) {
 	int bodyCount;
 	int width, height;
 	string positionUnits, massUnits;
 	double scale;
 
+	string initFileName; // = "init/solarsystem.txt";
+
 	double dt = DAY;
 	double elapsedTime = 0;
-	int totalFrames = 365;
+	int totalFrames; // = 365;
+	
+	// Parsing Command Line Arguments
+	if (argc != 3)
+	{
+		cout << "No arguments supplied! Please supply an initialisation file name, then a frame count.\n Usage: [time] ./sombrero initFileName frameCount" << endl;
+		return 1;
+	}
+	else
+	{
+		initFileName = argv[1];
+		totalFrames = atoi(argv[2]);
+	}
 
-	LoadParametersFromFile("init/save.txt", bodyCount, width, height, positionUnits, scale, massUnits);
+	LoadParametersFromFile(initFileName, bodyCount, width, height, positionUnits, scale, massUnits);
 	Body * bodyArray [bodyCount];
-	LoadBodiesFromFile("init/save.txt", bodyArray, positionUnits, massUnits);
+	LoadBodiesFromFile(initFileName, bodyArray, positionUnits, massUnits);
 
 	// Debug
 
 	Video video = Video("images/", "image_", width, height);
 	video.ClearImageFolder();
 
-	cout << "Running simulation..." << endl;
+	cout << "Running N-Body Simulation...\n Using init file: " << initFileName << endl;
+	cout << " Total Frames: " << totalFrames << endl << endl;
+	
+	// Calculating values for progress bar
+	string progressBar = "\rProgress -> [";
+	int progressCounter = 0;
+	int nextProgress = 0;
+	int fivePercent = totalFrames / 20;
 
 	for (int frameNumber = 0; frameNumber < totalFrames; frameNumber++)
 	{
@@ -81,14 +102,40 @@ int main() {
 		image.DrawText("Time: " + to_string((int)elapsedTime), 10, 16, 0, 255, 0);
 		image.Save();
 		image.CleanUp();
+		
+		// Update Progress Bar
+		if (frameNumber == nextProgress)
+		{
+			if (frameNumber != 0)
+			{
+				progressCounter++;
+			}
+			
+			cout << progressBar;
+			for (int c = 0; c < 20; c++)
+			{
+				if (c < progressCounter)
+				{
+					cout << "=";	
+				}
+				else
+				{
+					cout << " ";
+				}
+			}
+			cout << "] -> (" << nextProgress << ")";
+			
+			nextProgress += fivePercent;
+			fflush(stdout);
+		}
 	}
 
-	cout << "Building Video..." << endl;
+	cout << "\n\nBuilding Video..." << endl;
 	video.Build("result.mp4", totalFrames);
 
 	CleanUpBodyArray(bodyArray, bodyCount);
 
-	cout << "Done!" << endl;
+	cout << "Simulation Complete!" << endl;
 
 	return 0;
 }
