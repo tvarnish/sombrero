@@ -24,7 +24,13 @@ make setup
 Once Sombrero has been installed from source, and you are in the `sombrero/` directory, run the software using:
 
 ```
-./sombrero
+./sombrero <initialisation file path> <number of frames to generate>
+```
+
+If you want to time the simulation, you can call `time` on the program, like so:
+
+```
+time ./sombrero <init file> <frame count>
 ```
 
 ## Initialisation files
