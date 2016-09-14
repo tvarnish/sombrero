@@ -23,10 +23,10 @@ void Video::Build(string outputFName, int frameCount) {
 
 	//string command = "/usr/local/bin/ffmpeg ";
 	string command = "avconv ";
-	command += "-loglevel panic ";
+	//command += "-loglevel panic ";
 	command += "-r " + to_string(framerate) + " ";
 	command += "-s " + width + "x" + height + " ";
-	command += "-i " + imageFolder + imagePrefix + "%0" + to_string(NumberLength(frameCount)) + "d.ppm ";
+	command += "-i " + imageFolder + imagePrefix + "%0" + to_string(NumberLength(frameCount) - 1) + "d.ppm ";
 	command += "-vcodec libx264 -crf 25 -pix_fmt yuv420p ";
 	command += "-y ";
 	command += outputFileName;
