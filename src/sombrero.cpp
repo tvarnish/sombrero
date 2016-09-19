@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include <cmath>
+#include <ctime>
 
 #include "lib/font.h"
 #include "lib/body.h"
@@ -58,7 +59,7 @@ int main(int argc, char * argv[]) {
 	int fivePercent = totalFrames / 20;
 
 	for (int frameNumber = 0; frameNumber < totalFrames; frameNumber++)
-	{
+	{		
 		for (int a = 0; a < bodyCount; a++)
 		{
 			bodyArray[a]->ResetForce();
@@ -105,7 +106,7 @@ int main(int argc, char * argv[]) {
 		
 		// Update Progress Bar
 		if (frameNumber == nextProgress)
-		{
+		{		
 			if (frameNumber != 0)
 			{
 				progressCounter++;
@@ -132,6 +133,11 @@ int main(int argc, char * argv[]) {
 
 	cout << "\n\nBuilding Video..." << endl;
 	video.Build("result.mp4", totalFrames);
+	
+	// Create output.txt
+	Output output("init/output.txt", bodyCount, width, height, positionUnits, scale, massUnits);
+	output.AddAllBodies(bodyArray);
+	output.Save();
 
 	CleanUpBodyArray(bodyArray, bodyCount);
 

@@ -8,12 +8,13 @@ class Body;
 class Output {
 		std::string fileName;
 		std::string fileContents;
+		int bodyCount;
 
 	public:
 		Output(std::string filename, int bodyCount, int width, int height, std::string positionUnits, double scale, std::string massUnits);
 
 		void AddBody(Body * body);
-		void AddAllBodies(int bodyCount, Body * bodyArray []);
+		void AddAllBodies(Body * bodyArray []);
 		void Save();
 };
 

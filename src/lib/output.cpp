@@ -5,9 +5,10 @@
 
 using namespace std;
 
-Output::Output(string filename, int bodyCount, int width, int height, string positionUnits, double scale, string massUnits) {
+Output::Output(string filename, int totalBodyCount, int width, int height, string positionUnits, double scale, string massUnits) {
 	fileName = filename;
 	fileContents = "";
+	bodyCount = totalBodyCount;
 
 	// Add details about the simulation
 	// bodyCount, width, height, units (xy - m,au,lyr,pc,mpc), scale, units (mass - kg,m)
@@ -34,7 +35,7 @@ void Output::Save() {
 	outputFile.close();
 }
 
-void Output::AddAllBodies(int bodyCount, Body * bodyArray []) {
+void Output::AddAllBodies(Body * bodyArray []) {
 	for (int i = 0; i < bodyCount; i++)
 	{
 		AddBody(bodyArray[i]);
