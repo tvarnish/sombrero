@@ -58,8 +58,9 @@ void LoadBodiesFromFile(string filename, Body * bodyArray [], string positionUni
 		double y = stod(detailArray[1]);
 		double mass = stod(detailArray[2]);
 		double xVelocity = stod(detailArray[3]);
-		double yVelocity = stod(detailArray[4]);
+		double yVelocity = stod(detailArray[4]);		
 
+		/*
 		// Handle Position Units
 		if (positionUnits == "AU")
 		{
@@ -87,6 +88,7 @@ void LoadBodiesFromFile(string filename, Body * bodyArray [], string positionUni
 		{
 			mass *= M;
 		}
+		*/
 
 		bodyArray[bodyIndex] = new Body(x, y, mass, xVelocity, yVelocity);
 		bodyIndex++;

@@ -8,7 +8,13 @@ class Body;
 class Output {
 		std::string fileName;
 		std::string fileContents;
+	
+		std::string massUnitString;
+		std::string positionUnitString;
+	
 		int bodyCount;
+		
+		//std::string ToStandardForm(double value);
 
 	public:
 		Output(std::string filename, int bodyCount, int width, int height, std::string positionUnits, double scale, std::string massUnits);
@@ -18,4 +24,6 @@ class Output {
 		void Save();
 };
 
-#endif
+std::string ToStandardForm(double value);
+
+#endif 

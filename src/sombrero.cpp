@@ -22,11 +22,11 @@ int main(int argc, char * argv[]) {
 	string positionUnits, massUnits;
 	double scale;
 
-	string initFileName; // = "init/solarsystem.txt";
+	string initFileName;
 
 	double dt = DAY;
 	double elapsedTime = 0;
-	int totalFrames; // = 365;
+	int totalFrames;
 	
 	// Parsing Command Line Arguments
 	if (argc != 3)
@@ -44,13 +44,16 @@ int main(int argc, char * argv[]) {
 	Body * bodyArray [bodyCount];
 	LoadBodiesFromFile(initFileName, bodyArray, positionUnits, massUnits);
 
-	// Debug
-
 	Video video = Video("images/", "image_", width, height);
 	video.ClearImageFolder();
 
 	cout << "Running N-Body Simulation...\n Using init file: " << initFileName << endl;
 	cout << " Total Frames: " << totalFrames << endl << endl;
+	
+	/*
+	// Velocity
+	string velocityString = "";
+	*/
 	
 	// Calculating values for progress bar
 	string progressBar = "\rProgress -> [";
@@ -91,9 +94,18 @@ int main(int argc, char * argv[]) {
 		{
 			bodyArray[i]->Update(dt);
 		}
+		
 
 		// Update elapsedTime
 		elapsedTime += dt;
+		
+		/*
+		// Save the velocity data
+		double velX = bodyArray[7]->GetXVelocity();
+		double velY = bodyArray[7]->GetYVelocity();
+		double vel = sqrt((velX * velX) +(velY * velY));
+		velocityString += to_string(frameNumber) + "," + to_string(vel) + "\n";
+		*/
 
 		// Generate Image
 		string imageFileName = "images/image_" + PadWithZeroes(frameNumber, totalFrames) + ".ppm";
@@ -131,13 +143,20 @@ int main(int argc, char * argv[]) {
 		}
 	}
 
-	cout << "\n\nBuilding Video..." << endl;
-	video.Build("result.mp4", totalFrames);
+	/*
+	// Save velocityString
+	ofstream o("init/velocity.csv", ios::out);
+	o << velocityString;
+	o.close();
+	*/
 	
 	// Create output.txt
 	Output output("init/output.txt", bodyCount, width, height, positionUnits, scale, massUnits);
 	output.AddAllBodies(bodyArray);
 	output.Save();
+	
+	cout << "\n\nBuilding Video..." << endl;
+	video.Build("result.mp4", totalFrames);
 
 	CleanUpBodyArray(bodyArray, bodyCount);
 
