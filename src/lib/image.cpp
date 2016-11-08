@@ -39,14 +39,27 @@ int Image::Scale(double coordinate, string positionUnits, double scale) {
 	return position;
 }
 
-void Image::DrawAllBodies(int bodyCount, Body * bodyArray [], int r, int g, int b, string positionUnits, double scale) {
+void Image::DrawAllBodies(int bodyCount, Body * bodyArray [], int r, int g, int b, string positionUnits, double scale, double cameraAngle) {
 	int midX = width / 2;
 	int midY = height / 2;
 
 	for (int i = 0; i < bodyCount; i++)
 	{
-		int x = Scale(bodyArray[i]->GetX(), positionUnits, scale) + midX;
-		int y = -Scale(bodyArray[i]->GetY(), positionUnits, scale) + midY;
+		// Convert position to camera angle x and y
+		double xValue;
+		double yValue = bodyArray[i]->GetY();
+
+		if (cameraAngle == 90.0)
+		{
+			xValue = bodyArray[i]->GetZ();
+		}
+		else
+		{
+			xValue = bodyArray[i]->GetX();
+		}
+
+		int x = Scale(xValue, positionUnits, scale) + midX;
+		int y = -Scale(yValue, positionUnits, scale) + midY;
 
 		bool xCoordinateValid = x < width && x >= 0;
 		bool yCoordinateValid = y < height && y >= 0;
@@ -79,7 +92,7 @@ void Image::DrawText(string text, int x, int y, int r, int g, int b) {
 	for (size_t i = 0; i < text.length(); i++)
 	{
 		int c = (int)i;
-		
+
 		// Handle Alphabet
 		if (tolower(text[c]) >= 97 && tolower(text[c]) <= 122)
 		{

@@ -29,7 +29,7 @@ class Image {
 
 		Image(std::string filename, int w, int h);
 		void DrawBody(int x, int y, int r, int g, int b);
-		void DrawAllBodies(int bodyCount, Body * bodyArray [], int r, int g, int b, std::string positionUnits, double scale);
+		void DrawAllBodies(int bodyCount, Body * bodyArray [], int r, int g, int b, std::string positionUnits, double scale, double cameraAngle);
 		void DrawText(std::string text, int x, int y, int r, int g, int b);
 		void Save();
 		void CleanUp();
