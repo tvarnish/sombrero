@@ -18,35 +18,24 @@
 using namespace std;
 
 int main(int argc, char * argv[]) {
-	int i = 3;
-	int j = 1;
-
-	Matrix m;
-	m.Initialise(i, j);
-
 	// position example:
-	// (a,b) -> m.at(a).at(b)
+	// (a,b) -> m.GetAt(a,b)
 	// (0,0) (0,1)
 	// (1,0) (1,1)
 
-	m.SetAt(0, 0, 0.0);
-	m.SetAt(1, 0, 4.0);
-	m.SetAt(2, 0, -2.0);
+	PositionMatrix p;
+	p.Initialise();
+	p.Set(0.0, 4.0, -2.0);
+	cout << p.GetX() << endl;
+	cout << p.GetY() << endl;
+	cout << p.GetZ() << endl << endl;
 
-	m.Display();
+	PositionMatrix t;
+	t.Initialise();
 
-	Matrix t;
-	t.Initialise(i, j);
-	cout << endl;
-
-	for (int i = 0; i < 90.0; i += 5) {
+	for (double i = 0; i < 90; i += 10) {
 		cout << "i = " << i << endl;
-		t = m.Rotate(i);
-		/*
-		t.SetAt(0, 0, round(t.GetAt(0, 0)));
-		t.SetAt(1, 0, round(t.GetAt(1, 0)));
-		t.SetAt(2, 0, round(t.GetAt(2, 0)));
-		*/
+		t = p.RotateY(i);
 		t = t.Round();
 		t.Display();
 		cout << endl;

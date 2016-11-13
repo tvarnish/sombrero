@@ -10,7 +10,7 @@ void Matrix::Initialise(int _rows, int _columns) {
 	rows = _rows;
 	columns = _columns;
 
-	data.assign(rows, vector<double>(columns, 0));
+	this->data.assign(rows, vector<double>(columns, 0));
 }
 
 void Matrix::Display() {
@@ -30,7 +30,31 @@ void Matrix::SetAt(int r, int c, double value) {
 	this->data.at(r).at(c) = value;
 }
 
-Matrix Matrix::Rotate(double angle) {
+void PositionMatrix::Initialise() {
+  this->rows = 3;
+  this->columns = 1;
+	this->data.assign(3, vector<double>(1, 0.0));
+}
+
+void PositionMatrix::Set(double x, double y, double z) {
+  this->SetAt(0, 0, x);
+  this->SetAt(1, 0, y);
+  this->SetAt(2, 0, z);
+}
+
+double PositionMatrix::GetX() {
+  return this->GetAt(0, 0);
+}
+
+double PositionMatrix::GetY() {
+  return this->GetAt(1, 0);
+}
+
+double PositionMatrix::GetZ() {
+  return this->GetAt(2, 0);
+}
+
+PositionMatrix PositionMatrix::RotateY(double angle) {
 	Matrix rotateMatrix;
 	rotateMatrix.Initialise(3, 3);
 
@@ -43,8 +67,8 @@ Matrix Matrix::Rotate(double angle) {
 	rotateMatrix.SetAt(2, 0, -1.0 * sin(angleRadians));
 	rotateMatrix.SetAt(2, 2, cos(angleRadians));
 
-	Matrix newMatrix;
-	newMatrix.Initialise(this->rows, this->columns);
+	PositionMatrix newMatrix;
+	newMatrix.Initialise();
 
 	double value;
   for (int i = 0; i < 3; i ++) {
@@ -58,9 +82,9 @@ Matrix Matrix::Rotate(double angle) {
 	return newMatrix;
 }
 
-Matrix Matrix::Round() {
-  Matrix roundedMatrix;
-  roundedMatrix.Initialise(3, 1);
+PositionMatrix PositionMatrix::Round() {
+  PositionMatrix roundedMatrix;
+  roundedMatrix.Initialise();
 
   double roundedValue;
   for (int i = 0; i < 3; i++) {
