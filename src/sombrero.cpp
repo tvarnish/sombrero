@@ -11,40 +11,16 @@
 #include "lib/video.h"
 #include "lib/output.h"
 #include "lib/misc.h"
+#include "lib/matrix.h"
 
 #include "lib/units.h"
 
 using namespace std;
 
-class Matrix {
-	public:
-		int rows, columns;
-		vector<vector<double>> data;
-
-		void Initialise(int rows, int columns);
-		void Display();
-};
-
-void Matrix::Initialise(int _rows, int _columns) {
-	rows = _rows;
-	columns = _columns;
-	
-	data.assign(rows, vector<double>(columns, 0));
-}
-
-void Matrix::Display() {
-	for (int x = 0; x < this->rows; x++) {
-		for (int y = 0; y < this->columns; y++) {
-			cout << this->data.at(x).at(y) << " ";
-		}
-		cout << endl;
-	}
-}
-
 int main(int argc, char * argv[]) {
-	int i = 2;
-	int j = 2;
-	
+	int i = 3;
+	int j = 1;
+
 	Matrix m;
 	m.Initialise(i, j);
 
@@ -53,24 +29,28 @@ int main(int argc, char * argv[]) {
 	// (0,0) (0,1)
 	// (1,0) (1,1)
 
-	m.data.at(0).at(0) = 2;
-	m.data.at(1).at(0) = 4;
+	m.SetAt(0, 0, 0.0);
+	m.SetAt(1, 0, 4.0);
+	m.SetAt(2, 0, -2.0);
 
 	m.Display();
 
-	/*
-	Matrix m1;
-	m1.Initialise(3, 1);
-	m1.data.at(0).at(0) = 2.0;
-	m1.data.at(2).at(0) = 1.0;
-	m1.Display();
-
+	Matrix t;
+	t.Initialise(i, j);
 	cout << endl;
 
-	Matrix m2;
-	m2.Initialise(1, 3);
-	m1.data.at(0).at(1) = 5.0;
-	m2.Display();
-	*/
+	for (int i = 0; i < 90.0; i += 5) {
+		cout << "i = " << i << endl;
+		t = m.Rotate(i);
+		/*
+		t.SetAt(0, 0, round(t.GetAt(0, 0)));
+		t.SetAt(1, 0, round(t.GetAt(1, 0)));
+		t.SetAt(2, 0, round(t.GetAt(2, 0)));
+		*/
+		t = t.Round();
+		t.Display();
+		cout << endl;
+	}
+
 	return 0;
 }
