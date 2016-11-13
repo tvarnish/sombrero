@@ -3,23 +3,25 @@
 #define __BODY_H_INCLUDED__
 
 class Body {
-		double x, y;
-		double xVelocity, yVelocity;
+		double x, y, z;
+		double xVelocity, yVelocity, zVelocity;
 		double mass;
-		double xForce, yForce;
+		double xForce, yForce, zForce;
 
 	public:
-		Body(double xPos, double yPos, double bodyMass, double xVel, double yVel);
+		Body(double xPos, double yPos, double zPos, double bodyMass, double xVel, double yVel, double zVel);
 
 		double GetMass() { return mass; };
 		double GetX() { return x; };
 		double GetY() { return y; };
-		void SetPosition(double xPos, double yPos) { x = xPos; y = yPos; };
+		double GetZ() { return z; };
+		void SetPosition(double xPos, double yPos, double zPos) { x = xPos; y = yPos; z = zPos; };
 		double GetXVelocity() { return xVelocity; };
 		double GetYVelocity() { return yVelocity; };
-		void SetVelocity(double xVel, double yVel) { xVelocity = xVel; yVelocity = yVel; };
+		double GetZVelocity() { return zVelocity; };
+		void SetVelocity(double xVel, double yVel, double zVel) { xVelocity = xVel; yVelocity = yVel; zVelocity = zVel; };
 
-		void AddForce(double force, double angle);
+		void AddForce(double force, double phi, double theta);
 		void ResetForce();
 
 		void Update(double dt);
