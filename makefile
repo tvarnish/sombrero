@@ -1,6 +1,7 @@
 CXX = g++
-CXXFLAGS = -Wall -std=c++0x
+CXXFLAGS = -Wall -std=c++0x -I/usr/include/freetype2 -lpngwriter -lpng -lfreetype
 EXEC = sombrero
+LIBS = -I/opt/local/include/freetype2 -I/opt/local/include -I/usr/local/include -L/usr/local/lib -L/opt/local/lib -lpng -lpngwriter -lz -lfreetype
 
 # Make sure that there is a build directory, so that the output files can be generated.
 MAKEDIR_BUILD = mkdir -p build
@@ -8,9 +9,9 @@ MAKEDIR_IMAGE = mkdir -p images
 MAKEDIR_INIT = mkdir -p init
 
 sombrero: build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o
-	$(CXX) $(CXXFLAGS) -o $(EXEC) build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o
+	$(CXX) $(CXXFLAGS) -o $(EXEC) build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o $(LIBS)
 
-build/sombrero.o: src/sombrero.cpp src/lib/font.h src/lib/body.h src/lib/image.h src/lib/video.h src/lib/output.h src/lib/misc.h
+build/sombrero.o: src/sombrero.cpp src/lib/font.h src/lib/body.h src/lib/image.h src/lib/video.h src/lib/output.h src/lib/misc.h src/lib/units.h
 	$(CXX) $(CXXFLAGS) -c src/sombrero.cpp -o build/sombrero.o
 
 build/font.o: src/lib/font.cpp src/lib/font.h

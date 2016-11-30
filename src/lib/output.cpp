@@ -10,7 +10,7 @@ Output::Output(string filename, int totalBodyCount, int width, int height, strin
 	fileName = filename;
 	fileContents = "";
 	bodyCount = totalBodyCount;
-	
+
 	string massUnitString = massUnits;
 	string positionUnitString = positionUnits;
 
@@ -25,46 +25,13 @@ Output::Output(string filename, int totalBodyCount, int width, int height, strin
 }
 
 void Output::AddBody(Body * body) {
-	double x = body->GetX();
-	double y = body->GetY();
-	double mass = body->GetMass();
-	
-	/*
-	// Handle Position Units
-	if (positionUnitString == "AU")
-	{
-		x /= AU;
-		y /= AU;
-	}
-	else if (positionUnitString == "LYR")
-	{
-		x /= LYR;
-		y /= LYR;
-	}
-	else if (positionUnitString == "PC")
-	{
-		x /= PC;
-		y /= PC;
-	}
-	else if (positionUnitString == "MPC")
-	{
-		x /= MPC;
-		y /= MPC;
-	}
-
-	// Handle Mass Units
-	if (massUnitString == "M")
-	{
-		mass /= M;
-	}
-	*/
-	
-	// x,y,mass,xV,yV
-	fileContents += ToStandardForm( x ) + ",";
-	fileContents += ToStandardForm( y ) + ",";
-	fileContents += ToStandardForm( mass ) + ",";
+	fileContents += ToStandardForm( body->GetX() ) + ",";
+	fileContents += ToStandardForm( body->GetY() ) + ",";
+	fileContents += ToStandardForm( body->GetZ() ) + ",";
+	fileContents += ToStandardForm( body->GetMass() ) + ",";
 	fileContents += ToStandardForm( body->GetXVelocity() ) + ",";
-	fileContents += ToStandardForm( body->GetYVelocity() ) + "\n";
+	fileContents += ToStandardForm( body->GetYVelocity() ) + ",";
+	fileContents += ToStandardForm( body->GetZVelocity() ) + "\n";
 }
 
 void Output::Save() {
@@ -84,17 +51,17 @@ string ToStandardForm(double value) {
 	string standardForm = "";
 	string valueString = to_string(value);
 	bool negative = false;
-	
+
 	// Calculate the power
 	int power = 0;
 	double v = value;
-	
+
 	// Determine if value is negative
 	if (value < 0.0) {
 		negative = true;
 		v *= -1;
 	}
-	
+
 	if ((value < 1.0) && (value > 0.0)) {
 		while (v < 1.0) {
 			v *= 10;
@@ -107,16 +74,16 @@ string ToStandardForm(double value) {
 			power ++;
 		}
 	}
-	
+
 	// Compile into standard form
-	if (power != 0) {	
+	if (power != 0) {
 		// Deal with the negative sign at the front of negative numbers
 		if (negative) {
 			standardForm += "-";
 			// Remove "-" from the value string
 			valueString = valueString.substr(1, valueString.length() - 1);
 		}
-		
+
 		// Append significant figures
 		standardForm += valueString[0];
 		standardForm += ".";
@@ -124,7 +91,7 @@ string ToStandardForm(double value) {
 			if (valueString[i] == '.') break;
 			standardForm += valueString[i];
 		}
-		
+
 		// Append exponent
 		standardForm += "e";
 		standardForm += to_string(power);
@@ -132,6 +99,6 @@ string ToStandardForm(double value) {
 	else {
 		standardForm = valueString;
 	}
-	
+
 	return standardForm;
 }

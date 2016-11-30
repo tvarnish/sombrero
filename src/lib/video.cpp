@@ -14,23 +14,34 @@ Video::Video(string imgFolder, string imgPrefix, int w, int h) {
 }
 
 void Video::ClearImageFolder() {
-	system( ("rm " + imageFolder + "*.ppm").c_str() );
+	system( ("rm " + imageFolder + "*.png").c_str() );
 }
 
 void Video::Build(string outputFName, int frameCount) {
 	outputFileName = outputFName;
-	int framerate = 60;
-
+	int framerate = 30; //60
+	
+	/*
 	//string command = "/usr/local/bin/ffmpeg ";
 	string command = "avconv ";
 	//command += "-loglevel panic ";
 	command += "-loglevel error ";
 	command += "-r " + to_string(framerate) + " ";
 	command += "-s " + width + "x" + height + " ";
-	command += "-i " + imageFolder + imagePrefix + "%0" + to_string(NumberLength(frameCount - 1)) + "d.ppm ";
+	command += "-i " + imageFolder + imagePrefix + "%0" + to_string(NumberLength(frameCount - 1)) + "d.png ";
 	command += "-vcodec libx264 ";
 	command += "-y ";
 	command += outputFileName;
+	*/
+	
+	string command = "avconv -r " + to_string(framerate) + " ";
+	command += "-i " + imageFolder + imagePrefix + "%0" + to_string(NumberLength(frameCount - 1)) + "d.png ";
+	command += "-s " + width + "x" + height + " ";
+	//command += "-vcodec qtrle ";
+	command += "-y -loglevel error ";
+	command += outputFileName;
+
+	cout << command << endl;
 
 	system( command.c_str() );
 }
