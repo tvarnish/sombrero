@@ -6,22 +6,17 @@
 
 using namespace std;
 
-Output::Output(string filename, int totalBodyCount, int width, int height, string positionUnits, double scale, string massUnits) {
+Output::Output(string filename, int totalBodyCount, int width, int height, double scale) {
 	fileName = filename;
 	fileContents = "";
 	bodyCount = totalBodyCount;
-
-	string massUnitString = massUnits;
-	string positionUnitString = positionUnits;
 
 	// Add details about the simulation
 	// bodyCount, width, height, units (xy - m,au,lyr,pc,mpc), scale, units (mass - kg,m)
 	fileContents += to_string(bodyCount) + ",";
 	fileContents += to_string(width) + ",";
 	fileContents += to_string(height) + ",";
-	fileContents += positionUnits + ",";
-	fileContents += to_string(scale) + ",";
-	fileContents += massUnits + "\n";
+	fileContents += to_string(scale) + "\n";
 }
 
 void Output::AddBody(Body * body) {
@@ -29,6 +24,7 @@ void Output::AddBody(Body * body) {
 	fileContents += ToStandardForm( body->GetY() ) + ",";
 	fileContents += ToStandardForm( body->GetZ() ) + ",";
 	fileContents += ToStandardForm( body->GetMass() ) + ",";
+	fileContents += ToStandardForm( body->GetRadius() ) + ",";
 	fileContents += ToStandardForm( body->GetXVelocity() ) + ",";
 	fileContents += ToStandardForm( body->GetYVelocity() ) + ",";
 	fileContents += ToStandardForm( body->GetZVelocity() ) + "\n";

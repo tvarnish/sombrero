@@ -2,11 +2,12 @@
 
 #include <cmath>
 
-Body::Body(double xPos, double yPos, double zPos, double bodyMass, double xVel, double yVel, double zVel) {
+Body::Body(double xPos, double yPos, double zPos, double bodyMass, double r, double xVel, double yVel, double zVel) {
 	x = xPos;
 	y = yPos;
 	z = zPos;
 	mass = bodyMass;
+	radius = r;
 	xVelocity = xVel;
 	yVelocity = yVel;
 	zVelocity = zVel;

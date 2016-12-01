@@ -91,13 +91,13 @@ int main(int argc, char * argv[]) {
 
 			double mass = Random(1e23, 1e25);
 
-			bodyArray[i] = new Body(x, y, z, mass, random(0, 1e4), random(0, 1e4), random(0, 1e4));
+			bodyArray[i] = new Body(x, y, z, mass, Random(1e6, 9e6), Random(0, 1e4), Random(0, 1e4), Random(0, 1e4));
 		}
 
-		bodyArray[400] = new Body(0.0, 0.0, 0.0, 2e31, 0.0, 0.0, 0.0);
+		bodyArray[400] = new Body(0.0, 0.0, 0.0, 2e31, 1e8, 0.0, 0.0, 0.0);
 
 		// Save bodies to output.txt
-		Output output("init/output.txt", bodyCount, width, height, "", 100, "");
+		Output output("init/output.txt", bodyCount, width, height, 100);
 		output.AddAllBodies(bodyArray);
 		output.Save();
 
@@ -144,7 +144,7 @@ int main(int argc, char * argv[]) {
 	// N-Body Code
 
 	if (strcmp(argv[1], "-r") == 0 or strcmp(argv[1], "--run") == 0) {
-		LoadBodiesFromFile("init/output.txt", bodyArray, "", "");
+		LoadBodiesFromFile("init/output.txt", bodyArray);
 
 		Video video = Video("images/", "image_", width, height);
 		video.ClearImageFolder();
@@ -206,11 +206,13 @@ int main(int argc, char * argv[]) {
 		video.Build("result_run.mp4", frames);
 
 		// Create output.txt
-		Output output("init/output.txt", bodyCount, width, height, "", 100, "");
+		Output output("init/output.txt", bodyCount, width, height, 100);
 		output.AddAllBodies(bodyArray);
 		output.Save();
 
 		CleanUpBodyArray(bodyArray, bodyCount);
+
+		return 0;
 	}
 
 	else {
@@ -218,14 +220,6 @@ int main(int argc, char * argv[]) {
 		cout << usageStatement << endl;
 		return 1;
 	}
-
-	// Demo Image
-	pngwriter png(300, 300, 0, "test.png");
-	png.plot(100, 100, 1.0, 0.0, 0.0);
-	png.plot(200, 100, 0.0, 1.0, 0.0);
-	png.plot(200, 200, 0.0, 0.0, 1.0);
-	png.plot(100, 200, 1.0, 1.0, 1.0);
-	png.close();
 
 	return 0;
 }

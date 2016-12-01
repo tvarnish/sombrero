@@ -6,15 +6,17 @@ class Body {
 		double x, y, z;
 		double xVelocity, yVelocity, zVelocity;
 		double mass;
+		double radius;
 		double xForce, yForce, zForce;
 
 	public:
-		Body(double xPos, double yPos, double zPos, double bodyMass, double xVel, double yVel, double zVel);
+		Body(double xPos, double yPos, double zPos, double bodyMass, double r, double xVel, double yVel, double zVel);
 
 		double GetMass() { return mass; };
 		double GetX() { return x; };
 		double GetY() { return y; };
 		double GetZ() { return z; };
+		double GetRadius() { return radius; };
 		void SetPosition(double xPos, double yPos, double zPos) { x = xPos; y = yPos; z = zPos; };
 		double GetXVelocity() { return xVelocity; };
 		double GetYVelocity() { return yVelocity; };

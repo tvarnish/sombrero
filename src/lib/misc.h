@@ -5,8 +5,8 @@
 
 class Body;
 
-void LoadParametersFromFile(std::string filename, int & bodyCount, int & width, int & height, std::string & positionUnits, double & scale, std::string & massUnits);
-void LoadBodiesFromFile(std::string filename, Body * bodyArray [], std::string positionUnits, std::string massUnits);
+void LoadParametersFromFile(std::string filename, int & bodyCount, int & width, int & height, double & scale);
+void LoadBodiesFromFile(std::string filename, Body * bodyArray []);
 void CleanUpBodyArray(Body * bodyArray [], int bodyCount);
 int NumberLength(int number);
 std::string PadWithZeroes(int frameNumber, int maxCount);

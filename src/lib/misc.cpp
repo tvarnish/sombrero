@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void LoadParametersFromFile(string filename, int & bodyCount, int & width, int & height, string & positionUnits, double & scale, string & massUnits) {
+void LoadParametersFromFile(string filename, int & bodyCount, int & width, int & height, double & scale) {
 	ifstream inputFile(filename);
 	string fileLine;
 
@@ -15,7 +15,7 @@ void LoadParametersFromFile(string filename, int & bodyCount, int & width, int &
 	getline(inputFile, fileLine);
 	stringstream setup(fileLine);
 	string parameter;
-	string parameterArray [6];
+	string parameterArray [4];
 	int i = 0;
 
 	while (getline(setup, parameter, ','))
@@ -27,12 +27,10 @@ void LoadParametersFromFile(string filename, int & bodyCount, int & width, int &
 	bodyCount = stoi(parameterArray[0]);
 	width = stoi(parameterArray[1]);
 	height = stoi(parameterArray[2]);
-	positionUnits = parameterArray[3];
-	scale = stod(parameterArray[4]);
-	massUnits = parameterArray[5];
+	scale = stod(parameterArray[3]);
 }
 
-void LoadBodiesFromFile(string filename, Body * bodyArray [], string positionUnits, string massUnits) {
+void LoadBodiesFromFile(string filename, Body * bodyArray []) {
 	ifstream inputFile(filename);
 	string fileLine;
 	getline(inputFile, fileLine); // Skip first line
@@ -45,7 +43,7 @@ void LoadBodiesFromFile(string filename, Body * bodyArray [], string positionUni
 	while (getline(inputFile, fileLine))
 	{
 		stringstream bodyDetails(fileLine);
-		string detailArray [5];
+		string detailArray [8];
 		i = 0;
 
 		while (getline(bodyDetails, parameter, ','))
@@ -58,41 +56,12 @@ void LoadBodiesFromFile(string filename, Body * bodyArray [], string positionUni
 		double y = stod(detailArray[1]);
 		double z = stod(detailArray[2]);
 		double mass = stod(detailArray[3]);
-		double xVelocity = stod(detailArray[4]);
-		double yVelocity = stod(detailArray[5]);
-		double zVelocity = stod(detailArray[6]);
+		double radius = stod(detailArray[4]);
+		double xVelocity = stod(detailArray[5]);
+		double yVelocity = stod(detailArray[6]);
+		double zVelocity = stod(detailArray[7]);
 
-		/*
-		// Handle Position Units
-		if (positionUnits == "AU")
-		{
-			x *= AU;
-			y *= AU;
-		}
-		else if (positionUnits == "LYR")
-		{
-			x *= LYR;
-			y *= LYR;
-		}
-		else if (positionUnits == "PC")
-		{
-			x *= PC;
-			y *= PC;
-		}
-		else if (positionUnits == "MPC")
-		{
-			x *= MPC;
-			y *= MPC;
-		}
-
-		// Handle Mass Units
-		if (massUnits == "M")
-		{
-			mass *= M;
-		}
-		*/
-
-		bodyArray[bodyIndex] = new Body(x, y, z, mass, xVelocity, yVelocity, zVelocity);
+		bodyArray[bodyIndex] = new Body(x, y, z, mass, radius, xVelocity, yVelocity, zVelocity);
 		bodyIndex++;
 	}
 }
