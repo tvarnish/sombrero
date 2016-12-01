@@ -62,22 +62,22 @@ int main(int argc, char * argv[]) {
 		cout << endl;
 	}
 	*/
-	
-	string usageStatement = "Usage: ./sombrero [-g --generate] [-r --run]";
-	
+
+	string usageStatement = "Usage: ./sombrero [-g --generate {output file name}] [-r --run]";
+
 	int bodyCount = 401;
 	int width = 640;
 	int height = 480;
 
 	Body * bodyArray [bodyCount];
-	
+
 	if (argc == 1) {
 		// No arguments supplied. Exit.
 		cout << "No arguments supplied. Must choose an option." << endl;
 		cout << usageStatement << endl;
 		return 1;
 	}
-	
+
 	if (strcmp(argv[1], "-g") == 0 or strcmp(argv[1], "--generate") == 0) {
 		// Randomly generate bodies
 		for (int i = 0; i < bodyCount - 1; i++) {
@@ -88,10 +88,10 @@ int main(int argc, char * argv[]) {
 			double x = r * cos(theta) * cos(phi);
 			double y = r * sin(theta);
 			double z = r * cos(theta) * sin(phi);
-		
+
 			double mass = Random(1e23, 1e25);
 
-			bodyArray[i] = new Body(x, y, z, mass, 0.0, 0.0, 0.0);
+			bodyArray[i] = new Body(x, y, z, mass, random(0, 1e4), random(0, 1e4), random(0, 1e4));
 		}
 
 		bodyArray[400] = new Body(0.0, 0.0, 0.0, 2e31, 0.0, 0.0, 0.0);
@@ -108,10 +108,12 @@ int main(int argc, char * argv[]) {
 		// Rotate bodies about the y-axis
 		for (double angle = 0.0; angle < 360.0; angle ++) {
 			string imageFileName = "images/image_" + PadWithZeroes(angle, 360) + ".png";
-		
-			pngwriter png(width, height, 0.0, imageFileName.c_str());
-			int midX = width / 2;
-			int midY = height / 2;
+			Image image = Image(imageFileName, width, height, 100);
+			image.DrawText("I am not a potato!", 1, 1, 255, 255, 255);
+
+			//pngwriter png(width, height, 0.0, imageFileName.c_str());
+			//int midX = width / 2;
+			//int midY = height / 2;
 
 			for (int i = 0; i < bodyCount; i++) {
 				// Rotate body
@@ -124,30 +126,18 @@ int main(int argc, char * argv[]) {
 				t = p.RotateY(angle);
 				t = t.Round();
 
-				// Draw on image
-				int x = (int)(t.GetX() / AU * 100) + midX;
-				int y = (int)(t.GetY() / AU * 100) + midY;
-				bool xValid = x < width && y >= 0;
-				bool yValid = y < height && y >= 0;
-
-				if (xValid && yValid) {
-					png.plot(x, y, 1.0, 1.0, 1.0);
-				}
+				image.DrawBody(t.GetX(), t.GetY(), 255, 255, 255);
 			}
 
-			png.close();
+			image.Save();
 		}
-	
-		// string imageFileName = "images/image_" + PadWithZeroes(angle, 360) + ".ppm";
-		// Image image = Image(imageFileName, width, height);
-		// image.DrawAllBodies(bodyCount, rotatedBodies, 0, 255, 0, "", 100, 0);
-		// image.Save();
-		// image.CleanUp();
-		
+
 		// Build video from images
 		video.Build("result.mp4", 360);
-		
+
 		CleanUpBodyArray(bodyArray, bodyCount);
+
+		return 0;
 	}
 
 	/////////////////////////////////////////////////////////////////
@@ -165,7 +155,7 @@ int main(int argc, char * argv[]) {
 		for (int f = 0; f < frames; f++) {
 			for (int a = 0; a < bodyCount; a++) {
 				bodyArray[a]->ResetForce();
-	
+
 				for (int b = 0; b < bodyCount; b++) {
 					if (a != b) {
 						// Calculate distance
@@ -183,7 +173,7 @@ int main(int argc, char * argv[]) {
 
 						// Add force to total
 						bodyArray[a]->AddForce(force, phiAngle, thetaAngle);
-					}	
+					}
 				}
 			}
 
@@ -194,7 +184,7 @@ int main(int argc, char * argv[]) {
 
 			for (int i = 0; i < bodyCount; i++) {
 				bodyArray[i]->Update(dt);
-				
+
 				PositionMatrix p;
 				p.Initialise();
 				p.Set(bodyArray[i]->GetX(), bodyArray[i]->GetY(), bodyArray[i]->GetZ());
@@ -230,14 +220,12 @@ int main(int argc, char * argv[]) {
 	}
 
 	// Demo Image
-	/*
 	pngwriter png(300, 300, 0, "test.png");
 	png.plot(100, 100, 1.0, 0.0, 0.0);
 	png.plot(200, 100, 0.0, 1.0, 0.0);
 	png.plot(200, 200, 0.0, 0.0, 1.0);
 	png.plot(100, 200, 1.0, 1.0, 1.0);
 	png.close();
-	*/
 
 	return 0;
 }

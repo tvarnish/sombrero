@@ -4,70 +4,49 @@
 #include "units.h"
 
 #include <fstream>
+#include <pngwriter.h>
 
 using namespace std;
 
-Image::Image(string filename, int w, int h) {
+//pngwriter png;
+
+Image::Image(string filename, int w, int h, double _scale) {
 	fileName = filename;
 	width = w;
 	height = h;
+	scale = _scale;
 
-	// Initialize image (set all pixels to black (0,0,0))
-	for (int y = 0; y < height; y++)
-	{
-		vector<Pixel> row(width);
-		pixels.push_back(row);
+	png = pngwriter(width, height, 0, filename.c_str());
+}
 
-		Pixel p;
-		p.R = 0;
-		p.G = 0;
-		p.B = 0;
+void Image::Draw(int x, int y, int r, int g, int b) {
+	double redValue = (double)(r / 255);
+	double greenValue = (double)(g / 255);
+	double blueValue = (double)(b / 255);
 
-		for (int x = 0; x < width; x++)
-		{
-			pixels[y].push_back(p);
-		}
+	png.plot(x, y, redValue, greenValue, blueValue);
+}
+
+void Image::DrawBody(double x, double y, int r, int g, int b) {
+	int xScaled = (width / 2) + Scale(x, scale);
+ 	int yScaled = (height / 2) + Scale(y, scale);
+
+	bool xValid = xScaled < width && xScaled >= 0;
+	bool yValid = yScaled < height && yScaled >= 0;
+
+	if (xValid && yValid) {
+		Draw(xScaled, yScaled, r, g, b);
 	}
 }
 
-void Image::DrawBody(int x, int y, int r, int g, int b) {
-	pixels[y][x].SetColour(r, g, b);
-}
-
-int Image::Scale(double coordinate, string positionUnits, double scale) {
+int Image::Scale(double coordinate, double scale) {
 	int position = (int)(coordinate / AU * scale);
 	return position;
 }
 
-void Image::DrawAllBodies(int bodyCount, Body * bodyArray [], int r, int g, int b, string positionUnits, double scale, double cameraAngle) {
-	int midX = width / 2;
-	int midY = height / 2;
-
-	for (int i = 0; i < bodyCount; i++)
-	{
-		// Convert position to camera angle x and y
-		double xValue;
-		double yValue = bodyArray[i]->GetY();
-
-		if (cameraAngle == 90.0)
-		{
-			xValue = bodyArray[i]->GetZ();
-		}
-		else
-		{
-			xValue = bodyArray[i]->GetX();
-		}
-
-		int x = Scale(xValue, positionUnits, scale) + midX;
-		int y = -Scale(yValue, positionUnits, scale) + midY;
-
-		bool xCoordinateValid = x < width && x >= 0;
-		bool yCoordinateValid = y < height && y >= 0;
-
-		if (xCoordinateValid && yCoordinateValid)
-		{
-			DrawBody(x, y, r, g, b);
-		}
+void Image::DrawAllBodies(int bodyCount, Body * bodyArray [], int r, int g, int b) {
+	for (int i = 0; i < bodyCount; i++) {
+		DrawBody(bodyArray[i]->GetX(), bodyArray[i]->GetY(), r, g, b);
 	}
 }
 
@@ -78,11 +57,11 @@ void Image::DrawTextArray(int textArray [5][5], int xStart, int yStart, int r, i
 		{
 			if (textArray[y][x] == 0)
 			{
-				pixels[y + yStart][x + xStart].SetColour(0, 0, 0);
+				png.plot(x + xStart, height - (y + yStart), 0.0, 0.0, 0.0);
 			}
 			else
 			{
-				pixels[y + yStart][x + xStart].SetColour(r, g, b);
+				png.plot(x + xStart, height - (y + yStart), (double)(r / 255), (double)(g / 255), (double)(b / 255));
 			}
 		}
 	}
@@ -132,26 +111,5 @@ void Image::DrawText(string text, int x, int y, int r, int g, int b) {
 }
 
 void Image::Save() {
-	ofstream imageFile(fileName, ios::out);
-	imageFile << "P3\n";
-	imageFile << to_string(width) << " " << to_string(height) << "\n";
-	imageFile << "255\n";
-
-	for (int y = 0; y < height; y++)
-	{
-		for (int x = 0; x < width; x++)
-		{
-			imageFile << pixels[y][x].R << " ";
-			imageFile << pixels[y][x].G << " ";
-			imageFile << pixels[y][x].B << "\n";
-		}
-	}
-
-	imageFile.close();
-	CleanUp();
-}
-
-void Image::CleanUp() {
-	pixels.clear();
-	pixels.shrink_to_fit();
+	png.close();
 }

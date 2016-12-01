@@ -4,35 +4,28 @@
 
 #include <vector>
 #include <iostream>
+#include <pngwriter.h>
 
 class Body;
-
-class Pixel {
-	public:
-		int R;
-		int G;
-		int B;
-
-		void SetColour(int r, int g, int b) { R = r; G = g; B = b; };
-};
 
 class Image {
 		int width;
 		int height;
+		double scale;
 		std::string fileName;
 
+		pngwriter png;
+
 		void DrawTextArray(int textArray [5][5], int xStart, int yStart, int r, int g, int b);
-		int Scale(double coordinate, std::string positionUnits, double scale);
 
 	public:
-		std::vector< std::vector<Pixel> > pixels;
-
-		Image(std::string filename, int w, int h);
-		void DrawBody(int x, int y, int r, int g, int b);
-		void DrawAllBodies(int bodyCount, Body * bodyArray [], int r, int g, int b, std::string positionUnits, double scale, double cameraAngle);
+		Image(std::string filename, int w, int h, double _scale);
+		int Scale(double coordinate, double scale);
+		void Draw(int x, int y, int r, int g, int b);
+		void DrawBody(double x, double y, int r, int g, int b);
+		void DrawAllBodies(int bodyCount, Body * bodyArray [], int r, int g, int b);
 		void DrawText(std::string text, int x, int y, int r, int g, int b);
 		void Save();
-		void CleanUp();
 };
 
 #endif
