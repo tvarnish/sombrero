@@ -1,6 +1,9 @@
 # Sombrero
 Sombrero is my A-Level Computer Science project, focused on simulating the N-Body Problem, with a stretch goal of SPH for simulating star formation.
 
+> Apologies - this usage / prerequisites page does not work with the current version of the project.
+> I will be updating the prerequisites and usage details soon.
+
 ## Getting Started
 These instructions will get a copy of the project running on your local machine, for development and testing purposes.
 
