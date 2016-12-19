@@ -38,84 +38,6 @@ double Random(double min, double max) {
 }
 
 int main(int argc, char * argv[]) {
-	// position example:
-	// (a,b) -> m.GetAt(a,b)
-	// (0,0) (0,1)
-	// (1,0) (1,1)
-
-	/*
-	PositionMatrix p;
-	p.Initialise();
-	p.Set(0.0, 4.0, -2.0);
-	cout << p.GetX() << endl;
-	cout << p.GetY() << endl;
-	cout << p.GetZ() << endl << endl;
-
-	PositionMatrix t;
-	t.Initialise();
-
-	for (double i = 0; i < 90; i += 10) {
-		cout << "i = " << i << endl;
-		t = p.RotateY(i);
-		t = t.Round();
-		t.Display();
-		cout << endl;
-	}
-	*/
-
-	// Vector Testing
-	Vector a;
-	a.SetX(1);
-	a.SetY(2);
-	a.SetZ(3);
-
-	cout << "A:" << endl;
-	cout << a.GetX() << endl;
-	cout << a.GetY() << endl;
-	cout << a.GetZ() << endl << endl;
-
-	Vector b;
-	b.SetX(2);
-	b.SetY(1);
-	b.SetZ(2);
-
-	cout << "B:" << endl;
-	cout << b.GetX() << endl;
-	cout << b.GetY() << endl;
-	cout << b.GetZ() << endl << endl;
-
-	Vector p;
-
-	p = a.Add(b);
-	cout << "Add:" << endl;
-	cout << p.GetX() << endl;
-	cout << p.GetY() << endl;
-	cout << p.GetZ() << endl << endl;
-
-	p = a.Subtract(b);
-	cout << "Subtract:" << endl;
-	cout << p.GetX() << endl;
-	cout << p.GetY() << endl;
-	cout << p.GetZ() << endl << endl;
-
-	p = a.Multiply(2);
-	cout << "Multiply:" << endl;
-	cout << p.GetX() << endl;
-	cout << p.GetY() << endl;
-	cout << p.GetZ() << endl << endl;
-
-	p = a.Divide(2);
-	cout << "Divide:" << endl;
-	cout << p.GetX() << endl;
-	cout << p.GetY() << endl;
-	cout << p.GetZ() << endl << endl;
-
-	double v = a.DotProduct(b);
-	cout << "Dot Product:" << endl;
-	cout << v << endl;
-
-	return 0;
-
 	string usageStatement = "Usage: ./sombrero [-g --generate {output file name}] [-r --run]";
 
 	int bodyCount = 201;
@@ -230,6 +152,7 @@ int main(int argc, char * argv[]) {
 
 			for (int i = 0; i < bodyCount; i++) {
 				bodyArray[i]->Update(dt);
+				bodyArray[i]->Step();
 
 				image.DrawBody(bodyArray[i]->GetX(), bodyArray[i]->GetY(), 255, 255, 255);
 			}

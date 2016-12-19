@@ -6,11 +6,14 @@ Body::Body(double xPos, double yPos, double zPos, double bodyMass, double r, dou
 	x = xPos;
 	y = yPos;
 	z = zPos;
+
 	mass = bodyMass;
 	radius = r;
+	
 	xVelocity = xVel;
 	yVelocity = yVel;
 	zVelocity = zVel;
+	
 	xForce = 0.0;
 	yForce = 0.0;
 	zForce = 0.0;
@@ -22,10 +25,16 @@ void Body::Update(double dt) {
 	yVelocity += yForce / mass * dt;
 	zVelocity += zForce / mass * dt;
 
-	// Update position
-	x += xVelocity * dt;
-	y += yVelocity * dt;
-	z += zVelocity * dt;
+	// Calculate next position
+	nextX = x + xVelocity * dt;
+	nextY = y + yVelocity * dt;
+	nextZ = z + zVelocity * dt;
+}
+
+void Body::Step() {
+	x = nextX;
+	y = nextY;
+	z = nextZ;
 }
 
 void Body::AddForce(double force, double phi, double theta) {

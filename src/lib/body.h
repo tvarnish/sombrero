@@ -4,6 +4,7 @@
 
 class Body {
 		double x, y, z;
+		double nextX, nextY, nextZ;
 		double xVelocity, yVelocity, zVelocity;
 		double mass;
 		double radius;
@@ -27,6 +28,7 @@ class Body {
 		void ResetForce();
 
 		void Update(double dt);
+		void Step();
 };
 
 #endif
