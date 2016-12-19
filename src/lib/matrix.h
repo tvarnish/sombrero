@@ -18,17 +18,6 @@ class Matrix {
 		void SetAt(int r, int c, double value);
 };
 
-class PositionMatrix : public Matrix {
-  public:
-    void Initialise();
-    void Set(double x, double y, double z);
-    double GetX();
-    double GetY();
-    double GetZ();
-    PositionMatrix RotateY(double angle);
-    PositionMatrix Round();
-};
-
 class Vector {
 	double x;
 	double y;
@@ -49,6 +38,10 @@ class Vector {
 	Vector Multiply(double scalar);
 	Vector Divide(double scalar);
 	double DotProduct(Vector other);
+
+	Vector Transform(Matrix transformationMatrix);
+	Vector RotateY(double angle);
+	Vector RoundValues();
 };
 
 #endif

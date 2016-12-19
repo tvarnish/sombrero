@@ -41,7 +41,7 @@ int main(int argc, char * argv[]) {
 	string usageStatement = "Usage: ./sombrero [-g --generate] [-r --run]";
 
 	// Need to make these "settable" by the user
-	int bodyCount = 201;
+	int bodyCount = 200;
 	int width = 640;
 	int height = 480;
 
@@ -74,7 +74,7 @@ int main(int argc, char * argv[]) {
 			bodyArray[i] = new Body(x, y, z, mass, Random(1e6, 9e6), Random(0, 1e4), Random(0, 1e4), Random(0, 1e4));
 		}
 
-		bodyArray[400] = new Body(0.0, 0.0, 0.0, 2e31, 1e8, 0.0, 0.0, 0.0);
+		bodyArray[bodyCount] = new Body(0.0, 0.0, 0.0, 2e31, 1e8, 0.0, 0.0, 0.0);
 
 		// Save bodies to output.txt
 		Output output("init/output.txt", bodyCount, width, height, 100);
@@ -91,14 +91,12 @@ int main(int argc, char * argv[]) {
 
 			for (int i = 0; i < bodyCount; i++) {
 				// Rotate body
-				PositionMatrix p;
-				p.Initialise();
+				Vector p;
 				p.Set(bodyArray[i]->GetX(), bodyArray[i]->GetY(), bodyArray[i]->GetZ());
 
-				PositionMatrix t;
-				t.Initialise();
+				Vector t;
 				t = p.RotateY(angle);
-				t = t.Round();
+				t = t.RoundValues();
 
 				image.DrawBody(t.GetX(), t.GetY(), 255, 255, 255);
 			}
@@ -108,8 +106,6 @@ int main(int argc, char * argv[]) {
 
 		// Build video from images
 		video.Build("result.mp4", 360);
-
-		CleanUpBodyArray(bodyArray, bodyCount);
 
 		return 0;
 	}
@@ -169,8 +165,6 @@ int main(int argc, char * argv[]) {
 		Output output("init/output.txt", bodyCount, width, height, 100);
 		output.AddAllBodies(bodyArray);
 		output.Save();
-
-		CleanUpBodyArray(bodyArray, bodyCount);
 
 		return 0;
 	}

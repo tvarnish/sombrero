@@ -30,74 +30,6 @@ void Matrix::SetAt(int r, int c, double value) {
 	this->data.at(r).at(c) = value;
 }
 
-void PositionMatrix::Initialise() {
-  this->rows = 3;
-  this->columns = 1;
-	this->data.assign(3, vector<double>(1, 0.0));
-}
-
-void PositionMatrix::Set(double x, double y, double z) {
-  this->SetAt(0, 0, x);
-  this->SetAt(1, 0, y);
-  this->SetAt(2, 0, z);
-}
-
-double PositionMatrix::GetX() {
-  return this->GetAt(0, 0);
-}
-
-double PositionMatrix::GetY() {
-  return this->GetAt(1, 0);
-}
-
-double PositionMatrix::GetZ() {
-  return this->GetAt(2, 0);
-}
-
-PositionMatrix PositionMatrix::RotateY(double angle) {
-	Matrix rotateMatrix;
-	rotateMatrix.Initialise(3, 3);
-
-	// TODO: Create MISC function for converting to radians
-	double angleRadians = angle * (3.1415926 / 180.0);
-
-	rotateMatrix.SetAt(0, 0, cos(angleRadians));
-	rotateMatrix.SetAt(0, 2, sin(angleRadians));
-	rotateMatrix.SetAt(1, 1, 1.0);
-	rotateMatrix.SetAt(2, 0, -1.0 * sin(angleRadians));
-	rotateMatrix.SetAt(2, 2, cos(angleRadians));
-
-	PositionMatrix newMatrix;
-	newMatrix.Initialise();
-
-	double value;
-  for (int i = 0; i < 3; i ++) {
-    value = 0.0;
-    for (int j = 0; j < 3; j++) {
-      value += rotateMatrix.GetAt(i, j) * this->GetAt(j, 0);
-    }
-    newMatrix.SetAt(i, 0, value);
-  }
-
-	return newMatrix;
-}
-
-PositionMatrix PositionMatrix::Round() {
-  PositionMatrix roundedMatrix;
-  roundedMatrix.Initialise();
-
-  double roundedValue;
-  for (int i = 0; i < 3; i++) {
-    roundedValue = round(this->GetAt(i, 0));
-    if (roundedValue == -0.0) {
-      roundedValue = 0.0;
-    }
-    roundedMatrix.SetAt(i, 0, roundedValue);
-  }
-
-  return roundedMatrix;
-}
-
 Vector Vector::Add(Vector other) {
 	Vector result;
 	result.Set(this->x + other.x, this->y + other.y, this->z + other.z);
@@ -126,4 +58,56 @@ double Vector::DotProduct(Vector other) {
 	double result;
 	result = (this->x * other.x) + (this->y * other.y) + (this->z * other.z);
 	return result;
+}
+
+Vector Vector::Transform(Matrix transformationMatrix) {
+	Vector transformed;
+
+	// X
+	transformed.SetX(x * transformationMatrix.GetAt(0, 0) +
+					 y * transformationMatrix.GetAt(0, 1) +
+					 z * transformationMatrix.GetAt(0, 2));
+	// Y
+	transformed.SetY(x * transformationMatrix.GetAt(1, 0) +
+					 y * transformationMatrix.GetAt(1, 1) +
+					 z * transformationMatrix.GetAt(1, 2));
+	// Z
+	transformed.SetZ(x * transformationMatrix.GetAt(2, 0) +
+					 y * transformationMatrix.GetAt(2, 1) +
+					 z * transformationMatrix.GetAt(2, 2));
+
+	return transformed;
+}
+
+Vector Vector::RotateY(double angle) {
+	Matrix rotateMatrix;
+	rotateMatrix.Initialise(3, 3);
+
+	// TODO: Create MISC function for converting to radians
+	double angleRadians = angle * (3.1415926 / 180.0);
+
+	rotateMatrix.SetAt(0, 0, cos(angleRadians));
+	rotateMatrix.SetAt(0, 2, sin(angleRadians));
+	rotateMatrix.SetAt(1, 1, 1.0);
+	rotateMatrix.SetAt(2, 0, -1.0 * sin(angleRadians));
+	rotateMatrix.SetAt(2, 2, cos(angleRadians));
+
+	Vector transformed;
+	transformed = this->Transform(rotateMatrix);
+
+	return transformed;
+}
+
+Vector Vector::RoundValues() {
+	Vector rounded;
+
+	rounded.SetX(round(this->x));
+	rounded.SetY(round(this->y));
+	rounded.SetZ(round(this->z));
+
+	if (rounded.GetX() == -0.0) rounded.SetX(0.0);
+	if (rounded.GetY() == -0.0) rounded.SetY(0.0);
+	if (rounded.GetZ() == -0.0) rounded.SetZ(0.0);
+
+	return rounded;
 }
