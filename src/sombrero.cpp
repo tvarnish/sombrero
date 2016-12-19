@@ -74,7 +74,7 @@ int main(int argc, char * argv[]) {
 			bodyArray[i] = new Body(x, y, z, mass, Random(1e6, 9e6), Random(0, 1e4), Random(0, 1e4), Random(0, 1e4));
 		}
 
-		bodyArray[bodyCount] = new Body(0.0, 0.0, 0.0, 2e31, 1e8, 0.0, 0.0, 0.0);
+		bodyArray[bodyCount - 1] = new Body(0.0, 0.0, 0.0, 2e31, 1e8, 0.0, 0.0, 0.0);
 
 		// Save bodies to output.txt
 		Output output("init/output.txt", bodyCount, width, height, 100);
