@@ -63,9 +63,62 @@ int main(int argc, char * argv[]) {
 	}
 	*/
 
+	// Vector Testing
+	Vector a;
+	a.SetX(1);
+	a.SetY(2);
+	a.SetZ(3);
+
+	cout << "A:" << endl;
+	cout << a.GetX() << endl;
+	cout << a.GetY() << endl;
+	cout << a.GetZ() << endl << endl;
+
+	Vector b;
+	b.SetX(2);
+	b.SetY(1);
+	b.SetZ(2);
+
+	cout << "B:" << endl;
+	cout << b.GetX() << endl;
+	cout << b.GetY() << endl;
+	cout << b.GetZ() << endl << endl;
+
+	Vector p;
+
+	p = a.Add(b);
+	cout << "Add:" << endl;
+	cout << p.GetX() << endl;
+	cout << p.GetY() << endl;
+	cout << p.GetZ() << endl << endl;
+
+	p = a.Subtract(b);
+	cout << "Subtract:" << endl;
+	cout << p.GetX() << endl;
+	cout << p.GetY() << endl;
+	cout << p.GetZ() << endl << endl;
+
+	p = a.Multiply(2);
+	cout << "Multiply:" << endl;
+	cout << p.GetX() << endl;
+	cout << p.GetY() << endl;
+	cout << p.GetZ() << endl << endl;
+
+	p = a.Divide(2);
+	cout << "Divide:" << endl;
+	cout << p.GetX() << endl;
+	cout << p.GetY() << endl;
+	cout << p.GetZ() << endl << endl;
+
+	double v = a.DotProduct(b);
+	cout << "Dot Product:" << endl;
+	cout << v << endl;
+
+	return 0;
+
 	string usageStatement = "Usage: ./sombrero [-g --generate {output file name}] [-r --run]";
 
-	int bodyCount = 401;
+	int bodyCount = 201;
 	int width = 640;
 	int height = 480;
 
@@ -109,11 +162,6 @@ int main(int argc, char * argv[]) {
 		for (double angle = 0.0; angle < 360.0; angle ++) {
 			string imageFileName = "images/image_" + PadWithZeroes(angle, 360) + ".png";
 			Image image = Image(imageFileName, width, height, 100);
-			image.DrawText("I am not a potato!", 1, 1, 255, 255, 255);
-
-			//pngwriter png(width, height, 0.0, imageFileName.c_str());
-			//int midX = width / 2;
-			//int midY = height / 2;
 
 			for (int i = 0; i < bodyCount; i++) {
 				// Rotate body
@@ -178,28 +226,15 @@ int main(int argc, char * argv[]) {
 			}
 
 			string imageFileName = "images/image_" + PadWithZeroes(f, frames) + ".png";
-			pngwriter png(width, height, 0.0, imageFileName.c_str());
-			int midX = width / 2;
-			int midY = height / 2;
+			Image image = Image(imageFileName, width, height, 100);
 
 			for (int i = 0; i < bodyCount; i++) {
 				bodyArray[i]->Update(dt);
 
-				PositionMatrix p;
-				p.Initialise();
-				p.Set(bodyArray[i]->GetX(), bodyArray[i]->GetY(), bodyArray[i]->GetZ());
-
-				int x = (int)(p.GetX() / AU * 100) + midX;
-				int y = (int)(p.GetY() / AU * 100) + midY;
-				bool xValid = x < width && x >= 0;
-				bool yValid = y < height && y >= 0;
-
-				if (xValid && yValid) {
-					png.plot(x, y, 1.0, 1.0, 1.0);
-				}
+				image.DrawBody(bodyArray[i]->GetX(), bodyArray[i]->GetY(), 255, 255, 255);
 			}
 
-			png.close();
+			image.Save();
 		}
 
 		cout << "Done! Building video..." << endl;

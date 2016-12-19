@@ -97,3 +97,33 @@ PositionMatrix PositionMatrix::Round() {
 
   return roundedMatrix;
 }
+
+Vector Vector::Add(Vector other) {
+	Vector result;
+	result.Set(this->x + other.x, this->y + other.y, this->z + other.z);
+	return result;
+}
+
+Vector Vector::Subtract(Vector other) {
+	Vector result;
+	result.Set(this->x - other.x, this->y - other.y, this->z - other.z);
+	return result;
+}
+
+Vector Vector::Multiply(double scalar) {
+	Vector result;
+	result.Set(this->x * scalar, this->y * scalar, this->z * scalar);
+	return result;
+}
+
+Vector Vector::Divide(double scalar) {
+	Vector result;
+	result.Set(this->x / scalar, this->y / scalar, this->z / scalar);
+	return result;
+}
+
+double Vector::DotProduct(Vector other) {
+	double result;
+	result = (this->x * other.x) + (this->y * other.y) + (this->z * other.z);
+	return result;
+}

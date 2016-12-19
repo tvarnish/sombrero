@@ -29,4 +29,26 @@ class PositionMatrix : public Matrix {
     PositionMatrix Round();
 };
 
+class Vector {
+	double x;
+	double y;
+	double z;
+
+  public:
+	void Set(double x, double y, double z) { this->x = x; this->y = y; this->z = z; }
+	void SetX(double x) { this->x = x; };
+	void SetY(double y) { this->y = y; };
+	void SetZ(double z) { this->z = z; };
+
+	double GetX() { return this->x; };
+	double GetY() { return this->y; };
+	double GetZ() { return this->z; };
+
+	Vector Add(Vector other);
+	Vector Subtract(Vector other);
+	Vector Multiply(double scalar);
+	Vector Divide(double scalar);
+	double DotProduct(Vector other);
+};
+
 #endif
