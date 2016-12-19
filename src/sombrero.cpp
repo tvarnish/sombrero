@@ -38,14 +38,18 @@ double Random(double min, double max) {
 }
 
 int main(int argc, char * argv[]) {
-	string usageStatement = "Usage: ./sombrero [-g --generate {output file name}] [-r --run]";
+	string usageStatement = "Usage: ./sombrero [-g --generate] [-r --run]";
 
+	// Need to make these "settable" by the user
 	int bodyCount = 201;
 	int width = 640;
 	int height = 480;
 
+	int framerate = 45;
+
 	Body * bodyArray [bodyCount];
 
+	// No arguments supplied
 	if (argc == 1) {
 		// No arguments supplied. Exit.
 		cout << "No arguments supplied. Must choose an option." << endl;
@@ -53,6 +57,7 @@ int main(int argc, char * argv[]) {
 		return 1;
 	}
 
+	// Generate Body arrangement
 	if (strcmp(argv[1], "-g") == 0 or strcmp(argv[1], "--generate") == 0) {
 		// Randomly generate bodies
 		for (int i = 0; i < bodyCount - 1; i++) {
@@ -76,10 +81,9 @@ int main(int argc, char * argv[]) {
 		output.AddAllBodies(bodyArray);
 		output.Save();
 
-		Video video = Video("images/", "image_", width, height);
+		Video video = Video("images/", "image_", width, height, framerate);
 		video.ClearImageFolder();
 
-		// Do the thing.
 		// Rotate bodies about the y-axis
 		for (double angle = 0.0; angle < 360.0; angle ++) {
 			string imageFileName = "images/image_" + PadWithZeroes(angle, 360) + ".png";
@@ -110,13 +114,11 @@ int main(int argc, char * argv[]) {
 		return 0;
 	}
 
-	/////////////////////////////////////////////////////////////////
-	// N-Body Code
-
+	// Run simulation
 	if (strcmp(argv[1], "-r") == 0 or strcmp(argv[1], "--run") == 0) {
 		LoadBodiesFromFile("init/output.txt", bodyArray);
 
-		Video video = Video("images/", "image_", width, height);
+		Video video = Video("images/", "image_", width, height, framerate);
 		video.ClearImageFolder();
 
 		int frames = 500;
@@ -173,6 +175,7 @@ int main(int argc, char * argv[]) {
 		return 0;
 	}
 
+	// No *valid* arguments supplied
 	else {
 		cout << "No valid arguments provided." << endl;
 		cout << usageStatement << endl;
