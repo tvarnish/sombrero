@@ -10,5 +10,7 @@ void LoadBodiesFromFile(std::string filename, Body * bodyArray []);
 void CleanUpBodyArray(Body * bodyArray [], int bodyCount);
 int NumberLength(int number);
 std::string PadWithZeroes(int frameNumber, int maxCount);
+int RandomInteger(int min, int max);
+double Random(double min, double max);
 
 #endif

@@ -18,25 +18,6 @@
 
 using namespace std;
 
-int RandomInteger(int min, int max) {
-	srand((unsigned)clock());;
-
-	max ++;
-	double r = (double)rand() / (double)RAND_MAX;
-	int rnd = (int)(min + r * (max - min));
-
-	return rnd;
-}
-
-double Random(double min, double max) {
-	srand((unsigned)clock());
-	max ++;
-	double r = (double)rand() / (double)RAND_MAX;
-	double rnd = min + r * (max - min);
-
-	return rnd;
-}
-
 int main(int argc, char * argv[]) {
 	string usageStatement = "Usage: ./sombrero [-g --generate] [-r --run]";
 

@@ -98,3 +98,22 @@ string PadWithZeroes(int frameNumber, int maxCount) {
 
 	return paddedValue;
 }
+
+int RandomInteger(int min, int max) {
+	srand((unsigned)clock());;
+
+	max ++;
+	double r = (double)rand() / (double)RAND_MAX;
+	int rnd = (int)(min + r * (max - min));
+
+	return rnd;
+}
+
+double Random(double min, double max) {
+	srand((unsigned)clock());
+	max ++;
+	double r = (double)rand() / (double)RAND_MAX;
+	double rnd = min + r * (max - min);
+
+	return rnd;
+}
