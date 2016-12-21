@@ -42,6 +42,8 @@ void List::Append(Node * node) {
 }
 
 void List::Remove(int id) {
+	length--;
+
 	Node * pointer = head;
 	Node * previous = NULL;
 
