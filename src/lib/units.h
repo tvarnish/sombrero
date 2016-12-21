@@ -1,5 +1,5 @@
-//#ifndef __UNITS_H_INCLUDED__
-//#define __UNITS_H_INCLUDED__
+#ifndef __UNITS_H_INCLUDED__
+#define __UNITS_H_INCLUDED__
 
 // Real World Units (https://www.iau.org/public/themes/measuring/)
 #define AU 149597870700 // Astronomical Unit - Average Earth-Sun Distance
@@ -18,4 +18,4 @@
 
 #define PI 3.1415926
 
-//#endif
+#endif

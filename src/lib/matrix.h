@@ -1,5 +1,5 @@
-#ifndef __UNITS_H_INCLUDED__
-#define __UNITS_H_INCLUDED__
+#ifndef __MATRIX_H_INCLUDED__
+#define __MATRIX_H_INCLUDED__
 
 #include <vector>
 
