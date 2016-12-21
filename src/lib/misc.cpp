@@ -117,3 +117,8 @@ double Random(double min, double max) {
 
 	return rnd;
 }
+
+bool FileExists(string filename) {
+	ifstream file(filename.c_str());
+	return file.good();
+}

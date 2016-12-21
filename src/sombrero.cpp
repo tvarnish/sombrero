@@ -40,28 +40,66 @@ int main(int argc, char * argv[]) {
 
 	// Generate Body arrangement
 	if (strcmp(argv[1], "-g") == 0 or strcmp(argv[1], "--generate") == 0) {
-		// Randomly generate bodies
-		for (int i = 0; i < bodyCount - 1; i++) {
-			double r = Random(1e11, 2e11);
-			double theta = Random(0, 2 * PI);
-			double phi = Random(0, 2 * PI);
+		if (argc >= 3) {
+			// Generate random arrangement of bodies (+ generate rotation video)
+			// i.e. create new bodyArray
+			if (strcmp(argv[2], "random") == 0) {
+				for (int i = 0; i < bodyCount - 1; i++) {
+					double r = Random(1e11, 2e11);
+					double theta = Random(0, 2 * PI);
+					double phi = Random(0, 2 * PI);
 
-			double x = r * cos(theta) * cos(phi);
-			double y = r * sin(theta);
-			double z = r * cos(theta) * sin(phi);
+					double x = r * cos(theta) * cos(phi);
+					double y = r * sin(theta);
+					double z = r * cos(theta) * sin(phi);
 
-			double mass = Random(1e23, 1e25);
+					double mass = Random(1e23, 1e25);
 
-			bodyArray[i] = new Body(x, y, z, mass, Random(1e6, 9e6), Random(0, 1e4), Random(0, 1e4), Random(0, 1e4));
+					bodyArray[i] = new Body(x, y, z, mass, Random(1e6, 9e6), Random(0, 1e4), Random(0, 1e4), Random(0, 1e4));
+				}
+
+				bodyArray[bodyCount - 1] = new Body(0.0, 0.0, 0.0, 2e31, 1e8, 0.0, 0.0, 0.0);
+
+				// Save bodies to output.txt
+				Output output("init/output.txt", bodyCount, width, height, 100);
+				output.AddAllBodies(bodyArray);
+				output.Save();
+			}
+
+			// Generate rotate video around bodies
+			// i.e. Load bodies from file
+			else if (strcmp(argv[2], "rotate") == 0) {
+				string filename = "init/output.txt";
+
+				if (argc == 4) {
+					// Assume that the final argument is the filename
+					filename = argv[3];
+				}
+
+				if (FileExists(filename)) {
+					LoadBodiesFromFile(filename.c_str(), bodyArray);
+				}
+				else {
+					cout << "./sombrero --generate rotate [filename]" << endl;
+					cout << "When using rotate, must include valid filename: e.g. init/output.txt" << endl;
+					return 1;
+				}
+			}
+
+			else {
+				cout << usageStatement << endl;
+				cout << "Must supply generate argument: [random, rotate]" << endl;
+				return 1;
+			}
 		}
 
-		bodyArray[bodyCount - 1] = new Body(0.0, 0.0, 0.0, 2e31, 1e8, 0.0, 0.0, 0.0);
+		else {
+			cout << usageStatement << endl;
+			cout << "Must supply generate argument: [random, rotate]" << endl;
+			return 1;
+		}
 
-		// Save bodies to output.txt
-		Output output("init/output.txt", bodyCount, width, height, 100);
-		output.AddAllBodies(bodyArray);
-		output.Save();
-
+		// Generate rotate video around bodies
 		Video video = Video("images/", "image_", width, height, framerate);
 		video.ClearImageFolder();
 

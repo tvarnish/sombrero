@@ -12,5 +12,6 @@ int NumberLength(int number);
 std::string PadWithZeroes(int frameNumber, int maxCount);
 int RandomInteger(int min, int max);
 double Random(double min, double max);
+bool FileExists(std::string filename);
 
 #endif
