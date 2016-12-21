@@ -6,17 +6,19 @@
 class Node {
 	public:
 		int data;
+		int index;
 		Node * next;
 
 		Node();
 };
 
 class List {
-	public:
-		Node * head;
-		int length;
+	int length;
+	Node * head;
 
+	public:
 		List();
+		int GetLength();
 		void Append(Node * node);
 		void Display();
 };

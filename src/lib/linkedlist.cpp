@@ -12,7 +12,13 @@ List::List() {
 	length = 0;
 }
 
+int List::GetLength() {
+	return length;
+}
+
 void List::Append(Node * node) {
+	length++;
+
 	Node * pointer = head;
 
 	if (head == NULL) {
