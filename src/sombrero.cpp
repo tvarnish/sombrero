@@ -137,7 +137,8 @@ int main(int argc, char * argv[]) {
 		video.ClearImageFolder();
 
 		int frames = 500;
-		double dt = DAY;
+		double dt = DAY / 2;
+		double numberOfBodies = bodyCount;
 
 		for (int f = 0; f < frames; f++) {
 			// Optimised algorithm
@@ -181,9 +182,6 @@ int main(int argc, char * argv[]) {
 			}
 
 			// Collision Physics
-			//bool firstCollision = true;
-			int collisionCount = 0;
-
 			for (int a = 0; a < bodyCount; a++) {
 				for (int b = a + 1; b < bodyCount; b++) {
 					if (bodyArray[a] != NULL && bodyArray[b] != NULL) {
@@ -223,23 +221,10 @@ int main(int argc, char * argv[]) {
 
 							// Check validity
 							if (timeValid1 && timeValid2) {
-								/*
-								if (firstCollision == true) {
-									cout << "==== FRAME " << to_string(f) << " ====" << endl;
-									firstCollision = false;
-								}
-								*/
-
-								collisionCount++;
-
 								if (time1 <= time2) {
-									// DEBUG
-									//cout << "Collision occurs at " << to_string(time1)  << ", between [" << to_string(a) << "] and [" << to_string(b) << "]"<< endl;
 									collisionTime = time1 * dt;
 								}
 								else {
-									// DEBUG
-									//cout << "Collision occurs at " << to_string(time2)  << ", between [" << to_string(a) << "] and [" << to_string(b) << "]"<< endl;
 									collisionTime = time2 * dt;
 								}
 							}
@@ -302,19 +287,12 @@ int main(int argc, char * argv[]) {
 							bodyArray[newIndex]->Update(dt - collisionTime);
 
 							bodyArray[otherIndex] = NULL;
+
+							numberOfBodies--;
 						}
 					}
 				}
 			}
-
-			// DEBUG
-			/*
-			if (firstCollision == false) {
-				cout << endl;
-			}
-			*/
-
-			cout << "Frame " << f << ": " << collisionCount << endl;
 
 			// Move each body to their new positions
 			for (int i = 0; i < bodyCount; i++) {
@@ -327,6 +305,7 @@ int main(int argc, char * argv[]) {
 
 			// Draw information on frame
 			image.DrawText("F: " + to_string(f), 10, 10, 255, 255, 255);
+			image.DrawText("N: " + to_string(numberOfBodies), 10, 20, 255, 255, 255);
 
 			image.Save();
 		}
