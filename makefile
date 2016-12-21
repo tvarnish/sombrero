@@ -8,8 +8,8 @@ MAKEDIR_BUILD = mkdir -p build
 MAKEDIR_IMAGE = mkdir -p images
 MAKEDIR_INIT = mkdir -p init
 
-sombrero: build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o
-	$(CXX) $(CXXFLAGS) -o $(EXEC) build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o $(LIBS)
+sombrero: build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o build/linkedlist.o
+	$(CXX) $(CXXFLAGS) -g -o $(EXEC) build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o build/linkedlist.o $(LIBS)
 
 build/sombrero.o: src/sombrero.cpp src/lib/font.h src/lib/body.h src/lib/image.h src/lib/video.h src/lib/output.h src/lib/misc.h src/lib/units.h
 	$(CXX) $(CXXFLAGS) -c src/sombrero.cpp -o build/sombrero.o
@@ -34,6 +34,9 @@ build/misc.o: src/lib/misc.cpp src/lib/misc.h src/lib/body.h
 
 build/matrix.o: src/lib/matrix.cpp src/lib/matrix.h
 	$(CXX) $(CXXFLAGS) -c src/lib/matrix.cpp -o build/matrix.o
+
+build/linkedlist.o: src/lib/linkedlist.cpp src/lib/linkedlist.h
+	$(CXX) $(CXXFLAGS) -c src/lib/linkedlist.cpp -o build/linkedlist.o
 
 clean:
 	-rm build/*.o

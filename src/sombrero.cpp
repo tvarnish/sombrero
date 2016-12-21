@@ -12,6 +12,7 @@
 #include "lib/output.h"
 #include "lib/misc.h"
 #include "lib/matrix.h"
+#include "lib/linkedlist.h"
 #include "lib/units.h"
 
 #include <pngwriter.h>
@@ -19,12 +20,35 @@
 using namespace std;
 
 int main(int argc, char * argv[]) {
+	Node * a = new Node();
+	a->data = 2;
+
+	Node * b = new Node();
+	b->data = 1;
+
+	Node * c = new Node();
+	c->data = 3;
+
+	List * list = new List();
+	list->Display();
+
+	list->Append(a);
+	list->Append(b);
+	list->Append(c);
+	list->Display();
+
+	return 0;
+
 	string usageStatement = "Usage: ./sombrero [-g --generate] [-r --run]";
 
 	// Need to make these "settable" by the user
 	int bodyCount = 200;
 	int width = 640;
 	int height = 480;
+
+	// "run" settings
+	double dt = DAY / 4;
+	int frames = 50;
 
 	int framerate = 45;
 
@@ -41,11 +65,11 @@ int main(int argc, char * argv[]) {
 	// Generate Body arrangement
 	if (strcmp(argv[1], "-g") == 0 or strcmp(argv[1], "--generate") == 0) {
 		if (argc >= 3) {
-			// Generate random arrangement of bodies (+ generate rotation video)
+			// Generate random arrangement of bodies (+ rotation video)
 			// i.e. create new bodyArray
 			if (strcmp(argv[2], "random") == 0) {
 				for (int i = 0; i < bodyCount - 1; i++) {
-					double r = Random(1e11, 2e11);
+					double r = Random(1e11, 1e11);
 					double theta = Random(0, 2 * PI);
 					double phi = Random(0, 2 * PI);
 
@@ -53,12 +77,12 @@ int main(int argc, char * argv[]) {
 					double y = r * sin(theta);
 					double z = r * cos(theta) * sin(phi);
 
-					double mass = Random(1e23, 1e25);
+					double mass = Random(1e23, 1e24);
 
 					bodyArray[i] = new Body(x, y, z, mass, Random(1e6, 9e6), Random(0, 1e4), Random(0, 1e4), Random(0, 1e4));
 				}
 
-				bodyArray[bodyCount - 1] = new Body(0.0, 0.0, 0.0, 2e31, 1e8, 0.0, 0.0, 0.0);
+				bodyArray[bodyCount - 1] = new Body(0.0, 0.0, 0.0, 2e30, 1e8, 0.0, 0.0, 0.0);
 
 				// Save bodies to output.txt
 				Output output("init/output.txt", bodyCount, width, height, 100);
@@ -109,16 +133,22 @@ int main(int argc, char * argv[]) {
 			Image image = Image(imageFileName, width, height, 100);
 
 			for (int i = 0; i < bodyCount; i++) {
-				// Rotate body
-				Vector p;
-				p.Set(bodyArray[i]->GetX(), bodyArray[i]->GetY(), bodyArray[i]->GetZ());
+				if (bodyArray[i] != NULL) {
+					// Rotate body
+					Vector p;
+					p.Set(bodyArray[i]->GetX(), bodyArray[i]->GetY(), bodyArray[i]->GetZ());
 
-				Vector t;
-				t = p.RotateY(angle);
-				t = t.RoundValues();
+					Vector t;
+					t = p.RotateY(angle);
+					t = t.RoundValues();
 
-				image.DrawBody(t.GetX(), t.GetY(), 255, 255, 255);
+					image.DrawBody(t.GetX(), t.GetY(), 255, 255, 255);
+				}
 			}
+
+			// Add details to image
+			image.DrawText("ROTATION", 10, 10, 255, 255, 255);
+			image.DrawText("ANGLE: " + to_string((int)angle), 10, 20, 255, 255, 255);
 
 			image.Save();
 		}
@@ -136,8 +166,6 @@ int main(int argc, char * argv[]) {
 		Video video = Video("images/", "image_", width, height, framerate);
 		video.ClearImageFolder();
 
-		int frames = 500;
-		double dt = DAY / 2;
 		double numberOfBodies = bodyCount;
 
 		for (int f = 0; f < frames; f++) {
@@ -304,8 +332,9 @@ int main(int argc, char * argv[]) {
 			}
 
 			// Draw information on frame
-			image.DrawText("F: " + to_string(f), 10, 10, 255, 255, 255);
-			image.DrawText("N: " + to_string(numberOfBodies), 10, 20, 255, 255, 255);
+			image.DrawText("SIMULATION", 10, 10, 255, 255, 255);
+			image.DrawText("F: " + to_string(f), 10, 20, 255, 255, 255);
+			image.DrawText("N: " + to_string((int)numberOfBodies), 10, 30, 255, 255, 255);
 
 			image.Save();
 		}
