@@ -20,22 +20,25 @@
 using namespace std;
 
 int main(int argc, char * argv[]) {
-	Node * a = new Node();
-	a->data = 2;
-
-	Node * b = new Node();
-	b->data = 1;
-
-	Node * c = new Node();
-	c->data = 3;
-
 	List * list = new List();
 	list->Display();
 
-	list->Append(a);
-	list->Append(b);
-	list->Append(c);
+	list->Append(new Node(3));
+	list->Append(new Node(2));
+	list->Append(new Node(1));
 	list->Display();
+
+	list->Remove(1);
+	list->Display();
+
+	list->Append(new Node(2));
+	list->Append(new Node(5));
+	list->Display();
+
+	if (list->Contains(3)) {
+		Node * n = list->GetAt(3);
+		cout << endl << "Node [" << n->id << "], Data = " << n->data << endl;
+	}
 
 	return 0;
 
