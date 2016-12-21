@@ -39,7 +39,9 @@ void Output::Save() {
 void Output::AddAllBodies(Body * bodyArray []) {
 	for (int i = 0; i < bodyCount; i++)
 	{
-		AddBody(bodyArray[i]);
+		if (bodyArray[i] != NULL) {
+			AddBody(bodyArray[i]);
+		}
 	}
 }
 

@@ -142,27 +142,31 @@ int main(int argc, char * argv[]) {
 		for (int f = 0; f < frames; f++) {
 			// Optimised algorithm
 			for (int i = 0; i < bodyCount; i++) {
-				bodyArray[i]->ResetForce();
+				if (bodyArray[i] != NULL) {
+					bodyArray[i]->ResetForce();
+				}
 			}
 
 			for (int a = 0; a < bodyCount; a++) {
 				for (int b = a + 1; b < bodyCount; b++) {
-					// Calculate distance
-					double xDistance = bodyArray[a]->GetX() - bodyArray[b]->GetX();
-					double yDistance = bodyArray[a]->GetY() - bodyArray[b]->GetY();
-					double zDistance = bodyArray[a]->GetZ() - bodyArray[b]->GetZ();
-					double totalDistance = sqrt(pow(xDistance, 2) + pow(yDistance, 2) + pow(zDistance, 2));
+					if (bodyArray[a] != NULL && bodyArray[b] != NULL) {
+						// Calculate distance
+						double xDistance = bodyArray[a]->GetX() - bodyArray[b]->GetX();
+						double yDistance = bodyArray[a]->GetY() - bodyArray[b]->GetY();
+						double zDistance = bodyArray[a]->GetZ() - bodyArray[b]->GetZ();
+						double totalDistance = sqrt(pow(xDistance, 2) + pow(yDistance, 2) + pow(zDistance, 2));
 
-					// Calculate angles
-					double phiAngle = atan2(zDistance, sqrt(pow(xDistance, 2) + pow(yDistance, 2)));
-					double thetaAngle = atan2(yDistance, xDistance);
+						// Calculate angles
+						double phiAngle = atan2(zDistance, sqrt(pow(xDistance, 2) + pow(yDistance, 2)));
+						double thetaAngle = atan2(yDistance, xDistance);
 
-					// Calculate force
-					double force = GR * ((bodyArray[a]->GetMass() * bodyArray[b]->GetMass()) / (pow(totalDistance, 2)));
+						// Calculate force
+						double force = GR * ((bodyArray[a]->GetMass() * bodyArray[b]->GetMass()) / (pow(totalDistance, 2)));
 
-					// Add forces to totals
-					bodyArray[a]->AddForce(force, phiAngle, thetaAngle);
-					bodyArray[b]->AddForce(-force, phiAngle, thetaAngle);
+						// Add forces to totals
+						bodyArray[a]->AddForce(force, phiAngle, thetaAngle);
+						bodyArray[b]->AddForce(-force, phiAngle, thetaAngle);
+					}
 				}
 			}
 
@@ -171,75 +175,154 @@ int main(int argc, char * argv[]) {
 
 			// Calculate next position for each body
 			for (int i = 0; i < bodyCount; i++) {
-				bodyArray[i]->Update(dt);
+				if (bodyArray[i] != NULL) {
+					bodyArray[i]->Update(dt);
+				}
 			}
 
 			// Collision Physics
-			bool firstCollision = true;
+			//bool firstCollision = true;
+			int collisionCount = 0;
 
 			for (int a = 0; a < bodyCount; a++) {
 				for (int b = a + 1; b < bodyCount; b++) {
-					// Set up position vectors
-					Vector initialA;
-					initialA.Set(bodyArray[a]->GetX(), bodyArray[a]->GetY(), bodyArray[a]->GetZ());
+					if (bodyArray[a] != NULL && bodyArray[b] != NULL) {
+						double collisionTime = -1;
 
-					Vector finalA;
-					finalA.Set(bodyArray[a]->GetNextX(), bodyArray[a]->GetNextY(), bodyArray[a]->GetNextZ());
+						// Set up position vectors
+						Vector initialA;
+						initialA.Set(bodyArray[a]->GetX(), bodyArray[a]->GetY(), bodyArray[a]->GetZ());
 
-					Vector initialB;
-					initialB.Set(bodyArray[b]->GetX(), bodyArray[b]->GetY(), bodyArray[b]->GetZ());
+						Vector finalA;
+						finalA.Set(bodyArray[a]->GetNextX(), bodyArray[a]->GetNextY(), bodyArray[a]->GetNextZ());
 
-					Vector finalB;
-					finalB.Set(bodyArray[b]->GetNextX(), bodyArray[b]->GetNextY(), bodyArray[b]->GetNextZ());
+						Vector initialB;
+						initialB.Set(bodyArray[b]->GetX(), bodyArray[b]->GetY(), bodyArray[b]->GetZ());
 
-					// Check the two lines are not parallel
-					Vector lineA = finalA.Subtract(initialA);
-					Vector lineB = finalB.Subtract(initialB);
+						Vector finalB;
+						finalB.Set(bodyArray[b]->GetNextX(), bodyArray[b]->GetNextY(), bodyArray[b]->GetNextZ());
 
-					if (lineA.DotProduct(lineB) != 0) {
-						// Calculate collision times
-						Vector vectorA = initialB.Subtract(initialA);
-						Vector vectorB = (finalB.Subtract(finalA)).Add(initialA.Subtract(initialB));
+						// Check the two lines are not parallel
+						Vector lineA = finalA.Subtract(initialA);
+						Vector lineB = finalB.Subtract(initialB);
 
-						double dotProduct = vectorA.DotProduct(vectorB);
-						double radiiSum = bodyArray[a]->GetRadius() + bodyArray[b]->GetRadius();
+						if (lineA.DotProduct(lineB) != 0) {
+							// Calculate collision times
+							Vector vectorA = initialB.Subtract(initialA);
+							Vector vectorB = (finalB.Subtract(finalA)).Add(initialA.Subtract(initialB));
 
-						double determinant = (4 * pow(dotProduct, 2)) - (4 * pow(vectorB.Magnitude(), 2) * (pow(vectorA.Magnitude(), 2) - pow(radiiSum, 2)));
-						double time1 = (-2 * dotProduct + sqrt(determinant)) / (2 * pow(vectorB.Magnitude(), 2));
-						double time2 = (-2 * dotProduct - sqrt(determinant)) / (2 * pow(vectorB.Magnitude(), 2));
+							double dotProduct = vectorA.DotProduct(vectorB);
+							double radiiSum = bodyArray[a]->GetRadius() + bodyArray[b]->GetRadius();
 
-						bool timeValid1 = time1 >= 0 && time1 <= 1;
-						bool timeValid2 = time2 >= 0 && time2 <= 1;
+							double determinant = (4 * pow(dotProduct, 2)) - (4 * pow(vectorB.Magnitude(), 2) * (pow(vectorA.Magnitude(), 2) - pow(radiiSum, 2)));
+							double time1 = (-2 * dotProduct + sqrt(determinant)) / (2 * pow(vectorB.Magnitude(), 2));
+							double time2 = (-2 * dotProduct - sqrt(determinant)) / (2 * pow(vectorB.Magnitude(), 2));
 
-						// Check validity
-						if (timeValid1 && timeValid2) {
-							if (firstCollision == true) {
-								cout << "==== FRAME " << to_string(f) << " ====" << endl;
-								firstCollision = false;
+							bool timeValid1 = time1 >= 0 && time1 <= 1;
+							bool timeValid2 = time2 >= 0 && time2 <= 1;
+
+							// Check validity
+							if (timeValid1 && timeValid2) {
+								/*
+								if (firstCollision == true) {
+									cout << "==== FRAME " << to_string(f) << " ====" << endl;
+									firstCollision = false;
+								}
+								*/
+
+								collisionCount++;
+
+								if (time1 <= time2) {
+									// DEBUG
+									//cout << "Collision occurs at " << to_string(time1)  << ", between [" << to_string(a) << "] and [" << to_string(b) << "]"<< endl;
+									collisionTime = time1 * dt;
+								}
+								else {
+									// DEBUG
+									//cout << "Collision occurs at " << to_string(time2)  << ", between [" << to_string(a) << "] and [" << to_string(b) << "]"<< endl;
+									collisionTime = time2 * dt;
+								}
 							}
+						}
 
-							if (time1 <= time2) {
-								// Collision occurs at time1;
-								cout << "Collision occurs at " << to_string(time1)  << ", between [" << to_string(a) << "] and [" << to_string(b) << "]"<< endl;
+						// Collide particles if collision has occured
+						if (collisionTime != -1) {
+							double newMass = bodyArray[a]->GetMass() + bodyArray[b]->GetMass();
+
+							// Conservation of linear momentum
+							// X
+							double aXVelocity = bodyArray[a]->GetXVelocity();
+							double bXVelocity = bodyArray[b]->GetXVelocity();
+							double newXVelocity = ((bodyArray[a]->GetMass() * aXVelocity) + (bodyArray[b]->GetMass() * bXVelocity)) / (newMass);
+
+							// Y
+							double aYVelocity = bodyArray[a]->GetYVelocity();
+							double bYVelocity = bodyArray[b]->GetYVelocity();
+							double newYVelocity = ((bodyArray[a]->GetMass() * aYVelocity) + (bodyArray[b]->GetMass() * bYVelocity)) / (newMass);
+
+							// Z
+							double aZVelocity = bodyArray[a]->GetZVelocity();
+							double bZVelocity = bodyArray[b]->GetZVelocity();
+							double newZVelocity = ((bodyArray[a]->GetMass() * aZVelocity) + (bodyArray[b]->GetMass() * bZVelocity)) / (newMass);
+
+							// Calculate new position
+							// Use midpoint of the two "new positions"
+							bodyArray[a]->Update(collisionTime);
+							bodyArray[b]->Update(collisionTime);
+
+							double newX = (bodyArray[a]->GetNextX() + bodyArray[b]->GetNextX()) / 2;
+							double newY = (bodyArray[a]->GetNextY() + bodyArray[b]->GetNextY()) / 2;
+							double newZ = (bodyArray[a]->GetNextZ() + bodyArray[b]->GetNextZ()) / 2;
+
+							// Calculate new radius
+							// TODO: Figure out way of calculating a new radius given constant density?
+							// At the moment, use larger radius of the two bodies
+							double newRadius;
+							if (bodyArray[a]->GetRadius() >= bodyArray[b]->GetRadius()) {
+								newRadius = bodyArray[a]->GetRadius();
 							}
 							else {
-								// Collision occurs at time2;
-								cout << "Collision occurs at " << to_string(time2)  << ", between [" << to_string(a) << "] and [" << to_string(b) << "]"<< endl;
+								newRadius = bodyArray[b]->GetRadius();
 							}
+
+							// Remove a and b and create new body;
+							int newIndex;
+							int otherIndex;
+
+							if (a < b) {
+								newIndex = a;
+								otherIndex = b;
+							}
+							else {
+								newIndex = b;
+								otherIndex = a;
+							}
+
+							bodyArray[newIndex] = new Body(newX, newY, newZ, newMass, newRadius, newXVelocity, newYVelocity, newZVelocity);
+							bodyArray[newIndex]->Update(dt - collisionTime);
+
+							bodyArray[otherIndex] = NULL;
 						}
 					}
 				}
 			}
 
+			// DEBUG
+			/*
 			if (firstCollision == false) {
 				cout << endl;
 			}
+			*/
+
+			cout << "Frame " << f << ": " << collisionCount << endl;
 
 			// Move each body to their new positions
 			for (int i = 0; i < bodyCount; i++) {
-				bodyArray[i]->Step();
+				if (bodyArray[i] != NULL) {
+					bodyArray[i]->Step();
 
-				image.DrawBody(bodyArray[i]->GetX(), bodyArray[i]->GetY(), 255, 255, 255);
+					image.DrawBody(bodyArray[i]->GetX(), bodyArray[i]->GetY(), 255, 255, 255);
+				}
 			}
 
 			// Draw information on frame
