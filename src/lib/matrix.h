@@ -38,6 +38,7 @@ class Vector {
 	Vector Multiply(double scalar);
 	Vector Divide(double scalar);
 	double DotProduct(Vector other);
+	double Magnitude();
 
 	Vector Transform(Matrix transformationMatrix);
 	Vector RotateY(double angle);

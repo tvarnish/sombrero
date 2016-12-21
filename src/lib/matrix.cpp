@@ -60,6 +60,10 @@ double Vector::DotProduct(Vector other) {
 	return result;
 }
 
+double Vector::Magnitude() {
+	return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+}
+
 Vector Vector::Transform(Matrix transformationMatrix) {
 	Vector transformed;
 
