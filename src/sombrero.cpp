@@ -175,6 +175,65 @@ int main(int argc, char * argv[]) {
 			}
 
 			// Collision Physics
+			bool firstCollision = true;
+
+			for (int a = 0; a < bodyCount; a++) {
+				for (int b = a + 1; b < bodyCount; b++) {
+					// Set up position vectors
+					Vector initialA;
+					initialA.Set(bodyArray[a]->GetX(), bodyArray[a]->GetY(), bodyArray[a]->GetZ());
+
+					Vector finalA;
+					finalA.Set(bodyArray[a]->GetNextX(), bodyArray[a]->GetNextY(), bodyArray[a]->GetNextZ());
+
+					Vector initialB;
+					initialB.Set(bodyArray[b]->GetX(), bodyArray[b]->GetY(), bodyArray[b]->GetZ());
+
+					Vector finalB;
+					finalB.Set(bodyArray[b]->GetNextX(), bodyArray[b]->GetNextY(), bodyArray[b]->GetNextZ());
+
+					// Check the two lines are not parallel
+					Vector lineA = finalA.Subtract(initialA);
+					Vector lineB = finalB.Subtract(initialB);
+
+					if (lineA.DotProduct(lineB) != 0) {
+						// Calculate collision times
+						Vector vectorA = initialB.Subtract(initialA);
+						Vector vectorB = (finalB.Subtract(finalA)).Add(initialA.Subtract(initialB));
+
+						double dotProduct = vectorA.DotProduct(vectorB);
+						double radiiSum = bodyArray[a]->GetRadius() + bodyArray[b]->GetRadius();
+
+						double determinant = (4 * pow(dotProduct, 2)) - (4 * pow(vectorB.Magnitude(), 2) * (pow(vectorA.Magnitude(), 2) - pow(radiiSum, 2)));
+						double time1 = (-2 * dotProduct + sqrt(determinant)) / (2 * pow(vectorB.Magnitude(), 2));
+						double time2 = (-2 * dotProduct - sqrt(determinant)) / (2 * pow(vectorB.Magnitude(), 2));
+
+						bool timeValid1 = time1 >= 0 && time1 <= 1;
+						bool timeValid2 = time2 >= 0 && time2 <= 1;
+
+						// Check validity
+						if (timeValid1 && timeValid2) {
+							if (firstCollision == true) {
+								cout << "==== FRAME " << to_string(f) << " ====" << endl;
+								firstCollision = false;
+							}
+
+							if (time1 <= time2) {
+								// Collision occurs at time1;
+								cout << "Collision occurs at " << to_string(time1)  << ", between [" << to_string(a) << "] and [" << to_string(b) << "]"<< endl;
+							}
+							else {
+								// Collision occurs at time2;
+								cout << "Collision occurs at " << to_string(time2)  << ", between [" << to_string(a) << "] and [" << to_string(b) << "]"<< endl;
+							}
+						}
+					}
+				}
+			}
+
+			if (firstCollision == false) {
+				cout << endl;
+			}
 
 			// Move each body to their new positions
 			for (int i = 0; i < bodyCount; i++) {

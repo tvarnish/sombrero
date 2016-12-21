@@ -17,6 +17,9 @@ class Body {
 		double GetX() { return x; };
 		double GetY() { return y; };
 		double GetZ() { return z; };
+		double GetNextX() { return nextX; };
+		double GetNextY() { return nextY; };
+		double GetNextZ() { return nextZ; };
 		double GetRadius() { return radius; };
 		void SetPosition(double xPos, double yPos, double zPos) { x = xPos; y = yPos; z = zPos; };
 		double GetXVelocity() { return xVelocity; };
