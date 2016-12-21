@@ -140,44 +140,55 @@ int main(int argc, char * argv[]) {
 		double dt = DAY;
 
 		for (int f = 0; f < frames; f++) {
+			// Optimised algorithm
+			for (int i = 0; i < bodyCount; i++) {
+				bodyArray[i]->ResetForce();
+			}
+
 			for (int a = 0; a < bodyCount; a++) {
-				bodyArray[a]->ResetForce();
+				for (int b = a + 1; b < bodyCount; b++) {
+					// Calculate distance
+					double xDistance = bodyArray[a]->GetX() - bodyArray[b]->GetX();
+					double yDistance = bodyArray[a]->GetY() - bodyArray[b]->GetY();
+					double zDistance = bodyArray[a]->GetZ() - bodyArray[b]->GetZ();
+					double totalDistance = sqrt(pow(xDistance, 2) + pow(yDistance, 2) + pow(zDistance, 2));
 
-				for (int b = 0; b < bodyCount; b++) {
-					if (a != b) {
-						// Calculate distance
-						double xDistance = bodyArray[a]->GetX() - bodyArray[b]->GetX();
-						double yDistance = bodyArray[a]->GetY() - bodyArray[b]->GetY();
-						double zDistance = bodyArray[a]->GetZ() - bodyArray[b]->GetZ();
-						double totalDistance = sqrt(pow(xDistance, 2) + pow(yDistance, 2) + pow(zDistance, 2));
+					// Calculate angles
+					double phiAngle = atan2(zDistance, sqrt(pow(xDistance, 2) + pow(yDistance, 2)));
+					double thetaAngle = atan2(yDistance, xDistance);
 
-						// Calculate angles
-						double phiAngle = atan2(zDistance, sqrt(pow(xDistance, 2) + pow(yDistance, 2)));
-						double thetaAngle = atan2(yDistance, xDistance);
+					// Calculate force
+					double force = GR * ((bodyArray[a]->GetMass() * bodyArray[b]->GetMass()) / (pow(totalDistance, 2)));
 
-						// Calculate force
-						double force = GR * ((bodyArray[a]->GetMass() * bodyArray[b]->GetMass()) / (pow(totalDistance, 2)));
-
-						// Add force to total
-						bodyArray[a]->AddForce(force, phiAngle, thetaAngle);
-					}
+					// Add forces to totals
+					bodyArray[a]->AddForce(force, phiAngle, thetaAngle);
+					bodyArray[b]->AddForce(-force, phiAngle, thetaAngle);
 				}
 			}
 
 			string imageFileName = "images/image_" + PadWithZeroes(f, frames) + ".png";
 			Image image = Image(imageFileName, width, height, 100);
 
+			// Calculate next position for each body
 			for (int i = 0; i < bodyCount; i++) {
 				bodyArray[i]->Update(dt);
+			}
+
+			// Collision Physics
+
+			// Move each body to their new positions
+			for (int i = 0; i < bodyCount; i++) {
 				bodyArray[i]->Step();
 
 				image.DrawBody(bodyArray[i]->GetX(), bodyArray[i]->GetY(), 255, 255, 255);
 			}
 
+			// Draw information on frame
+			image.DrawText("F: " + to_string(f), 10, 10, 255, 255, 255);
+
 			image.Save();
 		}
 
-		cout << "Done! Building video..." << endl;
 		video.Build("result_run.mp4", frames);
 
 		// Create output.txt
