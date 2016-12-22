@@ -1,19 +1,18 @@
 #include "output.h"
 #include "body.h"
 #include "units.h"
+#include "linkedlist.h"
 
 #include <fstream>
 
 using namespace std;
 
-Output::Output(string filename, int totalBodyCount, int width, int height, double scale) {
+Output::Output(string filename, int width, int height, double scale) {
 	fileName = filename;
 	fileContents = "";
-	bodyCount = totalBodyCount;
 
 	// Add details about the simulation
 	// bodyCount, width, height, units (xy - m,au,lyr,pc,mpc), scale, units (mass - kg,m)
-	fileContents += to_string(bodyCount) + ",";
 	fileContents += to_string(width) + ",";
 	fileContents += to_string(height) + ",";
 	fileContents += to_string(scale) + "\n";
@@ -36,12 +35,12 @@ void Output::Save() {
 	outputFile.close();
 }
 
-void Output::AddAllBodies(Body * bodyArray []) {
-	for (int i = 0; i < bodyCount; i++)
-	{
-		if (bodyArray[i] != NULL) {
-			AddBody(bodyArray[i]);
-		}
+void Output::AddAllBodies(List bodyArray) {
+	Body * body = bodyArray.GetHead();
+
+	while (body != NULL) {
+		AddBody(body);
+		body = body->next;
 	}
 }
 

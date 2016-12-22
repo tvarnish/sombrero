@@ -1,13 +1,14 @@
 #include "misc.h"
 #include "body.h"
 #include "units.h"
+#include "linkedlist.h"
 
 #include <fstream>
 #include <sstream>
 
 using namespace std;
 
-void LoadParametersFromFile(string filename, int & bodyCount, int & width, int & height, double & scale) {
+void LoadParametersFromFile(string filename, int & width, int & height, double & scale) {
 	ifstream inputFile(filename);
 	string fileLine;
 
@@ -24,20 +25,18 @@ void LoadParametersFromFile(string filename, int & bodyCount, int & width, int &
 		i++;
 	}
 
-	bodyCount = stoi(parameterArray[0]);
-	width = stoi(parameterArray[1]);
-	height = stoi(parameterArray[2]);
-	scale = stod(parameterArray[3]);
+	width = stoi(parameterArray[0]);
+	height = stoi(parameterArray[1]);
+	scale = stod(parameterArray[2]);
 }
 
-void LoadBodiesFromFile(string filename, Body * bodyArray []) {
+void LoadBodiesFromFile(string filename, List & bodyArray) {
 	ifstream inputFile(filename);
 	string fileLine;
 	getline(inputFile, fileLine); // Skip first line
 
 	// Read in body details
 	string parameter;
-	int bodyIndex = 0;
 	int i;
 
 	while (getline(inputFile, fileLine))
@@ -61,15 +60,7 @@ void LoadBodiesFromFile(string filename, Body * bodyArray []) {
 		double yVelocity = stod(detailArray[6]);
 		double zVelocity = stod(detailArray[7]);
 
-		bodyArray[bodyIndex] = new Body(x, y, z, mass, radius, xVelocity, yVelocity, zVelocity);
-		bodyIndex++;
-	}
-}
-
-void CleanUpBodyArray(Body * bodyArray [], int bodyCount) {
-	for (int i = 0; i < bodyCount; i++)
-	{
-		delete bodyArray[i];
+		bodyArray.Append(new Body(x, y, z, mass, radius, xVelocity, yVelocity, zVelocity));
 	}
 }
 

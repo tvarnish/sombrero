@@ -20,40 +20,6 @@
 using namespace std;
 
 int main(int argc, char * argv[]) {
-	List bodyList = List();
-	// Or, List bodyList = new List();, where you must use -> not .
-
-	int n = 4;
-	for (int i = 0; i < n; i++) {
-		bodyList.Append(new Body((double)i, (double)i, (double)i, 10, 5, 0, 0, 0));
-	}
-
-	// Check if the list is empty to avoid segmentation fault
-	if (bodyList.GetLength() == 0) {
-		cout << "List is empty!" << endl;
-		return 1;
-	}
-
-	// Main loop (for n-body algorithm [optimised!])
-	Body * bodyA = bodyList.GetHead();
-	Body * bodyB = NULL;
-
-	while (bodyA->next != NULL) {
-		bodyB = bodyA->next;
-		cout << bodyA->id << " >> ";
-		while (bodyB != NULL) {
-			cout << bodyB->id << " [" << bodyB->GetX() << "," << bodyB->GetY() << "," << bodyB->GetZ() << "], ";
-			bodyB = bodyB->next;
-		}
-		bodyA = bodyA->next;
-		cout << endl;
-	}
-	cout << endl;
-
-	return 0;
-
-	///////////////////////////////////////////////////////////////////////////
-
 	string usageStatement = "Usage: ./sombrero [-g --generate] [-r --run]";
 
 	// Need to make these "settable" by the user
@@ -62,12 +28,15 @@ int main(int argc, char * argv[]) {
 	int height = 480;
 
 	// "run" settings
-	double dt = DAY / 4;
-	int frames = 50;
+	double dt = DAY;
+	int frames = 200;
 
 	int framerate = 45;
 
-	Body * bodyArray [bodyCount];
+	List bodyArray = List();
+	Body * body;
+	Body * bodyA;
+	Body * bodyB;
 
 	// No arguments supplied
 	if (argc == 1) {
@@ -94,13 +63,13 @@ int main(int argc, char * argv[]) {
 
 					double mass = Random(1e23, 1e24);
 
-					bodyArray[i] = new Body(x, y, z, mass, Random(1e6, 9e6), Random(0, 1e4), Random(0, 1e4), Random(0, 1e4));
+					bodyArray.Append(new Body(x, y, z, mass, Random(1e6, 9e6), 0, 0, 0));
 				}
 
-				bodyArray[bodyCount - 1] = new Body(0.0, 0.0, 0.0, 2e30, 1e8, 0.0, 0.0, 0.0);
+				bodyArray.Append(new Body(0.0, 0.0, 0.0, 2e30, 1e8, 0.0, 0.0, 0.0));
 
 				// Save bodies to output.txt
-				Output output("init/output.txt", bodyCount, width, height, 100);
+				Output output("init/output.txt", width, height, 100);
 				output.AddAllBodies(bodyArray);
 				output.Save();
 			}
@@ -147,23 +116,25 @@ int main(int argc, char * argv[]) {
 			string imageFileName = "images/image_" + PadWithZeroes(angle, 360) + ".png";
 			Image image = Image(imageFileName, width, height, 100);
 
-			for (int i = 0; i < bodyCount; i++) {
-				if (bodyArray[i] != NULL) {
-					// Rotate body
-					Vector p;
-					p.Set(bodyArray[i]->GetX(), bodyArray[i]->GetY(), bodyArray[i]->GetZ());
+			body = bodyArray.GetHead();
+			while (body != NULL) {
+				// Rotate body
+				Vector p;
+				p.Set(body->GetX(), body->GetY(), body->GetZ());
 
-					Vector t;
-					t = p.RotateY(angle);
-					t = t.RoundValues();
+				Vector t;
+				t = p.RotateY(angle);
+				t = t.RoundValues();
 
-					image.DrawBody(t.GetX(), t.GetY(), 255, 255, 255);
-				}
+				image.DrawBody(t.GetX(), t.GetY(), 255, 255, 255);
+
+				body = body->next;
 			}
 
 			// Add details to image
 			image.DrawText("ROTATION", 10, 10, 255, 255, 255);
-			image.DrawText("ANGLE: " + to_string((int)angle), 10, 20, 255, 255, 255);
+			image.DrawText("A: " + to_string((int)angle), 10, 20, 255, 255, 255);
+			image.DrawText("N: " + to_string(bodyArray.GetLength()), 10, 30, 255, 255, 255);
 
 			image.Save();
 		}
@@ -181,175 +152,177 @@ int main(int argc, char * argv[]) {
 		Video video = Video("images/", "image_", width, height, framerate);
 		video.ClearImageFolder();
 
-		double numberOfBodies = bodyCount;
-
 		for (int f = 0; f < frames; f++) {
-			// Optimised algorithm
-			for (int i = 0; i < bodyCount; i++) {
-				if (bodyArray[i] != NULL) {
-					bodyArray[i]->ResetForce();
-				}
+			// Reset force counter on each body
+			body = bodyArray.GetHead();
+			while (body != NULL) {
+				body->ResetForce();
+				body = body->next;
 			}
 
-			for (int a = 0; a < bodyCount; a++) {
-				for (int b = a + 1; b < bodyCount; b++) {
-					if (bodyArray[a] != NULL && bodyArray[b] != NULL) {
-						// Calculate distance
-						double xDistance = bodyArray[a]->GetX() - bodyArray[b]->GetX();
-						double yDistance = bodyArray[a]->GetY() - bodyArray[b]->GetY();
-						double zDistance = bodyArray[a]->GetZ() - bodyArray[b]->GetZ();
-						double totalDistance = sqrt(pow(xDistance, 2) + pow(yDistance, 2) + pow(zDistance, 2));
+			// n-body Algorithm (optimised)
+			bodyA = bodyArray.GetHead();
+			bodyB = NULL;
 
-						// Calculate angles
-						double phiAngle = atan2(zDistance, sqrt(pow(xDistance, 2) + pow(yDistance, 2)));
-						double thetaAngle = atan2(yDistance, xDistance);
+			while (bodyA != NULL) {
+				bodyB = bodyA->next;
 
-						// Calculate force
-						double force = GR * ((bodyArray[a]->GetMass() * bodyArray[b]->GetMass()) / (pow(totalDistance, 2)));
+				while (bodyB != NULL) {
+					// Calculate distance
+					double xDistance = bodyA->GetX() - bodyB->GetX();
+					double yDistance = bodyA->GetY() - bodyB->GetY();
+					double zDistance = bodyA->GetZ() - bodyB->GetZ();
+					double totalDistance = sqrt(pow(xDistance, 2) + pow(yDistance, 2) + pow(zDistance, 2));
 
-						// Add forces to totals
-						bodyArray[a]->AddForce(force, phiAngle, thetaAngle);
-						bodyArray[b]->AddForce(-force, phiAngle, thetaAngle);
-					}
+					// Calculate angles
+					double phiAngle = atan2(zDistance, sqrt(pow(xDistance, 2) + pow(yDistance, 2)));
+					double thetaAngle = atan2(yDistance, xDistance);
+
+					// Calculate force
+					double force = GR * ((bodyA->GetMass() * bodyB->GetMass()) / (pow(totalDistance, 2)));
+
+					// Add forces to totals
+					bodyA->AddForce(force, phiAngle, thetaAngle);
+					bodyB->AddForce(-force, phiAngle, thetaAngle);
+
+					// Advance pointer
+					bodyB = bodyB->next;
 				}
+
+				bodyA = bodyA->next;
 			}
 
 			string imageFileName = "images/image_" + PadWithZeroes(f, frames) + ".png";
 			Image image = Image(imageFileName, width, height, 100);
 
 			// Calculate next position for each body
-			for (int i = 0; i < bodyCount; i++) {
-				if (bodyArray[i] != NULL) {
-					bodyArray[i]->Update(dt);
-				}
+			body = bodyArray.GetHead();
+			while (body != NULL) {
+				body->Update(dt);
+				body = body->next;
 			}
 
 			// Collision Physics
-			for (int a = 0; a < bodyCount; a++) {
-				for (int b = a + 1; b < bodyCount; b++) {
-					if (bodyArray[a] != NULL && bodyArray[b] != NULL) {
-						double collisionTime = -1;
+			bodyA = bodyArray.GetHead();
+			bodyB = NULL;
 
-						// Set up position vectors
-						Vector initialA;
-						initialA.Set(bodyArray[a]->GetX(), bodyArray[a]->GetY(), bodyArray[a]->GetZ());
+			while (bodyA != NULL) {
+				bodyB = bodyA->next;
 
-						Vector finalA;
-						finalA.Set(bodyArray[a]->GetNextX(), bodyArray[a]->GetNextY(), bodyArray[a]->GetNextZ());
+				while (bodyB != NULL) {
+					double collisionTime = -1;
 
-						Vector initialB;
-						initialB.Set(bodyArray[b]->GetX(), bodyArray[b]->GetY(), bodyArray[b]->GetZ());
+					// Set up position vectors
+					Vector initialA;
+					initialA.Set(bodyA->GetX(), bodyA->GetY(), bodyA->GetZ());
 
-						Vector finalB;
-						finalB.Set(bodyArray[b]->GetNextX(), bodyArray[b]->GetNextY(), bodyArray[b]->GetNextZ());
+					Vector finalA;
+					finalA.Set(bodyA->GetNextX(), bodyA->GetNextY(), bodyA->GetNextZ());
 
-						// Check the two lines are not parallel
-						Vector lineA = finalA.Subtract(initialA);
-						Vector lineB = finalB.Subtract(initialB);
+					Vector initialB;
+					initialB.Set(bodyB->GetX(), bodyB->GetY(), bodyB->GetZ());
 
-						if (lineA.DotProduct(lineB) != 0) {
-							// Calculate collision times
-							Vector vectorA = initialB.Subtract(initialA);
-							Vector vectorB = (finalB.Subtract(finalA)).Add(initialA.Subtract(initialB));
+					Vector finalB;
+					finalB.Set(bodyB->GetNextX(), bodyB->GetNextY(), bodyB->GetNextZ());
 
-							double dotProduct = vectorA.DotProduct(vectorB);
-							double radiiSum = bodyArray[a]->GetRadius() + bodyArray[b]->GetRadius();
+					// Check the two lines are not parallel
+					Vector lineA = finalA.Subtract(initialA);
+					Vector lineB = finalB.Subtract(initialB);
 
-							double determinant = (4 * pow(dotProduct, 2)) - (4 * pow(vectorB.Magnitude(), 2) * (pow(vectorA.Magnitude(), 2) - pow(radiiSum, 2)));
-							double time1 = (-2 * dotProduct + sqrt(determinant)) / (2 * pow(vectorB.Magnitude(), 2));
-							double time2 = (-2 * dotProduct - sqrt(determinant)) / (2 * pow(vectorB.Magnitude(), 2));
+					if (lineA.DotProduct(lineB) != 0) {
+						// Calculate collision times
+						Vector vectorA = initialB.Subtract(initialA);
+						Vector vectorB = (finalB.Subtract(finalA)).Add(initialA.Subtract(initialB));
 
-							bool timeValid1 = time1 >= 0 && time1 <= 1;
-							bool timeValid2 = time2 >= 0 && time2 <= 1;
+						double dotProduct = vectorA.DotProduct(vectorB);
+						double radiiSum = bodyA->GetRadius() + bodyB->GetRadius();
 
-							// Check validity
-							if (timeValid1 && timeValid2) {
-								if (time1 <= time2) {
-									collisionTime = time1 * dt;
-								}
-								else {
-									collisionTime = time2 * dt;
-								}
-							}
-						}
+						double determinant = (4 * pow(dotProduct, 2)) - (4 * pow(vectorB.Magnitude(), 2) * (pow(vectorA.Magnitude(), 2) - pow(radiiSum, 2)));
+						double time1 = (-2 * dotProduct + sqrt(determinant)) / (2 * pow(vectorB.Magnitude(), 2));
+						double time2 = (-2 * dotProduct - sqrt(determinant)) / (2 * pow(vectorB.Magnitude(), 2));
 
-						// Collide particles if collision has occured
-						if (collisionTime != -1) {
-							double newMass = bodyArray[a]->GetMass() + bodyArray[b]->GetMass();
+						bool timeValid1 = time1 >= 0 && time1 <= 1;
+						bool timeValid2 = time2 >= 0 && time2 <= 1;
 
-							// Conservation of linear momentum
-							// X
-							double aXVelocity = bodyArray[a]->GetXVelocity();
-							double bXVelocity = bodyArray[b]->GetXVelocity();
-							double newXVelocity = ((bodyArray[a]->GetMass() * aXVelocity) + (bodyArray[b]->GetMass() * bXVelocity)) / (newMass);
-
-							// Y
-							double aYVelocity = bodyArray[a]->GetYVelocity();
-							double bYVelocity = bodyArray[b]->GetYVelocity();
-							double newYVelocity = ((bodyArray[a]->GetMass() * aYVelocity) + (bodyArray[b]->GetMass() * bYVelocity)) / (newMass);
-
-							// Z
-							double aZVelocity = bodyArray[a]->GetZVelocity();
-							double bZVelocity = bodyArray[b]->GetZVelocity();
-							double newZVelocity = ((bodyArray[a]->GetMass() * aZVelocity) + (bodyArray[b]->GetMass() * bZVelocity)) / (newMass);
-
-							// Calculate new position
-							// Use midpoint of the two "new positions"
-							bodyArray[a]->Update(collisionTime);
-							bodyArray[b]->Update(collisionTime);
-
-							double newX = (bodyArray[a]->GetNextX() + bodyArray[b]->GetNextX()) / 2;
-							double newY = (bodyArray[a]->GetNextY() + bodyArray[b]->GetNextY()) / 2;
-							double newZ = (bodyArray[a]->GetNextZ() + bodyArray[b]->GetNextZ()) / 2;
-
-							// Calculate new radius
-							// TODO: Figure out way of calculating a new radius given constant density?
-							// At the moment, use larger radius of the two bodies
-							double newRadius;
-							if (bodyArray[a]->GetRadius() >= bodyArray[b]->GetRadius()) {
-								newRadius = bodyArray[a]->GetRadius();
+						// Check validity
+						if (timeValid1 && timeValid2) {
+							if (time1 <= time2) {
+								collisionTime = time1 * dt;
 							}
 							else {
-								newRadius = bodyArray[b]->GetRadius();
+								collisionTime = time2 * dt;
 							}
-
-							// Remove a and b and create new body;
-							int newIndex;
-							int otherIndex;
-
-							if (a < b) {
-								newIndex = a;
-								otherIndex = b;
-							}
-							else {
-								newIndex = b;
-								otherIndex = a;
-							}
-
-							bodyArray[newIndex] = new Body(newX, newY, newZ, newMass, newRadius, newXVelocity, newYVelocity, newZVelocity);
-							bodyArray[newIndex]->Update(dt - collisionTime);
-
-							bodyArray[otherIndex] = NULL;
-
-							numberOfBodies--;
 						}
 					}
+
+					// Collide particles if collision has occured
+					if (collisionTime != -1) {
+						double newMass = bodyA->GetMass() + bodyB->GetMass();
+
+						// Conservation of linear momentum
+						// X
+						double aXVelocity = bodyA->GetXVelocity();
+						double bXVelocity = bodyB->GetXVelocity();
+						double newXVelocity = ((bodyA->GetMass() * aXVelocity) + (bodyB->GetMass() * bXVelocity)) / (newMass);
+
+						// Y
+						double aYVelocity = bodyA->GetYVelocity();
+						double bYVelocity = bodyB->GetYVelocity();
+						double newYVelocity = ((bodyA->GetMass() * aYVelocity) + (bodyB->GetMass() * bYVelocity)) / (newMass);
+
+						// Z
+						double aZVelocity = bodyA->GetZVelocity();
+						double bZVelocity = bodyB->GetZVelocity();
+						double newZVelocity = ((bodyA->GetMass() * aZVelocity) + (bodyB->GetMass() * bZVelocity)) / (newMass);
+
+						// Calculate new position
+						// Use midpoint of the two "new positions"
+						bodyA->Update(collisionTime);
+						bodyB->Update(collisionTime);
+
+						double newX = (bodyA->GetNextX() + bodyB->GetNextX()) / 2;
+						double newY = (bodyA->GetNextY() + bodyB->GetNextY()) / 2;
+						double newZ = (bodyA->GetNextZ() + bodyB->GetNextZ()) / 2;
+
+						// Calculate new radius
+						// TODO: Figure out way of calculating a new radius given constant density?
+						// At the moment, use larger radius of the two bodies
+						double newRadius;
+						if (bodyA->GetRadius() >= bodyB->GetRadius()) {
+							newRadius = bodyA->GetRadius();
+						}
+						else {
+							newRadius = bodyB->GetRadius();
+						}
+
+						// Create a new (combined) body, and remove A and B;
+						bodyArray.Remove(bodyA->id);
+						bodyArray.Remove(bodyB->id);
+
+						Body * newBody = new Body(newX, newY, newZ, newMass, newRadius, newXVelocity, newYVelocity, newZVelocity);
+						newBody->Update(dt - collisionTime);
+						bodyArray.Append(newBody);
+					}
+
+					bodyB = bodyB->next;
 				}
+
+				bodyA = bodyA->next;
 			}
 
 			// Move each body to their new positions
-			for (int i = 0; i < bodyCount; i++) {
-				if (bodyArray[i] != NULL) {
-					bodyArray[i]->Step();
+			body = bodyArray.GetHead();
+			while (body != NULL) {
+				body->Step();
+				image.DrawBody(body->GetX(), body->GetY(), 255, 255, 255);
 
-					image.DrawBody(bodyArray[i]->GetX(), bodyArray[i]->GetY(), 255, 255, 255);
-				}
+				body = body->next;
 			}
 
 			// Draw information on frame
 			image.DrawText("SIMULATION", 10, 10, 255, 255, 255);
 			image.DrawText("F: " + to_string(f), 10, 20, 255, 255, 255);
-			image.DrawText("N: " + to_string((int)numberOfBodies), 10, 30, 255, 255, 255);
+			image.DrawText("N: " + to_string(bodyArray.GetLength()), 10, 30, 255, 255, 255);
 
 			image.Save();
 		}
@@ -357,7 +330,7 @@ int main(int argc, char * argv[]) {
 		video.Build("result_run.mp4", frames);
 
 		// Create output.txt
-		Output output("init/output.txt", bodyCount, width, height, 100);
+		Output output("init/output.txt", width, height, 100);
 		output.AddAllBodies(bodyArray);
 		output.Save();
 
