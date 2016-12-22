@@ -20,27 +20,39 @@
 using namespace std;
 
 int main(int argc, char * argv[]) {
-	List * list = new List();
-	list->Display();
+	List bodyList = List();
+	// Or, List bodyList = new List();, where you must use -> not .
 
-	list->Append(new Node(3));
-	list->Append(new Node(2));
-	list->Append(new Node(1));
-	list->Display();
-
-	list->Remove(1);
-	list->Display();
-
-	list->Append(new Node(2));
-	list->Append(new Node(5));
-	list->Display();
-
-	if (list->Contains(3)) {
-		Node * n = list->GetAt(3);
-		cout << endl << "Node [" << n->id << "], Data = " << n->data << endl;
+	int n = 4;
+	for (int i = 0; i < n; i++) {
+		bodyList.Append(new Body((double)i, (double)i, (double)i, 10, 5, 0, 0, 0));
 	}
 
+	// Check if the list is empty to avoid segmentation fault
+	if (bodyList.GetLength() == 0) {
+		cout << "List is empty!" << endl;
+		return 1;
+	}
+
+	// Main loop (for n-body algorithm [optimised!])
+	Body * bodyA = bodyList.GetHead();
+	Body * bodyB = NULL;
+
+	while (bodyA->next != NULL) {
+		bodyB = bodyA->next;
+		cout << bodyA->id << " >> ";
+		while (bodyB != NULL) {
+			cout << bodyB->id << " [" << bodyB->GetX() << "," << bodyB->GetY() << "," << bodyB->GetZ() << "], ";
+			bodyB = bodyB->next;
+		}
+		bodyA = bodyA->next;
+		cout << endl;
+	}
+	cout << endl;
+
 	return 0;
+
+	///////////////////////////////////////////////////////////////////////////
 
 	string usageStatement = "Usage: ./sombrero [-g --generate] [-r --run]";
 

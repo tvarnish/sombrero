@@ -2,6 +2,8 @@
 #ifndef __BODY_H_INCLUDED__
 #define __BODY_H_INCLUDED__
 
+#include <iostream>
+
 class Body {
 		double x, y, z;
 		double nextX, nextY, nextZ;
@@ -11,6 +13,9 @@ class Body {
 		double xForce, yForce, zForce;
 
 	public:
+		Body * next = NULL;
+		int id;
+
 		Body(double xPos, double yPos, double zPos, double bodyMass, double r, double xVel, double yVel, double zVel);
 
 		double GetMass() { return mass; };

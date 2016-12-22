@@ -3,22 +3,13 @@
 
 using namespace std;
 
-Node::Node(int d) {
-	data = d;
-	next = NULL;
-}
-
 List::List() {
 	head = NULL;
 	length = 0;
 	nextId = 0;
 }
 
-int List::GetLength() {
-	return length;
-}
-
-void List::Append(Node * node) {
+void List::Append(Body * node) {
 	// Update the List's length
 	length++;
 
@@ -27,7 +18,7 @@ void List::Append(Node * node) {
 	nextId++;
 
 	// Follow pointers through list until you reach a NULL pointer
-	Node * pointer = head;
+	Body * pointer = head;
 
 	if (head == NULL) {
 		head = node;
@@ -44,8 +35,8 @@ void List::Append(Node * node) {
 void List::Remove(int id) {
 	length--;
 
-	Node * pointer = head;
-	Node * previous = NULL;
+	Body * pointer = head;
+	Body * previous = NULL;
 
 	while (pointer != NULL) {
 		if (pointer->id == id) {
@@ -59,20 +50,8 @@ void List::Remove(int id) {
 	}
 }
 
-void List::Display() {
-	// For DEBUG purposes only
-	Node * pointer = head;
-
-	while (pointer != NULL) {
-		cout << pointer->data << " [" << pointer->id << "]"<< ", ";
-		pointer = pointer->next;
-	}
-
-	cout << endl;
-}
-
-Node * List::GetAt(int id) {
-	Node * pointer = head;
+Body * List::GetAt(int id) {
+	Body * pointer = head;
 
 	while (pointer != NULL) {
 		if (pointer->id == id) {
@@ -87,7 +66,7 @@ Node * List::GetAt(int id) {
 }
 
 bool List::Contains(int id) {
-	Node * pointer = head;
+	Body * pointer = head;
 
 	while (pointer != NULL) {
 		if (pointer->id == id) {

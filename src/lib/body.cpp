@@ -9,11 +9,11 @@ Body::Body(double xPos, double yPos, double zPos, double bodyMass, double r, dou
 
 	mass = bodyMass;
 	radius = r;
-	
+
 	xVelocity = xVel;
 	yVelocity = yVel;
 	zVelocity = zVel;
-	
+
 	xForce = 0.0;
 	yForce = 0.0;
 	zForce = 0.0;

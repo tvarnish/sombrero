@@ -3,28 +3,20 @@
 
 #include "body.h"
 
-class Node {
-	public:
-		int data;
-		int id;
-		Node * next;
-
-		Node(int d);
-};
-
 class List {
 	int length;
-	Node * head;
+	Body * head;
 	int nextId;
 
 	public:
 		List();
-		int GetLength();
-		void Append(Node * node);
-		void Remove(int id);
-		void Display();
 
-		Node * GetAt(int id);
+		Body * GetHead() { return head; };
+		int GetLength() { return length; };
+		void Append(Body * node);
+		void Remove(int id);
+
+		Body * GetAt(int id);
 		bool Contains(int id);
 };
 
