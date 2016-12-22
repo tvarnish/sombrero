@@ -30,7 +30,7 @@ void LoadParametersFromFile(string filename, int & width, int & height, double &
 	scale = stod(parameterArray[2]);
 }
 
-void LoadBodiesFromFile(string filename, List & bodyArray) {
+void LoadBodiesFromFile(string filename, List & bodyList) {
 	ifstream inputFile(filename);
 	string fileLine;
 	getline(inputFile, fileLine); // Skip first line
@@ -60,7 +60,7 @@ void LoadBodiesFromFile(string filename, List & bodyArray) {
 		double yVelocity = stod(detailArray[6]);
 		double zVelocity = stod(detailArray[7]);
 
-		bodyArray.Append(new Body(x, y, z, mass, radius, xVelocity, yVelocity, zVelocity));
+		bodyList.Append(new Body(x, y, z, mass, radius, xVelocity, yVelocity, zVelocity));
 	}
 }
 

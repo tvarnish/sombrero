@@ -2,6 +2,7 @@
 #include "body.h"
 #include "font.h"
 #include "units.h"
+#include "linkedlist.h"
 
 #include <fstream>
 #include <pngwriter.h>
@@ -44,9 +45,11 @@ int Image::Scale(double coordinate, double scale) {
 	return position;
 }
 
-void Image::DrawAllBodies(int bodyCount, Body * bodyArray [], int r, int g, int b) {
-	for (int i = 0; i < bodyCount; i++) {
-		DrawBody(bodyArray[i]->GetX(), bodyArray[i]->GetY(), r, g, b);
+void Image::DrawAllBodies(int bodyCount, List bodyList, int r, int g, int b) {
+	Body * body = bodyList.GetHead();
+	while (body != NULL) {
+		DrawBody(body->GetX(), body->GetY(), r, g, b);
+		body = body->next;
 	}
 }
 

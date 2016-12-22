@@ -16,7 +16,7 @@ class Output {
 		Output(std::string filename, int width, int height, double scale);
 
 		void AddBody(Body * body);
-		void AddAllBodies(List bodyArray);
+		void AddAllBodies(List bodyList);
 		void Save();
 };
 

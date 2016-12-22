@@ -33,7 +33,7 @@ int main(int argc, char * argv[]) {
 
 	int framerate = 45;
 
-	List bodyArray = List();
+	List bodyList = List();
 	Body * body;
 	Body * bodyA;
 	Body * bodyB;
@@ -50,7 +50,7 @@ int main(int argc, char * argv[]) {
 	if (strcmp(argv[1], "-g") == 0 or strcmp(argv[1], "--generate") == 0) {
 		if (argc >= 3) {
 			// Generate random arrangement of bodies (+ rotation video)
-			// i.e. create new bodyArray
+			// i.e. create new bodyList
 			if (strcmp(argv[2], "random") == 0) {
 				for (int i = 0; i < bodyCount - 1; i++) {
 					double r = Random(1e11, 1e11);
@@ -63,14 +63,14 @@ int main(int argc, char * argv[]) {
 
 					double mass = Random(1e23, 1e24);
 
-					bodyArray.Append(new Body(x, y, z, mass, Random(1e6, 9e6), 0, 0, 0));
+					bodyList.Append(new Body(x, y, z, mass, Random(1e6, 9e6), 0, 0, 0));
 				}
 
-				bodyArray.Append(new Body(0.0, 0.0, 0.0, 2e30, 1e8, 0.0, 0.0, 0.0));
+				bodyList.Append(new Body(0.0, 0.0, 0.0, 2e30, 1e8, 0.0, 0.0, 0.0));
 
 				// Save bodies to output.txt
 				Output output("init/output.txt", width, height, 100);
-				output.AddAllBodies(bodyArray);
+				output.AddAllBodies(bodyList);
 				output.Save();
 			}
 
@@ -85,7 +85,7 @@ int main(int argc, char * argv[]) {
 				}
 
 				if (FileExists(filename)) {
-					LoadBodiesFromFile(filename.c_str(), bodyArray);
+					LoadBodiesFromFile(filename.c_str(), bodyList);
 				}
 				else {
 					cout << "./sombrero --generate rotate [filename]" << endl;
@@ -116,7 +116,7 @@ int main(int argc, char * argv[]) {
 			string imageFileName = "images/image_" + PadWithZeroes(angle, 360) + ".png";
 			Image image = Image(imageFileName, width, height, 100);
 
-			body = bodyArray.GetHead();
+			body = bodyList.GetHead();
 			while (body != NULL) {
 				// Rotate body
 				Vector p;
@@ -134,7 +134,7 @@ int main(int argc, char * argv[]) {
 			// Add details to image
 			image.DrawText("ROTATION", 10, 10, 255, 255, 255);
 			image.DrawText("A: " + to_string((int)angle), 10, 20, 255, 255, 255);
-			image.DrawText("N: " + to_string(bodyArray.GetLength()), 10, 30, 255, 255, 255);
+			image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 255, 255, 255);
 
 			image.Save();
 		}
@@ -147,21 +147,21 @@ int main(int argc, char * argv[]) {
 
 	// Run simulation
 	if (strcmp(argv[1], "-r") == 0 or strcmp(argv[1], "--run") == 0) {
-		LoadBodiesFromFile("init/output.txt", bodyArray);
+		LoadBodiesFromFile("init/output.txt", bodyList);
 
 		Video video = Video("images/", "image_", width, height, framerate);
 		video.ClearImageFolder();
 
 		for (int f = 0; f < frames; f++) {
 			// Reset force counter on each body
-			body = bodyArray.GetHead();
+			body = bodyList.GetHead();
 			while (body != NULL) {
 				body->ResetForce();
 				body = body->next;
 			}
 
 			// n-body Algorithm (optimised)
-			bodyA = bodyArray.GetHead();
+			bodyA = bodyList.GetHead();
 			bodyB = NULL;
 
 			while (bodyA != NULL) {
@@ -196,14 +196,14 @@ int main(int argc, char * argv[]) {
 			Image image = Image(imageFileName, width, height, 100);
 
 			// Calculate next position for each body
-			body = bodyArray.GetHead();
+			body = bodyList.GetHead();
 			while (body != NULL) {
 				body->Update(dt);
 				body = body->next;
 			}
 
 			// Collision Physics
-			bodyA = bodyArray.GetHead();
+			bodyA = bodyList.GetHead();
 			bodyB = NULL;
 
 			while (bodyA != NULL) {
@@ -296,12 +296,12 @@ int main(int argc, char * argv[]) {
 						}
 
 						// Create a new (combined) body, and remove A and B;
-						bodyArray.Remove(bodyA->id);
-						bodyArray.Remove(bodyB->id);
+						bodyList.Remove(bodyA->id);
+						bodyList.Remove(bodyB->id);
 
 						Body * newBody = new Body(newX, newY, newZ, newMass, newRadius, newXVelocity, newYVelocity, newZVelocity);
 						newBody->Update(dt - collisionTime);
-						bodyArray.Append(newBody);
+						bodyList.Append(newBody);
 					}
 
 					bodyB = bodyB->next;
@@ -311,7 +311,7 @@ int main(int argc, char * argv[]) {
 			}
 
 			// Move each body to their new positions
-			body = bodyArray.GetHead();
+			body = bodyList.GetHead();
 			while (body != NULL) {
 				body->Step();
 				image.DrawBody(body->GetX(), body->GetY(), 255, 255, 255);
@@ -322,7 +322,7 @@ int main(int argc, char * argv[]) {
 			// Draw information on frame
 			image.DrawText("SIMULATION", 10, 10, 255, 255, 255);
 			image.DrawText("F: " + to_string(f), 10, 20, 255, 255, 255);
-			image.DrawText("N: " + to_string(bodyArray.GetLength()), 10, 30, 255, 255, 255);
+			image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 255, 255, 255);
 
 			image.Save();
 		}
@@ -331,7 +331,7 @@ int main(int argc, char * argv[]) {
 
 		// Create output.txt
 		Output output("init/output.txt", width, height, 100);
-		output.AddAllBodies(bodyArray);
+		output.AddAllBodies(bodyList);
 		output.Save();
 
 		return 0;

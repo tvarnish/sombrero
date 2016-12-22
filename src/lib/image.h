@@ -6,6 +6,8 @@
 #include <iostream>
 #include <pngwriter.h>
 
+#include "linkedlist.h"
+
 class Body;
 
 class Image {
@@ -23,7 +25,7 @@ class Image {
 		int Scale(double coordinate, double scale);
 		void Draw(int x, int y, int r, int g, int b);
 		void DrawBody(double x, double y, int r, int g, int b);
-		void DrawAllBodies(int bodyCount, Body * bodyArray [], int r, int g, int b);
+		void DrawAllBodies(int bodyCount, List bodyList, int r, int g, int b);
 		void DrawText(std::string text, int x, int y, int r, int g, int b);
 		void Save();
 };

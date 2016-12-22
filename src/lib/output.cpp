@@ -35,8 +35,8 @@ void Output::Save() {
 	outputFile.close();
 }
 
-void Output::AddAllBodies(List bodyArray) {
-	Body * body = bodyArray.GetHead();
+void Output::AddAllBodies(List bodyList) {
+	Body * body = bodyList.GetHead();
 
 	while (body != NULL) {
 		AddBody(body);
