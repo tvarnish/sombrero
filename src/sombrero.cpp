@@ -31,7 +31,7 @@ int main(int argc, char * argv[]) {
 
 	// "run" settings
 	double dt = DAY;
-	int frames = 200;
+	//int frames = 200;
 
 	int framerate = 45;
 
@@ -41,10 +41,9 @@ int main(int argc, char * argv[]) {
 	Body * bodyB;
 
 	// Check command is valid using regex
-	// ./sombrero -c filename.scfg -g random -r frames
-	// -c (character).scfg (-g *characters*) | (-r *integer > 0*)
-	regex validCommand("-c [\\w]+.scfg (((\\-g|\\-\\-generate) (random|rotate))|((\\-r|\\-\\-run) [1-9][0-9]*))");
+	regex validCommand("-c [\\w]+.scfg (((\\-g|\\-\\-generate) (random|rotate))|((\\-r|\\-\\-run) [0-9]*))");
 
+	// Join argv into command string (ignoring program name)
 	string command = "";
 	for (int i = 1; i < argc; i++) {
 		command += (string)argv[i];
@@ -53,127 +52,93 @@ int main(int argc, char * argv[]) {
 		}
 	}
 
-	cout << "command: (" << command << ")" << endl;
-
 	if (!regex_match(command, validCommand)) {
-		cout << "Not a valid command. See usage statement." << endl;
+		cout << "Invalid command. See usage statement." << endl;
 		cout << usageStatement << endl;
 		return 1;
 	}
 
-	cout << "Valid." << endl;
-	return 0;
-
-	// No arguments supplied
-	if (argc == 1) {
-		cout << "No arguments supplied." << endl;
-		cout << usageStatement << endl;
-		return 1;
-	}
+	// Load settings from config file
 
 	// Generate Body arrangement
-	if (strcmp(argv[1], "-g") == 0 or strcmp(argv[1], "--generate") == 0) {
-		if (argc >= 3) {
-			// Generate random arrangement of bodies (+ rotation video)
-			// i.e. create new bodyList
-			if (strcmp(argv[2], "random") == 0) {
-				for (int i = 0; i < bodyCount - 1; i++) {
-					double r = Random(1e11, 1e11);
-					double theta = Random(0, 2 * PI);
-					double phi = Random(0, 2 * PI);
+	string mainCommand = (string)argv[3];
 
-					double x = r * cos(theta) * cos(phi);
-					double y = r * sin(theta);
-					double z = r * cos(theta) * sin(phi);
+	if (mainCommand == "-g" or mainCommand == "--generate") {
+		string generateCommand = (string)argv[4];
 
-					double mass = Random(1e23, 1e24);
+		// Random - generate random arrangement of bodies
+		if (generateCommand == "random") {
+			for (int i = 0; i < bodyCount - 1; i++) {
+				double r = Random(1e11, 1e11);
+				double theta = Random(0, 2 * PI);
+				double phi = Random(0, 2 * PI);
 
-					bodyList.Append(new Body(x, y, z, mass, Random(1e6, 9e6), 0, 0, 0));
-				}
+				double x = r * cos(theta) * cos(phi);
+				double y = r * sin(theta);
+				double z = r * cos(theta) * sin(phi);
 
-				bodyList.Append(new Body(0.0, 0.0, 0.0, 2e30, 1e8, 0.0, 0.0, 0.0));
+				double mass = Random(1e23, 1e24);
 
-				// Save bodies to output.txt
-				Output output("init/output.txt", width, height, 100);
-				output.AddAllBodies(bodyList);
-				output.Save();
+				bodyList.Append(new Body(x, y, z, mass, Random(1e6, 9e6), 0, 0, 0));
 			}
 
-			// Generate rotate video around bodies
-			// i.e. Load bodies from file
-			else if (strcmp(argv[2], "rotate") == 0) {
-				string filename = "init/output.txt";
+			bodyList.Append(new Body(0.0, 0.0, 0.0, 2e30, 1e8, 0.0, 0.0, 0.0));
 
-				if (argc == 4) {
-					// Assume that the final argument is the filename
-					filename = argv[3];
-				}
+			// Save bodies to output.txt
+			Output output("init/output.txt", width, height, 100);
+			output.AddAllBodies(bodyList);
+			output.Save();
 
-				if (FileExists(filename)) {
-					LoadBodiesFromFile(filename.c_str(), bodyList);
-				}
-				else {
-					cout << "./sombrero --generate rotate [filename]" << endl;
-					cout << "When using rotate, must include valid filename: e.g. init/output.txt" << endl;
-					return 1;
-				}
-			}
-
-			// No *valid* options supplied
-			else {
-				cout << "Must supply valid generate argument: [random, rotate]" << endl;
-				cout << usageStatement << endl;
-				return 1;
-			}
-		}
-
-		// No options supplied
-		else {
-			cout << "Must supply generate argument: [random, rotate]" << endl;
-			cout << usageStatement << endl;
-			return 1;
+			return 0;
 		}
 
 		// Generate rotate video around bodies
-		Video video = Video("images/", "image_", width, height, framerate);
-		video.ClearImageFolder();
+		else if (generateCommand == "rotate") {
+			LoadBodiesFromFile("init/output.txt", bodyList);
 
-		// Rotate bodies about the y-axis
-		for (double angle = 0.0; angle < 360.0; angle ++) {
-			string imageFileName = "images/image_" + PadWithZeroes(angle, 360) + ".png";
-			Image image = Image(imageFileName, width, height, 100);
+			Video video = Video("images/", "image_", width, height, framerate);
+			video.ClearImageFolder();
 
-			body = bodyList.GetHead();
-			while (body != NULL) {
-				// Rotate body
-				Vector p;
-				p.Set(body->GetX(), body->GetY(), body->GetZ());
+			// Rotate bodies about the y-axis
+			for (double angle = 0.0; angle < 360.0; angle ++) {
+				string imageFileName = "images/image_" + PadWithZeroes(angle, 360) + ".png";
+				Image image = Image(imageFileName, width, height, 100);
 
-				Vector t;
-				t = p.RotateY(angle);
-				t = t.RoundValues();
+				body = bodyList.GetHead();
+				while (body != NULL) {
+					// Rotate body
+					Vector p;
+					p.Set(body->GetX(), body->GetY(), body->GetZ());
 
-				image.DrawBody(t.GetX(), t.GetY(), 255, 255, 255);
+					Vector t;
+					t = p.RotateY(angle);
+					t = t.RoundValues();
 
-				body = body->next;
+					image.DrawBody(t.GetX(), t.GetY(), 255, 255, 255);
+
+					body = body->next;
+				}
+
+				// Add details to image
+				image.DrawText("ROTATION", 10, 10, 255, 255, 255);
+				image.DrawText("A: " + to_string((int)angle), 10, 20, 255, 255, 255);
+				image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 255, 255, 255);
+
+				image.Save();
 			}
 
-			// Add details to image
-			image.DrawText("ROTATION", 10, 10, 255, 255, 255);
-			image.DrawText("A: " + to_string((int)angle), 10, 20, 255, 255, 255);
-			image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 255, 255, 255);
+			// Build video from images
+			video.Build("result.mp4", 360);
 
-			image.Save();
+			return 0;
 		}
-
-		// Build video from images
-		video.Build("result.mp4", 360);
-
-		return 0;
 	}
 
 	// Run simulation
-	if (strcmp(argv[1], "-r") == 0 or strcmp(argv[1], "--run") == 0) {
+	else if (mainCommand == "-r" or mainCommand == "-run") {
+		int frames = stoi((string)argv[4]) + 1;
+		// Adding 1 makes sure that if 0 frames are to be simulated, 1 frame will be generated (frame 0) for the video
+
 		LoadBodiesFromFile("init/output.txt", bodyList);
 
 		Video video = Video("images/", "image_", width, height, framerate);
@@ -363,13 +328,4 @@ int main(int argc, char * argv[]) {
 
 		return 0;
 	}
-
-	// No *valid* arguments supplied
-	else {
-		cout << "No valid arguments provided." << endl;
-		cout << usageStatement << endl;
-		return 1;
-	}
-
-	return 0;
 }
