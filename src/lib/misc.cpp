@@ -8,32 +8,9 @@
 
 using namespace std;
 
-void LoadParametersFromFile(string filename, int & width, int & height, double & scale) {
-	ifstream inputFile(filename);
-	string fileLine;
-
-	// Read in setup parameters
-	getline(inputFile, fileLine);
-	stringstream setup(fileLine);
-	string parameter;
-	string parameterArray [4];
-	int i = 0;
-
-	while (getline(setup, parameter, ','))
-	{
-		parameterArray[i] = parameter;
-		i++;
-	}
-
-	width = stoi(parameterArray[0]);
-	height = stoi(parameterArray[1]);
-	scale = stod(parameterArray[2]);
-}
-
 void LoadBodiesFromFile(string filename, List & bodyList) {
 	ifstream inputFile(filename);
 	string fileLine;
-	getline(inputFile, fileLine); // Skip first line
 
 	// Read in body details
 	string parameter;

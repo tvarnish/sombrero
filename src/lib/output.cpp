@@ -7,15 +7,9 @@
 
 using namespace std;
 
-Output::Output(string filename, int width, int height, double scale) {
+Output::Output(string filename) {
 	fileName = filename;
 	fileContents = "";
-
-	// Add details about the simulation
-	// bodyCount, width, height, units (xy - m,au,lyr,pc,mpc), scale, units (mass - kg,m)
-	fileContents += to_string(width) + ",";
-	fileContents += to_string(height) + ",";
-	fileContents += to_string(scale) + "\n";
 }
 
 void Output::AddBody(Body * body) {

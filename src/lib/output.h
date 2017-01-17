@@ -13,7 +13,7 @@ class Output {
 		//std::string ToStandardForm(double value);
 
 	public:
-		Output(std::string filename, int width, int height, double scale);
+		Output(std::string filename);
 
 		void AddBody(Body * body);
 		void AddAllBodies(List bodyList);

@@ -6,7 +6,6 @@
 
 class Body;
 
-void LoadParametersFromFile(std::string filename, int & width, int & height, double & scale);
 void LoadBodiesFromFile(std::string filename, List & bodyList);
 int NumberLength(int number);
 std::string PadWithZeroes(int frameNumber, int maxCount);

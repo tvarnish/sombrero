@@ -23,17 +23,11 @@ using namespace std;
 int main(int argc, char * argv[]) {
 	string usageStatement = "Usage: " + (string)argv[0] + " -c configfile.scfg (-g --generate (random|rotate) )|(-r --run framecount)";
 
-	// Need to make these "settable" by the user
-	// Defaults
-	int bodyCount = 200;
-	int width = 640;
-	int height = 480;
-
-	// "run" settings
-	double dt = DAY;
-	//int frames = 200;
-
-	int framerate = 45;
+	int bodyCount;
+	int width, height;
+	double scale;
+	double dt;
+	int framerate;
 
 	List bodyList = List();
 	Body * body;
@@ -58,7 +52,144 @@ int main(int argc, char * argv[]) {
 		return 1;
 	}
 
-	// Load settings from config file
+	// Load settings (parameter values) from config file
+	ifstream configFile((string)argv[2]);
+	string value;
+
+	regex integer("[1-9][0-9]*");
+	regex decimal("([1-9][0-9]*)(\\.[0-9]*)");
+	regex stdform("([1-9][0-9]*)(\\.)*[0-9]*e([1-9][0-9]*)");
+
+	// Width
+	getline(configFile, value);
+	if (regex_match(value, integer)) {
+		width = stoi(value);
+	}
+	else {
+		cout << "Width parameter is not a valid integer (line 1) of " << (string)argv[2] << endl;
+		return 1;
+	}
+
+	// Height
+	getline(configFile, value);
+	if (regex_match(value, integer)) {
+		height = stoi(value);
+	}
+	else {
+		cout << "Height parameter is not a valid integer (line 2) of " << (string)argv[2] << endl;
+		return 1;
+	}
+
+	// Body Count - How many bodies to generate when using generate commands
+	getline(configFile, value);
+	if (regex_match(value, integer)) {
+		bodyCount = stoi(value);
+	}
+	else {
+		cout << "Body count parameter is not a valid integer (line 3) of " << (string)argv[2] << endl;
+		return 1;
+	}
+
+	// Scale
+	getline(configFile, value);
+	if (regex_match(value, integer) or regex_match(value, decimal)) {
+		scale = atof(value.c_str());
+	}
+	else {
+		cout << "Scale parameter is not a valid double (line 4) of " << (string)argv[2] << endl;
+	}
+
+	// dt
+	string dtErrorMessage = "dt parameter is not a valid double or time value (DAY, etc.) (line 5) of " + (string)argv[2];
+	getline(configFile, value);
+	if (regex_match(value, decimal) or regex_match(value, integer)) {
+		dt = atof(value.c_str());
+	}
+	else {
+		regex division("\\/");
+		regex multiplication("\\*");
+
+		if (regex_search(value, division)) {
+			stringstream valueDiv(value);
+			getline(valueDiv, value, '/');
+
+			if (value == "DAY") {
+				getline(valueDiv, value, '/');
+				if (regex_match(value, integer) or regex_match(value, decimal) or regex_match(value, stdform)) {
+					dt = DAY / atof(value.c_str());
+				}
+				else {
+					cout << dtErrorMessage << endl;
+					return 1;
+				}
+			}
+			else if (value == "YR" or value == "YEAR") {
+				getline(valueDiv, value, '/');
+				if (regex_match(value, integer) or regex_match(value, decimal) or regex_match(value, stdform)) {
+					dt = YR / atof(value.c_str());
+				}
+				else {
+					cout << dtErrorMessage << endl;
+					return 1;
+				}
+			}
+			else {
+				cout << dtErrorMessage << endl;
+				return 1;
+			}
+		}
+		else if (regex_search(value, multiplication)) {
+			stringstream valueMult(value);
+			getline(valueMult, value, '*');
+			
+			if (value == "DAY") {
+				getline(valueMult, value, '*');
+				if (regex_match(value, integer) or regex_match(value, decimal) or regex_match(value, stdform)) {
+					dt = DAY * atof(value.c_str());
+				}
+				else {
+					cout << dtErrorMessage << endl;
+					return 1;
+				}
+			}
+			else if (value == "YR" or value == "YEAR") {
+				getline(valueMult, value, '*');
+				if (regex_match(value, integer) or regex_match(value, decimal) or regex_match(value, stdform)) {
+					dt = YR * atof(value.c_str());
+				}
+				else {
+					cout << dtErrorMessage << endl;
+					return 1;
+				}
+			}
+			else {
+				cout << dtErrorMessage << endl;
+				return 1;
+			}
+		}
+		else {
+			if (value == "DAY") {
+				dt = DAY;
+			}
+			else if (value == "YR" or value == "YEAR") {
+				dt = YR;
+			}
+			else {
+				cout << dtErrorMessage << endl;
+				return 1;
+			}
+		}
+	}
+
+	// framerate
+	getline(configFile, value);
+	if (regex_match(value, integer)) {
+		framerate = atof(value.c_str());
+	}
+	else {
+		cout << "Framerate parameter is not a valid integer (line 6) of " << (string)argv[2] << endl;
+		return 1;
+	}
 
 	// Generate Body arrangement
 	string mainCommand = (string)argv[3];
@@ -85,7 +216,7 @@ int main(int argc, char * argv[]) {
 			bodyList.Append(new Body(0.0, 0.0, 0.0, 2e30, 1e8, 0.0, 0.0, 0.0));
 
 			// Save bodies to output.txt
-			Output output("init/output.txt", width, height, 100);
+			Output output("init/output.txt");
 			output.AddAllBodies(bodyList);
 			output.Save();
 
@@ -102,7 +233,7 @@ int main(int argc, char * argv[]) {
 			// Rotate bodies about the y-axis
 			for (double angle = 0.0; angle < 360.0; angle ++) {
 				string imageFileName = "images/image_" + PadWithZeroes(angle, 360) + ".png";
-				Image image = Image(imageFileName, width, height, 100);
+				Image image = Image(imageFileName, width, height, scale);
 
 				body = bodyList.GetHead();
 				while (body != NULL) {
@@ -185,7 +316,7 @@ int main(int argc, char * argv[]) {
 			}
 
 			string imageFileName = "images/image_" + PadWithZeroes(f, frames) + ".png";
-			Image image = Image(imageFileName, width, height, 100);
+			Image image = Image(imageFileName, width, height, scale);
 
 			// Calculate next position for each body
 			body = bodyList.GetHead();
@@ -322,7 +453,7 @@ int main(int argc, char * argv[]) {
 		video.Build("result_run.mp4", frames);
 
 		// Create output.txt
-		Output output("init/output.txt", width, height, 100);
+		Output output("init/output.txt");
 		output.AddAllBodies(bodyList);
 		output.Save();
 
