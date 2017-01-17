@@ -19,10 +19,39 @@
 
 using namespace std;
 
+// Function to return the index of an argument in argv
+int FindFlag(char * argv[], int argc, string argumentShort, string argumentLong = "") {
+	int shortIndex = -1;
+	int longIndex = -1;
+
+	for (int i = 1; i < argc; i++) {
+		if (strcmp(argv[i], argumentShort.c_str()) == 0 and shortIndex == -1) {
+				shortIndex = i;
+			}
+		if (argumentLong != "") {
+			if (strcmp(argv[i], argumentLong.c_str()) == 0 and longIndex == -1) {
+				longIndex = i;
+			}
+		}
+	}
+
+	if (shortIndex != -1 and longIndex == -1) {
+		return shortIndex;
+	}
+	else if (shortIndex == -1 and longIndex != -1) {
+		return longIndex;
+	}
+	else {
+		return -1;
+	}
+
+}
+
 int main(int argc, char * argv[]) {
 	string usageStatement = "Usage: ./sombrero [-g --generate] [-r --run]";
 
 	// Need to make these "settable" by the user
+	// Defaults
 	int bodyCount = 200;
 	int width = 640;
 	int height = 480;
@@ -37,6 +66,23 @@ int main(int argc, char * argv[]) {
 	Body * body;
 	Body * bodyA;
 	Body * bodyB;
+
+	// Check for the main flags
+	int generateIndex = FindFlag(argv, argc, "-g", "--generate");
+	int runFlag = FindFlag(argv, argc, "-r", "--run");
+	if (generateIndex != -1 and runFlag == -1) {
+		cout << "Generate flag located!" << endl;
+		return 0;
+	}
+	else if (generateIndex == -1 and runFlag != -1) {
+		cout << "Run flag located!" << endl;
+		return 0;
+	}
+	else {
+		cout << usageStatement << endl;
+		cout << "Must have either run flag or generate flag" << endl;
+		return 1;
+	}
 
 	// No arguments supplied
 	if (argc == 1) {
@@ -94,6 +140,7 @@ int main(int argc, char * argv[]) {
 				}
 			}
 
+			// No *valid* options supplied
 			else {
 				cout << usageStatement << endl;
 				cout << "Must supply generate argument: [random, rotate]" << endl;
@@ -101,6 +148,7 @@ int main(int argc, char * argv[]) {
 			}
 		}
 
+		// No options supplied
 		else {
 			cout << usageStatement << endl;
 			cout << "Must supply generate argument: [random, rotate]" << endl;
