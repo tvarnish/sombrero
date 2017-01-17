@@ -48,50 +48,6 @@ int FindFlag(char * argv[], int argc, string argumentShort, string argumentLong 
 
 }
 
-class Flag
-{
-	string shortFlag;
-	string longFlag;
-	bool present;
-	int index;
-public:
-	Flag(string shFlag, string lFlag) {
-		shortFlag = shFlag;
-		longFlag = lFlag;
-	};
-
-	bool Present() { return present; };
-	int GetIndex() { return index; };
-	void CheckIfPresent(char * argv[], int argc) {
-		int shortIndex = -1;
-		int longIndex = -1;
-
-		for (int i = 1; i < argc; i++) {
-			if (strcmp(argv[i], shortFlag.c_str()) == 0 and shortIndex == -1) {
-				shortIndex = i;
-			}
-			if (longFlag != "") {
-				if (strcmp(argv[i], longFlag.c_str()) == 0 and longIndex == -1) {
-					longIndex = i;
-				}
-			}
-		}
-
-		if (shortIndex != -1 and longIndex == -1) {
-			present = true;
-			index = shortIndex;
-		}
-		else if (shortIndex == -1 and longIndex != -1) {
-			present = true;
-			index = longIndex;
-		}
-		else {
-			present = false;
-			index = -1;
-		}
-	};
-};
-
 int main(int argc, char * argv[]) {
 	string usageStatement = "Usage: ./sombrero [-g --generate] [-r --run] [-s --settings]";
 
@@ -114,13 +70,10 @@ int main(int argc, char * argv[]) {
 
 	// No arguments supplied
 	if (argc == 1) {
-		// No arguments supplied. Exit.
 		cout << "No arguments supplied." << endl;
 		cout << usageStatement << endl;
 		return 1;
 	}
-
-	// If arguments supplied
 	else {
 		// Get indexes of main flags
 		// May be more efficient to generate a dictionary of all of the flags and their indexes...
