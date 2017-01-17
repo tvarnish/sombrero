@@ -4,6 +4,7 @@
 #include <vector>
 #include <cmath>
 #include <ctime>
+#include <regex>
 
 #include "lib/font.h"
 #include "lib/body.h"
@@ -47,8 +48,52 @@ int FindFlag(char * argv[], int argc, string argumentShort, string argumentLong 
 
 }
 
+class Flag
+{
+	string shortFlag;
+	string longFlag;
+	bool present;
+	int index;
+public:
+	Flag(string shFlag, string lFlag) {
+		shortFlag = shFlag;
+		longFlag = lFlag;
+	};
+
+	bool Present() { return present; };
+	int GetIndex() { return index; };
+	void CheckIfPresent(char * argv[], int argc) {
+		int shortIndex = -1;
+		int longIndex = -1;
+
+		for (int i = 1; i < argc; i++) {
+			if (strcmp(argv[i], shortFlag.c_str()) == 0 and shortIndex == -1) {
+				shortIndex = i;
+			}
+			if (longFlag != "") {
+				if (strcmp(argv[i], longFlag.c_str()) == 0 and longIndex == -1) {
+					longIndex = i;
+				}
+			}
+		}
+
+		if (shortIndex != -1 and longIndex == -1) {
+			present = true;
+			index = shortIndex;
+		}
+		else if (shortIndex == -1 and longIndex != -1) {
+			present = true;
+			index = longIndex;
+		}
+		else {
+			present = false;
+			index = -1;
+		}
+	};
+};
+
 int main(int argc, char * argv[]) {
-	string usageStatement = "Usage: ./sombrero [-g --generate] [-r --run]";
+	string usageStatement = "Usage: ./sombrero [-g --generate] [-r --run] [-s --settings]";
 
 	// Need to make these "settable" by the user
 	// Defaults
@@ -67,30 +112,46 @@ int main(int argc, char * argv[]) {
 	Body * bodyA;
 	Body * bodyB;
 
-	// Check for the main flags
-	int generateIndex = FindFlag(argv, argc, "-g", "--generate");
-	int runFlag = FindFlag(argv, argc, "-r", "--run");
-	if (generateIndex != -1 and runFlag == -1) {
-		cout << "Generate flag located!" << endl;
-		return 0;
-	}
-	else if (generateIndex == -1 and runFlag != -1) {
-		cout << "Run flag located!" << endl;
-		return 0;
-	}
-	else {
-		cout << usageStatement << endl;
-		cout << "Must have either run flag or generate flag" << endl;
-		return 1;
-	}
-
 	// No arguments supplied
 	if (argc == 1) {
 		// No arguments supplied. Exit.
-		cout << "No arguments supplied. Must choose an option." << endl;
+		cout << "No arguments supplied." << endl;
 		cout << usageStatement << endl;
 		return 1;
 	}
+
+	// If arguments supplied
+	else {
+		// Get indexes of main flags
+		// May be more efficient to generate a dictionary of all of the flags and their indexes...
+		int generateFlag = FindFlag(argv, argc, "-g", "--generate");
+		int runFlag = FindFlag(argv, argc, "-r", "--run");
+		int settingsFlag = FindFlag(argv, argc, "-s", "--settings");
+
+		string flagString = "";
+		bool generate = generateFlag != -1;
+		bool run = runFlag != -1;
+		bool settings = settingsFlag != -1;
+
+		flagString = to_string(generate) + to_string(run) + to_string(settings);
+		
+		// Valid if flag string matches one of the following patterns:
+		//	10*
+		//	01*
+		// REGUlAR EXPRESSIONS!
+
+		regex validFlags("(01|10)(0|1)");
+		if (regex_match(flagString, validFlags)) {
+			cout << "Valid!" << endl;
+		}
+		else {
+			cout << "Not Valid!" << endl;
+		}
+
+		return 0;
+	}
+
+	///////////////////////
 
 	// Generate Body arrangement
 	if (strcmp(argv[1], "-g") == 0 or strcmp(argv[1], "--generate") == 0) {
