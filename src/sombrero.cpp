@@ -20,36 +20,8 @@
 
 using namespace std;
 
-// Function to return the index of an argument in argv
-int FindFlag(char * argv[], int argc, string argumentShort, string argumentLong = "") {
-	int shortIndex = -1;
-	int longIndex = -1;
-
-	for (int i = 1; i < argc; i++) {
-		if (strcmp(argv[i], argumentShort.c_str()) == 0 and shortIndex == -1) {
-				shortIndex = i;
-			}
-		if (argumentLong != "") {
-			if (strcmp(argv[i], argumentLong.c_str()) == 0 and longIndex == -1) {
-				longIndex = i;
-			}
-		}
-	}
-
-	if (shortIndex != -1 and longIndex == -1) {
-		return shortIndex;
-	}
-	else if (shortIndex == -1 and longIndex != -1) {
-		return longIndex;
-	}
-	else {
-		return -1;
-	}
-
-}
-
 int main(int argc, char * argv[]) {
-	string usageStatement = "Usage: ./sombrero [-g --generate] [-r --run] [-s --settings]";
+	string usageStatement = "Usage: " + (string)argv[0] + " -c configfile.scfg (-g --generate (random|rotate) )|(-r --run framecount)";
 
 	// Need to make these "settable" by the user
 	// Defaults
@@ -68,43 +40,36 @@ int main(int argc, char * argv[]) {
 	Body * bodyA;
 	Body * bodyB;
 
+	// Check command is valid using regex
+	// ./sombrero -c filename.scfg -g random -r frames
+	// -c (character).scfg (-g *characters*) | (-r *integer > 0*)
+	regex validCommand("-c [\\w]+.scfg (((\\-g|\\-\\-generate) (random|rotate))|((\\-r|\\-\\-run) [1-9][0-9]*))");
+
+	string command = "";
+	for (int i = 1; i < argc; i++) {
+		command += (string)argv[i];
+		if (i != argc - 1) {
+			command += " ";
+		}
+	}
+
+	cout << "command: (" << command << ")" << endl;
+
+	if (!regex_match(command, validCommand)) {
+		cout << "Not a valid command. See usage statement." << endl;
+		cout << usageStatement << endl;
+		return 1;
+	}
+
+	cout << "Valid." << endl;
+	return 0;
+
 	// No arguments supplied
 	if (argc == 1) {
 		cout << "No arguments supplied." << endl;
 		cout << usageStatement << endl;
 		return 1;
 	}
-	else {
-		// Get indexes of main flags
-		// May be more efficient to generate a dictionary of all of the flags and their indexes...
-		int generateFlag = FindFlag(argv, argc, "-g", "--generate");
-		int runFlag = FindFlag(argv, argc, "-r", "--run");
-		int settingsFlag = FindFlag(argv, argc, "-s", "--settings");
-
-		string flagString = "";
-		bool generate = generateFlag != -1;
-		bool run = runFlag != -1;
-		bool settings = settingsFlag != -1;
-
-		flagString = to_string(generate) + to_string(run) + to_string(settings);
-		
-		// Valid if flag string matches one of the following patterns:
-		//	10*
-		//	01*
-		// REGUlAR EXPRESSIONS!
-
-		regex validFlags("(01|10)(0|1)");
-		if (regex_match(flagString, validFlags)) {
-			cout << "Valid!" << endl;
-		}
-		else {
-			cout << "Not Valid!" << endl;
-		}
-
-		return 0;
-	}
-
-	///////////////////////
 
 	// Generate Body arrangement
 	if (strcmp(argv[1], "-g") == 0 or strcmp(argv[1], "--generate") == 0) {
@@ -156,16 +121,16 @@ int main(int argc, char * argv[]) {
 
 			// No *valid* options supplied
 			else {
+				cout << "Must supply valid generate argument: [random, rotate]" << endl;
 				cout << usageStatement << endl;
-				cout << "Must supply generate argument: [random, rotate]" << endl;
 				return 1;
 			}
 		}
 
 		// No options supplied
 		else {
-			cout << usageStatement << endl;
 			cout << "Must supply generate argument: [random, rotate]" << endl;
+			cout << usageStatement << endl;
 			return 1;
 		}
 
