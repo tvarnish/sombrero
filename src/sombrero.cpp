@@ -35,7 +35,7 @@ int main(int argc, char * argv[]) {
 	Body * bodyB;
 
 	// Check command is valid using regex
-	regex validCommand("-c [\\w]+.scfg (((\\-g|\\-\\-generate) (rotate|shell|random))|((\\-r|\\-\\-run) [0-9]* [0-9]*))");
+	regex validCommand("-c [\\w]+.scfg (((\\-g|\\-\\-generate) ([a-z]+))|((\\-r|\\-\\-run) [0-9]* [0-9]*))");
 
 	// Join argv into command string (ignoring program name)
 	string command = "";
@@ -286,6 +286,13 @@ int main(int argc, char * argv[]) {
 			video.Build("result.mp4", 360);
 
 			return 0;
+		}
+
+		else {
+			cout << "Not a valid generate command. Please specify a valid command." << endl;
+			cout << usageStatement << endl;
+
+			return 1;
 		}
 	}
 
