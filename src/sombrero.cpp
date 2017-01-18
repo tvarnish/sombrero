@@ -35,7 +35,7 @@ int main(int argc, char * argv[]) {
 	Body * bodyB;
 
 	// Check command is valid using regex
-	regex validCommand("-c [\\w]+.scfg (((\\-g|\\-\\-generate) (random|rotate))|((\\-r|\\-\\-run) [0-9]*))");
+	regex validCommand("-c [\\w]+.scfg (((\\-g|\\-\\-generate) (rotate|shell|random))|((\\-r|\\-\\-run) [0-9]* [0-9]*))");
 
 	// Join argv into command string (ignoring program name)
 	string command = "";
@@ -194,13 +194,16 @@ int main(int argc, char * argv[]) {
 	// Generate Body arrangement
 	string mainCommand = (string)argv[3];
 
+	// For the generate commands - random seed
+	srand(time(NULL));
+
 	if (mainCommand == "-g" or mainCommand == "--generate") {
 		string generateCommand = (string)argv[4];
 
 		// Random - generate random arrangement of bodies
-		if (generateCommand == "random") {
+		if (generateCommand == "shell") {
 			for (int i = 0; i < bodyCount - 1; i++) {
-				double r = Random(1e11, 1e11);
+				double r = 1e11;
 				double theta = Random(0, 2 * PI);
 				double phi = Random(0, 2 * PI);
 
@@ -214,6 +217,27 @@ int main(int argc, char * argv[]) {
 			}
 
 			bodyList.Append(new Body(0.0, 0.0, 0.0, 2e30, 1e8, 0.0, 0.0, 0.0));
+
+			// Save bodies to output.txt
+			Output output("init/output.txt");
+			output.AddAllBodies(bodyList);
+			output.Save();
+
+			return 0;
+		}
+
+		// Random arrangement of stationary particles
+		else if (generateCommand == "random") {
+			for (int i = 0; i < bodyCount; i++) {
+				double x = Random(-3e11, 3e11);
+				double y = Random(-3e11, 3e11);
+				double z = Random(-3e11, 3e11);
+
+				double mass = Random(1e23, 1e27);
+				double radius = Random(1e6, 1e8);
+
+				bodyList.Append(new Body(x, y, z, mass, radius, 0, 0, 0));
+			}
 
 			// Save bodies to output.txt
 			Output output("init/output.txt");
@@ -267,8 +291,14 @@ int main(int argc, char * argv[]) {
 
 	// Run simulation
 	else if (mainCommand == "-r" or mainCommand == "-run") {
-		int frames = stoi((string)argv[4]) + 1;
-		// Adding 1 makes sure that if 0 frames are to be simulated, 1 frame will be generated (frame 0) for the video
+		int frames = stoi((string)argv[4]);
+		int currentFrames = stoi((string)argv[5]);
+		
+		if (frames == 0) {
+			cout << "Simulation must run for at least 1 frame." << endl;
+			cout << usageStatement << endl;
+			return 1;
+		}
 
 		LoadBodiesFromFile("init/output.txt", bodyList);
 
@@ -444,7 +474,7 @@ int main(int argc, char * argv[]) {
 
 			// Draw information on frame
 			image.DrawText("SIMULATION", 10, 10, 255, 255, 255);
-			image.DrawText("F: " + to_string(f), 10, 20, 255, 255, 255);
+			image.DrawText("F: " + to_string(f + currentFrames), 10, 20, 255, 255, 255);
 			image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 255, 255, 255);
 
 			image.Save();
