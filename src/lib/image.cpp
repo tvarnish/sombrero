@@ -138,11 +138,11 @@ void Image::DrawText(string text, int x, int y, int r, int g, int b) {
 }
 
 void Image::DrawScale(double scale, int x, int y, int r, int g, int b) {
+	double distanceOfScale = 1.0;
+	string scaleString = "1.0 AU";
+
 	if (scale >= 3.0) {
 		// Long enough to a line
-		double distanceOfScale = 1.0;
-		string scaleString = "1 AU";
-
 		// Check if line + text will fit on screen
 		while (x + scale + 10 + (6 * scaleString.length()) >= width) {
 			scale /= 10;
@@ -157,9 +157,16 @@ void Image::DrawScale(double scale, int x, int y, int r, int g, int b) {
 		DrawText(scaleString.c_str(), x + scale + 5, y - 2, r, g, b);
 	}
 	else {
-		// Not long enough - just write a message
-		string scaleText = "SCALE: " + to_string(scale) + " PX/AU";
-		DrawText(scaleText.c_str(), x, y - 2, r, g, b);
+		// Too short - must extend to fill screen
+		scale *= 100;
+		distanceOfScale *= 100;
+		scaleString = RemoveTrailingZeroes(to_string(distanceOfScale)) + " AU";
+
+		DrawLine(x, y, x + scale, y, r, g, b);
+		Draw(x, height - y + 1, r, g, b);
+		Draw(x + scale, height - y + 1, r, g, b);
+
+		DrawText(scaleString.c_str(), x + scale + 5, y - 2, r, g, b);
 	}
 }
 
