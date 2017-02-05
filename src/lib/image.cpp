@@ -21,11 +21,19 @@ Image::Image(string filename, int w, int h, double _scale) {
 }
 
 void Image::Draw(int x, int y, int r, int g, int b) {
-	double redValue = (double)(r / 255);
-	double greenValue = (double)(g / 255);
-	double blueValue = (double)(b / 255);
+	double redValue = ((double)r / 255.0);
+	double greenValue = ((double)g / 255.0);
+	double blueValue = ((double)b / 255.0);
 
 	png.plot(x, y, redValue, greenValue, blueValue);
+}
+
+void Image::DrawLine(int x1, int y1, int x2, int y2, int r, int g, int b) {
+	double redValue = ((double)r / 255.0);
+	double greenValue = ((double)g / 255.0);
+	double blueValue = ((double)b / 255.0);
+
+	png.line(x1, height - y1, x2, height - y2, redValue, greenValue, blueValue);
 }
 
 void Image::DrawBody(double x, double y, int r, int g, int b) {
@@ -64,7 +72,7 @@ void Image::DrawTextArray(int textArray [5][5], int xStart, int yStart, int r, i
 			}
 			else
 			{
-				png.plot(x + xStart, height - (y + yStart), (double)(r / 255), (double)(g / 255), (double)(b / 255));
+				png.plot(x + xStart, height - (y + yStart), ((double)r / 255.0), ((double)g / 255.0), ((double)b / 255.0));
 			}
 		}
 	}
@@ -103,6 +111,9 @@ void Image::DrawText(string text, int x, int y, int r, int g, int b) {
 			case '-':
 				DrawTextArray(fontHYPHEN, x, y, r, g, b);
 				break;
+			case '/':
+				DrawTextArray(fontSLASH, x, y, r, g, b);
+				break;
 
 			default:
 				break;
@@ -110,6 +121,21 @@ void Image::DrawText(string text, int x, int y, int r, int g, int b) {
 		}
 
 		x += fontWidth + kerning;
+	}
+}
+
+void Image::DrawScale(double scale, int x, int y, int r, int g, int b) {
+	if (scale >= 3.0) {
+		// Long enough to draw a line
+		DrawLine(x, y, x + scale, y, r, g, b);
+		Draw(x, height - y + 1, r, g, b);
+		Draw(x + scale, height - y + 1, r, g, b);
+		DrawText("1 AU", x + scale + 5, y - 2, r, g, b);
+	}
+	else {
+		// Not long enough - just write a message
+		string scaleText = "SCALE: " + to_string(scale) + " PX/AU";
+		DrawText(scaleText.c_str(), x, y - 2, r, g, b);
 	}
 }
 

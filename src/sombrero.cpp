@@ -275,9 +275,11 @@ int main(int argc, char * argv[]) {
 				}
 
 				// Add details to image
-				image.DrawText("ROTATION", 10, 10, 255, 255, 255);
-				image.DrawText("A: " + to_string((int)angle), 10, 20, 255, 255, 255);
-				image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 255, 255, 255);
+				image.DrawText("ROTATION", 10, 10, 155, 155, 155);
+				image.DrawText("A: " + to_string((int)angle), 10, 20, 155, 155, 155);
+				image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 155, 155, 155);
+
+				image.DrawScale(scale, 10, height - 15, 55, 55, 55);
 
 				image.Save();
 			}
@@ -480,9 +482,11 @@ int main(int argc, char * argv[]) {
 			}
 
 			// Draw information on frame
-			image.DrawText("SIMULATION", 10, 10, 255, 255, 255);
-			image.DrawText("F: " + to_string(f + currentFrames), 10, 20, 255, 255, 255);
-			image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 255, 255, 255);
+			image.DrawText("SIMULATION", 10, 10, 155, 155, 155);
+			image.DrawText("F: " + to_string(f + currentFrames), 10, 20, 155, 155, 155);
+			image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 155, 155, 155);
+
+			image.DrawScale(scale, 10, height - 15, 55, 55, 55);
 
 			image.Save();
 		}

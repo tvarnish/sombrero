@@ -10,5 +10,6 @@ extern int fontNumbers [10][5][5];
 extern int fontPERIOD [5][5];
 extern int fontCOLON [5][5];
 extern int fontHYPHEN [5][5];
+extern int fontSLASH [5][5];
 
 #endif

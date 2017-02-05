@@ -24,9 +24,11 @@ class Image {
 		Image(std::string filename, int w, int h, double _scale);
 		int Scale(double coordinate, double scale);
 		void Draw(int x, int y, int r, int g, int b);
+		void DrawLine(int x1, int y1, int x2, int y2, int r, int g, int b);
 		void DrawBody(double x, double y, int r, int g, int b);
 		void DrawAllBodies(int bodyCount, List bodyList, int r, int g, int b);
 		void DrawText(std::string text, int x, int y, int r, int g, int b);
+		void DrawScale(double scale, int x, int y, int  r, int g, int b);
 		void Save();
 };
 
