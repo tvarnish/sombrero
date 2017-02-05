@@ -3,7 +3,6 @@
 
 // Real World Units (https://www.iau.org/public/themes/measuring/)
 #define AU 149597870700 // Astronomical Unit - Average Earth-Sun Distance
-#define LYR 9.4607305e15 // Lightyear
 #define PC 3.0857e12 // Parsec
 #define MPC 1.0e6 * PC // Megaparsec
 // A Parsec is the distance to a star that subtends 1 arcsecond, at an arc

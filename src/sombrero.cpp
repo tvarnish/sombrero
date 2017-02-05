@@ -328,23 +328,6 @@ int main(int argc, char * argv[]) {
 
 				currentScale += scaleStep;
 			}
-			/*
-			for (double currentScale = scale; currentScale < finalScale; currentScale += scaleStep) {
-				string imageFileName = "images/image_" + PadWithZeroes(currentScale - scale, frameCount) + ".png";
-				Image image = Image(imageFileName, width, height, currentScale);
-
-				image.DrawAllBodies(bodyList, 255, 255, 0);
-
-				// Add details to image
-				image.DrawText("ZOOM", 10, 10, 155, 155, 155);
-				image.DrawText("S: " + RemoveTrailingZeroes(to_string(currentScale)), 10, 20, 155, 155, 155);
-				image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 155, 155, 155);
-
-				image.DrawScale(currentScale, 10, height - 15, 55, 55, 55);
-
-				image.Save();
-			}
-			*/
 
 			// Build video from images
 			video.Build("zoom_result.mp4", abs(finalScale - scale));
@@ -375,6 +358,8 @@ int main(int argc, char * argv[]) {
 
 		Video video = Video("images/", "image_", width, height, framerate);
 		video.ClearImageFolder();
+
+		double elapsedTime = 0;
 
 		for (int f = 0; f < frames; f++) {
 			// Reset force counter on each body
@@ -543,8 +528,28 @@ int main(int argc, char * argv[]) {
 				body = body->next;
 			}
 
+			elapsedTime += dt;
+
+			// Format elapsed time
+			string elapsedTimeString;
+			string timeUnits;
+
+			if (elapsedTime >= 2 * YR) {
+				timeUnits = " YEARS";
+				elapsedTimeString =  RemoveTrailingZeroes(to_string(elapsedTime / ((double)YR))); 
+			}
+			else {
+				if (elapsedTime == DAY) {
+					timeUnits = " DAY";
+				}
+				else {
+					timeUnits = " DAYS";
+				}
+				elapsedTimeString =  RemoveTrailingZeroes(to_string(elapsedTime / (double)DAY));
+			}
+
 			// Draw information on frame
-			image.DrawText("SIMULATION", 10, 10, 155, 155, 155);
+			image.DrawText("SIMULATION  (" + timeUnits + ") " + elapsedTimeString, 10, 10, 155, 155, 155);
 			image.DrawText("F: " + to_string(f + currentFrames), 10, 20, 155, 155, 155);
 			image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 155, 155, 155);
 
