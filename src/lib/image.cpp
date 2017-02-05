@@ -36,27 +36,39 @@ void Image::DrawLine(int x1, int y1, int x2, int y2, int r, int g, int b) {
 	png.line(x1, height - y1, x2, height - y2, redValue, greenValue, blueValue);
 }
 
-void Image::DrawBody(double x, double y, int r, int g, int b) {
-	int xScaled = (width / 2) + Scale(x, scale);
- 	int yScaled = (height / 2) + Scale(y, scale);
-
-	bool xValid = xScaled < width && xScaled >= 0;
-	bool yValid = yScaled < height && yScaled >= 0;
-
-	if (xValid && yValid) {
-		Draw(xScaled, yScaled, r, g, b);
-	}
-}
-
 int Image::Scale(double coordinate, double scale) {
 	int position = (int)(coordinate / AU * scale);
 	return position;
 }
 
+void Image::DrawBody(double x, double y, double radius, int r, int g, int b) {
+	int xScaled = (width / 2) + Scale(x, scale);
+ 	int yScaled = (height / 2) + Scale(y, scale);
+ 	int radiusScaled = Scale(radius, scale);
+
+	bool xValid = xScaled < width && xScaled >= 0;
+	bool yValid = yScaled < height && yScaled >= 0;
+
+	if (xValid && yValid) {
+		double redValue = ((double)r / 255.0);
+		double greenValue = ((double)g / 255.0);
+		double blueValue = ((double)b / 255.0);
+
+		if (radiusScaled == 0) {
+			Draw(xScaled, yScaled, r, g, b);
+		}
+		else {
+			png.filledcircle(xScaled, yScaled, radiusScaled, redValue, greenValue, blueValue);
+		}
+
+		//Draw(xScaled, yScaled, r, g, b);
+	}
+}
+
 void Image::DrawAllBodies(int bodyCount, List bodyList, int r, int g, int b) {
 	Body * body = bodyList.GetHead();
 	while (body != NULL) {
-		DrawBody(body->GetX(), body->GetY(), r, g, b);
+		DrawBody(body->GetX(), body->GetY(), body->GetRadius(), r, g, b);
 		body = body->next;
 	}
 }
@@ -126,7 +138,7 @@ void Image::DrawText(string text, int x, int y, int r, int g, int b) {
 
 void Image::DrawScale(double scale, int x, int y, int r, int g, int b) {
 	if (scale >= 3.0) {
-		// Long enough to draw a line
+		// Long enough to a line
 		DrawLine(x, y, x + scale, y, r, g, b);
 		Draw(x, height - y + 1, r, g, b);
 		Draw(x + scale, height - y + 1, r, g, b);

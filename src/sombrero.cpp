@@ -58,7 +58,7 @@ int main(int argc, char * argv[]) {
 
 	regex integer("[1-9][0-9]*");
 	regex decimal("([1-9][0-9]*)(\\.[0-9]*)");
-	regex stdform("([1-9][0-9]*)(\\.)*[0-9]*e([1-9][0-9]*)");
+	regex stdform("([1-9][0-9]*)(\\.)*[0-9]*e(-*[1-9][0-9]*)");
 
 	// Width
 	getline(configFile, value);
@@ -92,8 +92,9 @@ int main(int argc, char * argv[]) {
 
 	// Scale
 	getline(configFile, value);
-	if (regex_match(value, integer) or regex_match(value, decimal)) {
-		scale = atof(value.c_str());
+	if (regex_match(value, integer) or regex_match(value, decimal) or regex_match(value, stdform)) {
+		scale = stod(value.c_str());
+		cout << scale << endl;
 	}
 	else {
 		cout << "Scale parameter is not a valid double (line 4) of " << (string)argv[2] << endl;
@@ -269,7 +270,7 @@ int main(int argc, char * argv[]) {
 					t = p.RotateY(angle);
 					t = t.RoundValues();
 
-					image.DrawBody(t.GetX(), t.GetY(), 255, 255, 255);
+					image.DrawBody(t.GetX(), t.GetY(), body->GetRadius(), 255, 255, 255);
 
 					body = body->next;
 				}
@@ -476,7 +477,7 @@ int main(int argc, char * argv[]) {
 			body = bodyList.GetHead();
 			while (body != NULL) {
 				body->Step();
-				image.DrawBody(body->GetX(), body->GetY(), 255, 255, 255);
+				image.DrawBody(body->GetX(), body->GetY(), body->GetRadius(), 255, 255, 255);
 
 				body = body->next;
 			}
