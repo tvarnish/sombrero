@@ -55,7 +55,7 @@ void Image::DrawBody(double x, double y, double radius, int r, int g, int b) {
 		double blueValue = ((double)b / 255.0);
 
 		if (radiusScaled == 0) {
-			Draw(xScaled, yScaled, r, g, b);
+			Draw(xScaled, yScaled, 255, 255, 255); // White pixels show up the best on the screen
 		}
 		else {
 			png.filledcircle(xScaled, yScaled, radiusScaled, redValue, greenValue, blueValue);
