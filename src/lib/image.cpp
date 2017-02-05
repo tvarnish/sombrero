@@ -139,10 +139,39 @@ void Image::DrawText(string text, int x, int y, int r, int g, int b) {
 void Image::DrawScale(double scale, int x, int y, int r, int g, int b) {
 	if (scale >= 3.0) {
 		// Long enough to a line
+		double distanceOfScale = 1.0;
+		string scaleString = "1 AU";
+
+		// Check if line + text will fit on screen
+		while (x + scale + 5 * scaleString.length() >= width) {
+			scale /= 10;
+			distanceOfScale /= 10;
+			scaleString = to_string(distanceOfScale) + " AU";
+		}
+
+		// Remove trailing zeroes (aesthetic)
+		string scaleDistance = to_string(distanceOfScale);
+		int i = scaleDistance.length() - 1;
+		int lastNotZero;
+
+		while (i >= 0) {
+			if (scaleDistance[i] != '0') {
+				lastNotZero = i;
+				break;
+			}
+
+			i--;
+		}
+
+		if (scaleDistance[lastNotZero] == '.') lastNotZero++;
+
+		scaleString = scaleDistance.substr(0, lastNotZero + 1) + "AU";
+
 		DrawLine(x, y, x + scale, y, r, g, b);
 		Draw(x, height - y + 1, r, g, b);
 		Draw(x + scale, height - y + 1, r, g, b);
-		DrawText("1 AU", x + scale + 5, y - 2, r, g, b);
+
+		DrawText(scaleString.c_str(), x + scale + 5, y - 2, r, g, b);
 	}
 	else {
 		// Not long enough - just write a message
