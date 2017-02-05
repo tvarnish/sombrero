@@ -26,7 +26,7 @@ class Image {
 		void Draw(int x, int y, int r, int g, int b);
 		void DrawLine(int x1, int y1, int x2, int y2, int r, int g, int b);
 		void DrawBody(double x, double y, double radius, int r, int g, int b);
-		void DrawAllBodies(int bodyCount, List bodyList, int r, int g, int b);
+		void DrawAllBodies(List bodyList, int r, int g, int b);
 		void DrawText(std::string text, int x, int y, int r, int g, int b);
 		void DrawScale(double scale, int x, int y, int  r, int g, int b);
 		void Save();

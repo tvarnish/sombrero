@@ -21,7 +21,7 @@
 using namespace std;
 
 int main(int argc, char * argv[]) {
-	string usageStatement = "Usage: " + (string)argv[0] + " -c configfile.scfg (-g --generate (random|rotate) )|(-r --run framecount)";
+	string usageStatement = "Usage: " + (string)argv[0] + " -c configfile.scfg (-g --generate (random|rotate|zoom) )|(-r --run framecount)";
 
 	int bodyCount;
 	int width, height;
@@ -35,7 +35,7 @@ int main(int argc, char * argv[]) {
 	Body * bodyB;
 
 	// Check command is valid using regex
-	regex validCommand("-c [\\w]+.scfg (((\\-g|\\-\\-generate) ([a-z]+))|((\\-r|\\-\\-run) [0-9]* [0-9]*))");
+	regex validCommand("-c [\\w]+.scfg (((\\-g|\\-\\-generate) ([a-z]+)( [1-9][0-9]*))|((\\-r|\\-\\-run) [0-9]* [0-9]*))");
 
 	// Join argv into command string (ignoring program name)
 	string command = "";
@@ -94,7 +94,6 @@ int main(int argc, char * argv[]) {
 	getline(configFile, value);
 	if (regex_match(value, integer) or regex_match(value, decimal) or regex_match(value, stdform)) {
 		scale = stod(value.c_str());
-		cout << scale << endl;
 	}
 	else {
 		cout << "Scale parameter is not a valid double (line 4) of " << (string)argv[2] << endl;
@@ -200,6 +199,7 @@ int main(int argc, char * argv[]) {
 
 	if (mainCommand == "-g" or mainCommand == "--generate") {
 		string generateCommand = (string)argv[4];
+		string zoomScale = (string)argv[5];
 
 		// Random - generate random arrangement of bodies
 		if (generateCommand == "shell") {
@@ -287,6 +287,67 @@ int main(int argc, char * argv[]) {
 
 			// Build video from images
 			video.Build("result.mp4", 360);
+
+			return 0;
+		}
+
+		// Generate zoom (set new scale) video
+		else if (generateCommand == "zoom") {
+			LoadBodiesFromFile("init/output.txt", bodyList);
+
+			Video video = Video("images/", "image_", width, height, framerate);
+			video.ClearImageFolder();
+
+			double finalScale = stod(zoomScale);
+			double scaleStep;
+
+			if (finalScale < scale) {
+				scaleStep = -1;
+			}
+			else {
+				scaleStep = 1;
+			}
+
+			int frameCount = abs(finalScale - scale);
+
+			double currentScale = scale;
+			while (abs(finalScale - currentScale) != 0) {
+				string imageFileName = "images/image_" + PadWithZeroes(abs(currentScale - scale), frameCount) + ".png";
+				Image image = Image(imageFileName, width, height, currentScale);
+
+				image.DrawAllBodies(bodyList, 255, 255, 0);
+
+				// Add details to image
+				image.DrawText("ZOOM", 10, 10, 155, 155, 155);
+				image.DrawText("S: " + RemoveTrailingZeroes(to_string(currentScale)), 10, 20, 155, 155, 155);
+				image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 155, 155, 155);
+
+				image.DrawScale(currentScale, 10, height - 15, 55, 55, 55);
+
+				image.Save();
+
+				currentScale += scaleStep;
+			}
+			/*
+			for (double currentScale = scale; currentScale < finalScale; currentScale += scaleStep) {
+				string imageFileName = "images/image_" + PadWithZeroes(currentScale - scale, frameCount) + ".png";
+				Image image = Image(imageFileName, width, height, currentScale);
+
+				image.DrawAllBodies(bodyList, 255, 255, 0);
+
+				// Add details to image
+				image.DrawText("ZOOM", 10, 10, 155, 155, 155);
+				image.DrawText("S: " + RemoveTrailingZeroes(to_string(currentScale)), 10, 20, 155, 155, 155);
+				image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 155, 155, 155);
+
+				image.DrawScale(currentScale, 10, height - 15, 55, 55, 55);
+
+				image.Save();
+			}
+			*/
+
+			// Build video from images
+			video.Build("zoom_result.mp4", abs(finalScale - scale));
 
 			return 0;
 		}

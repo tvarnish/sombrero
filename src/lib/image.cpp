@@ -3,6 +3,7 @@
 #include "font.h"
 #include "units.h"
 #include "linkedlist.h"
+#include "misc.h"
 
 #include <fstream>
 #include <pngwriter.h>
@@ -65,7 +66,7 @@ void Image::DrawBody(double x, double y, double radius, int r, int g, int b) {
 	}
 }
 
-void Image::DrawAllBodies(int bodyCount, List bodyList, int r, int g, int b) {
+void Image::DrawAllBodies(List bodyList, int r, int g, int b) {
 	Body * body = bodyList.GetHead();
 	while (body != NULL) {
 		DrawBody(body->GetX(), body->GetY(), body->GetRadius(), r, g, b);
@@ -143,29 +144,11 @@ void Image::DrawScale(double scale, int x, int y, int r, int g, int b) {
 		string scaleString = "1 AU";
 
 		// Check if line + text will fit on screen
-		while (x + scale + 5 * scaleString.length() >= width) {
+		while (x + scale + 10 + (6 * scaleString.length()) >= width) {
 			scale /= 10;
 			distanceOfScale /= 10;
-			scaleString = to_string(distanceOfScale) + " AU";
+			scaleString = RemoveTrailingZeroes(to_string(distanceOfScale)) + " AU";
 		}
-
-		// Remove trailing zeroes (aesthetic)
-		string scaleDistance = to_string(distanceOfScale);
-		int i = scaleDistance.length() - 1;
-		int lastNotZero;
-
-		while (i >= 0) {
-			if (scaleDistance[i] != '0') {
-				lastNotZero = i;
-				break;
-			}
-
-			i--;
-		}
-
-		if (scaleDistance[lastNotZero] == '.') lastNotZero++;
-
-		scaleString = scaleDistance.substr(0, lastNotZero + 1) + "AU";
 
 		DrawLine(x, y, x + scale, y, r, g, b);
 		Draw(x, height - y + 1, r, g, b);

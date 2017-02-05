@@ -87,3 +87,22 @@ bool FileExists(string filename) {
 	ifstream file(filename.c_str());
 	return file.good();
 }
+
+string RemoveTrailingZeroes(string inputString) {
+	int i = inputString.length() - 1;
+	int lastNotZero;
+
+	while (i >= 0) {
+		if (inputString[i] != '0') {
+			lastNotZero = i;
+			break;
+		}
+
+		i--;
+	}
+
+	if (inputString[lastNotZero] == '.') lastNotZero++;
+
+	string outputString = inputString.substr(0, lastNotZero + 1);
+	return outputString;
+}
