@@ -23,6 +23,7 @@ using namespace std;
 int main(int argc, char * argv[]) {
 	string usageStatement = "Usage: " + (string)argv[0] + " -c configfile.scfg (-g --generate (random|rotate|zoom) )|(-r --run framecount)";
 
+	string simulationName;
 	int bodyCount;
 	int width, height;
 	double scale;
@@ -33,6 +34,29 @@ int main(int argc, char * argv[]) {
 	Body * body;
 	Body * bodyA;
 	Body * bodyB;
+
+	////////////////// TESTING /////////////////////
+
+	LoadFromFile("init/testing.txt", simulationName, width, height, scale, framerate, dt, bodyList);
+
+	string imageFileName = simulationName + ".png";
+	Image image = Image(imageFileName, width, height, scale);
+
+	// Add details to image
+	image.DrawText(simulationName.c_str(), 10, 10, 155, 155, 155);
+	image.DrawText("W: " + to_string(width), 10, 20, 155, 155, 155);
+	image.DrawText("H: " + to_string(height), 10, 30, 155, 155, 155);
+	image.DrawText("S: " + to_string(scale), 10, 40, 155, 155, 155);
+	image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 50, 155, 155, 155);
+	image.DrawText("F: " + to_string(framerate), 10, 60, 155, 155, 155);
+	image.DrawText("T: " + to_string(dt), 10, 70, 155, 155, 155);
+	image.DrawScale(scale, 10, height - 15, 55, 55, 55);
+	image.DrawAllBodies(bodyList, 255, 255, 255);
+	image.Save();
+
+	return 0;
+
+	///////////////////////////////////////////////
 
 	// Check command is valid using regex
 	regex validCommand("-c [\\w]+.scfg (((\\-g|\\-\\-generate) ([a-z]+)( [1-9][0-9]*))|((\\-r|\\-\\-run) [0-9]* [0-9]*))");
@@ -193,7 +217,7 @@ int main(int argc, char * argv[]) {
 
 	// Generate Body arrangement
 	string mainCommand = (string)argv[3];
-
+	
 	// For the generate commands - random seed
 	srand(time(NULL));
 
@@ -250,7 +274,7 @@ int main(int argc, char * argv[]) {
 
 		// Generate rotate video around bodies
 		else if (generateCommand == "rotate") {
-			LoadBodiesFromFile("init/output.txt", bodyList);
+			//LoadBodiesFromFile("init/output.txt", bodyList);
 
 			Video video = Video("images/", "image_", width, height, framerate);
 			video.ClearImageFolder();
@@ -293,7 +317,7 @@ int main(int argc, char * argv[]) {
 
 		// Generate zoom (set new scale) video
 		else if (generateCommand == "zoom") {
-			LoadBodiesFromFile("init/output.txt", bodyList);
+			//LoadBodiesFromFile("init/output.txt", bodyList);
 
 			Video video = Video("images/", "image_", width, height, framerate);
 			video.ClearImageFolder();
@@ -354,7 +378,7 @@ int main(int argc, char * argv[]) {
 			return 1;
 		}
 
-		LoadBodiesFromFile("init/output.txt", bodyList);
+		//LoadBodiesFromFile("init/output.txt", bodyList);
 
 		Video video = Video("images/", "image_", width, height, framerate);
 		video.ClearImageFolder();

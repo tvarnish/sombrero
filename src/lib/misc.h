@@ -6,7 +6,9 @@
 
 class Body;
 
-void LoadBodiesFromFile(std::string filename, List & bodyList);
+//void LoadBodiesFromFile(std::string filename, List & bodyList);
+void LoadFromFile(std::string filename, std::string & simulationName, int & width, int & height, double & scale, int & frameRate, double & timeStep, List & bodyList);
+
 int NumberLength(int number);
 std::string PadWithZeroes(int frameNumber, int maxCount);
 int RandomInteger(int min, int max);
