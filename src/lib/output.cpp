@@ -7,9 +7,16 @@
 
 using namespace std;
 
-Output::Output(string filename) {
+Output::Output(string filename, string simulationName, int width, int height, double scale, double frameRate, double timeStep) {
 	fileName = filename;
 	fileContents = "";
+
+	fileContents += simulationName + ",";
+	fileContents += to_string(width) + ",";
+	fileContents += to_string(height) + ",";
+	fileContents += to_string(scale) + ",";
+	fileContents += to_string(frameRate) + ",";
+	fileContents += to_string(timeStep) + "\n";
 }
 
 void Output::AddBody(Body * body) {

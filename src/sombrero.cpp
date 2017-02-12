@@ -21,7 +21,7 @@
 using namespace std;
 
 int main(int argc, char * argv[]) {
-	string usageStatement = "Usage: " + (string)argv[0] + " -c configfile.scfg (-g --generate (random|rotate|zoom) )|(-r --run framecount)";
+	string usageStatement = "Usage: " + (string)argv[0] + " mainCommand subCommand inputfilename.csv outputfolder/";
 
 	string simulationName;
 	int bodyCount;
@@ -30,205 +30,120 @@ int main(int argc, char * argv[]) {
 	double dt;
 	int framerate;
 
+	string mainCommand, subCommand;
+	string inputFileName;
+	string outputFolderName;
+	int framesToSimulate;
+
 	List bodyList = List();
 	Body * body;
 	Body * bodyA;
 	Body * bodyB;
 
-	////////////////// TESTING /////////////////////
-
-	LoadFromFile("init/testing.txt", simulationName, width, height, scale, framerate, dt, bodyList);
-
-	string imageFileName = simulationName + ".png";
-	Image image = Image(imageFileName, width, height, scale);
-
-	// Add details to image
-	image.DrawText(simulationName.c_str(), 10, 10, 155, 155, 155);
-	image.DrawText("W: " + to_string(width), 10, 20, 155, 155, 155);
-	image.DrawText("H: " + to_string(height), 10, 30, 155, 155, 155);
-	image.DrawText("S: " + to_string(scale), 10, 40, 155, 155, 155);
-	image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 50, 155, 155, 155);
-	image.DrawText("F: " + to_string(framerate), 10, 60, 155, 155, 155);
-	image.DrawText("T: " + to_string(dt), 10, 70, 155, 155, 155);
-	image.DrawScale(scale, 10, height - 15, 55, 55, 55);
-	image.DrawAllBodies(bodyList, 255, 255, 255);
-	image.Save();
-
-	return 0;
-
-	///////////////////////////////////////////////
-
-	// Check command is valid using regex
-	regex validCommand("-c [\\w]+.scfg (((\\-g|\\-\\-generate) ([a-z]+)( [1-9][0-9]*))|((\\-r|\\-\\-run) [0-9]* [0-9]*))");
-
-	// Join argv into command string (ignoring program name)
-	string command = "";
-	for (int i = 1; i < argc; i++) {
-		command += (string)argv[i];
-		if (i != argc - 1) {
-			command += " ";
-		}
+	// Input Arguments
+	if (argc == 5) {
+		mainCommand = argv[1];
+		subCommand = argv[2];
+		inputFileName = argv[3];
+		outputFolderName = argv[4];
 	}
-
-	if (!regex_match(command, validCommand)) {
-		cout << "Invalid command. See usage statement." << endl;
+	else {
 		cout << usageStatement << endl;
+		cout << "Must supply all arguments." << endl;
 		return 1;
 	}
 
-	// Load settings (parameter values) from config file
-	ifstream configFile((string)argv[2]);
-	string value;
+	// Validate commands
+	bool generatingCommand;
 
-	regex integer("[1-9][0-9]*");
-	regex decimal("([1-9][0-9]*)(\\.[0-9]*)");
-	regex stdform("([1-9][0-9]*)(\\.)*[0-9]*e(-*[1-9][0-9]*)");
-
-	// Width
-	getline(configFile, value);
-	if (regex_match(value, integer)) {
-		width = stoi(value);
-	}
-	else {
-		cout << "Width parameter is not a valid integer (line 1) of " << (string)argv[2] << endl;
-		return 1;
-	}
-
-	// Height
-	getline(configFile, value);
-	if (regex_match(value, integer)) {
-		height = stoi(value);
-	}
-	else {
-		cout << "Height parameter is not a valid integer (line 2) of " << (string)argv[2] << endl;
-		return 1;
-	}
-
-	// Body Count - How many bodies to generate when using generate commands
-	getline(configFile, value);
-	if (regex_match(value, integer)) {
-		bodyCount = stoi(value);
-	}
-	else {
-		cout << "Body count parameter is not a valid integer (line 3) of " << (string)argv[2] << endl;
-		return 1;
-	}
-
-	// Scale
-	getline(configFile, value);
-	if (regex_match(value, integer) or regex_match(value, decimal) or regex_match(value, stdform)) {
-		scale = stod(value.c_str());
-	}
-	else {
-		cout << "Scale parameter is not a valid double (line 4) of " << (string)argv[2] << endl;
-	}
-
-	// dt
-	string dtErrorMessage = "dt parameter is not a valid double or time value (DAY, etc.) (line 5) of " + (string)argv[2];
-	getline(configFile, value);
-	if (regex_match(value, decimal) or regex_match(value, integer)) {
-		dt = atof(value.c_str());
-	}
-	else {
-		regex division("\\/");
-		regex multiplication("\\*");
-
-		if (regex_search(value, division)) {
-			stringstream valueDiv(value);
-			getline(valueDiv, value, '/');
-
-			if (value == "DAY") {
-				getline(valueDiv, value, '/');
-				if (regex_match(value, integer) or regex_match(value, decimal) or regex_match(value, stdform)) {
-					dt = DAY / atof(value.c_str());
-				}
-				else {
-					cout << dtErrorMessage << endl;
-					return 1;
-				}
-			}
-			else if (value == "YR" or value == "YEAR") {
-				getline(valueDiv, value, '/');
-				if (regex_match(value, integer) or regex_match(value, decimal) or regex_match(value, stdform)) {
-					dt = YR / atof(value.c_str());
-				}
-				else {
-					cout << dtErrorMessage << endl;
-					return 1;
-				}
-			}
-			else {
-				cout << dtErrorMessage << endl;
-				return 1;
-			}
+	if (mainCommand == "run") {
+		// Check that subCommand is an integer
+		regex validFrameCount("[1-9][0-9]*");
+		if (regex_match(subCommand, validFrameCount)) {
+			framesToSimulate = stoi(subCommand);
 		}
-		else if (regex_search(value, multiplication)) {
-			stringstream valueMult(value);
-			getline(valueMult, value, '*');
+		else {
+			cout << usageStatement << endl;
+			cout << "Frame count (subCommand) is not valid (must be integer greater than 0)" << endl;
+			return 1;
+		}
+	}
+	else if (mainCommand == "generate") {
+		if (subCommand == "shell") {
+			generatingCommand = true;
+			bodyCount = 250;
+		}
+		else if (subCommand == "random") {
+			generatingCommand = true;
+			bodyCount = 250;
+		}
+		else if (subCommand == "rotate") {
+			generatingCommand = false;
+		}
+		else {
+			cout << usageStatement << endl;
+			cout << "Not a valid sub command: shell, random, rotate" << endl;
+		}
+	}
+	else {
+		cout << usageStatement << endl;
+		cout << "Not a valid main command: run, generate" << endl;
+		return 1;
+	}
+
+	// Validate input file
+	regex validCSV("(/*[\\w\\-. ]+)+.csv");
+	if (regex_match(inputFileName, validCSV)) {
+		if (FileExists(inputFileName)) {
+			// Check if there are any bodies in the input file
+			LoadFromFile(inputFileName, simulationName, width, height, scale, framerate, dt, bodyList);
 			
-			if (value == "DAY") {
-				getline(valueMult, value, '*');
-				if (regex_match(value, integer) or regex_match(value, decimal) or regex_match(value, stdform)) {
-					dt = DAY * atof(value.c_str());
-				}
-				else {
-					cout << dtErrorMessage << endl;
+			if (bodyList.GetLength() == 0) {
+				// Check if bodies are going to be generated
+				if (!generatingCommand) {
+					cout << usageStatement << endl;
+					cout << "Must supply some bodies in input file, if not generating them." << endl;
 					return 1;
 				}
-			}
-			else if (value == "YR" or value == "YEAR") {
-				getline(valueMult, value, '*');
-				if (regex_match(value, integer) or regex_match(value, decimal) or regex_match(value, stdform)) {
-					dt = YR * atof(value.c_str());
-				}
-				else {
-					cout << dtErrorMessage << endl;
-					return 1;
-				}
-			}
-			else {
-				cout << dtErrorMessage << endl;
-				return 1;
 			}
 		}
 		else {
-			if (value == "DAY") {
-				dt = DAY;
-			}
-			else if (value == "YR" or value == "YEAR") {
-				dt = YR;
-			}
-			else {
-				cout << dtErrorMessage << endl;
-				return 1;
-			}
+			cout << usageStatement << endl;
+			cout << "Input file does not exist!" << endl;
+			return 1;
 		}
 	}
-
-	// framerate
-	getline(configFile, value);
-	if (regex_match(value, integer)) {
-		framerate = atof(value.c_str());
-	}
 	else {
-		cout << "Framerate parameter is not a valid integer (line 6) of " << (string)argv[2] << endl;
+		cout << usageStatement << endl;
+		cout << "Input filename is not valid. Must be a .csv" << endl;
 		return 1;
 	}
 
-	// Generate Body arrangement
-	string mainCommand = (string)argv[3];
+	// Validate output folder
+	regex validFolder("(/*[\\w\\-. ]+)+/");
+	if (regex_match(outputFolderName, validFolder)) {
+		if (!FileExists(outputFolderName)) {
+			// Create folder if it doesn't exist.
+			system(("mkdir " + outputFolderName).c_str());
+		}
+	}
+	else {
+		cout << usageStatement << endl;
+		cout << "Not a valid output folder path." << endl;
+		return 1;
+	}
 	
-	// For the generate commands - random seed
+	// For the generate commands - initialise random seed
 	srand(time(NULL));
 
-	if (mainCommand == "-g" or mainCommand == "--generate") {
-		string generateCommand = (string)argv[4];
-		string zoomScale = (string)argv[5];
+	if (mainCommand == "generate") {
+		// TODO: REMOVE THIS
+		string zoomScale = "200";
 
 		// Random - generate random arrangement of bodies
-		if (generateCommand == "shell") {
+		if (subCommand == "shell") {
 			for (int i = 0; i < bodyCount - 1; i++) {
-				double r = 1e11;
+				double r = 0.5e11;
 				double theta = Random(0, 2 * PI);
 				double phi = Random(0, 2 * PI);
 
@@ -241,10 +156,10 @@ int main(int argc, char * argv[]) {
 				bodyList.Append(new Body(x, y, z, mass, Random(1e6, 9e6), 0, 0, 0));
 			}
 
-			bodyList.Append(new Body(0.0, 0.0, 0.0, 2e30, 1e8, 0.0, 0.0, 0.0));
+			bodyList.Append(new Body(0.0, 0.0, 0.0, 1e30, 1e8, 0.0, 0.0, 0.0));
 
 			// Save bodies to output.txt
-			Output output("init/output.txt");
+			Output output(outputFolderName + "_" + simulationName + ".csv", simulationName, width, height, scale, framerate, dt);
 			output.AddAllBodies(bodyList);
 			output.Save();
 
@@ -252,7 +167,7 @@ int main(int argc, char * argv[]) {
 		}
 
 		// Random arrangement of stationary particles
-		else if (generateCommand == "random") {
+		else if (subCommand == "random") {
 			for (int i = 0; i < bodyCount; i++) {
 				double x = Random(-3e11, 3e11);
 				double y = Random(-3e11, 3e11);
@@ -265,7 +180,7 @@ int main(int argc, char * argv[]) {
 			}
 
 			// Save bodies to output.txt
-			Output output("init/output.txt");
+			Output output(outputFolderName + "_" + simulationName + ".csv", simulationName, width, height, scale, framerate, dt);
 			output.AddAllBodies(bodyList);
 			output.Save();
 
@@ -273,9 +188,7 @@ int main(int argc, char * argv[]) {
 		}
 
 		// Generate rotate video around bodies
-		else if (generateCommand == "rotate") {
-			//LoadBodiesFromFile("init/output.txt", bodyList);
-
+		else if (subCommand == "rotate") {
 			Video video = Video("images/", "image_", width, height, framerate);
 			video.ClearImageFolder();
 
@@ -310,13 +223,13 @@ int main(int argc, char * argv[]) {
 			}
 
 			// Build video from images
-			video.Build("result.mp4", 360);
+			video.Build(outputFolderName + "_" + simulationName + "_rotate.mp4", 360);
 
 			return 0;
 		}
 
 		// Generate zoom (set new scale) video
-		else if (generateCommand == "zoom") {
+		else if (subCommand == "zoom") {
 			//LoadBodiesFromFile("init/output.txt", bodyList);
 
 			Video video = Video("images/", "image_", width, height, framerate);
@@ -354,7 +267,7 @@ int main(int argc, char * argv[]) {
 			}
 
 			// Build video from images
-			video.Build("zoom_result.mp4", abs(finalScale - scale));
+			video.Build(outputFolderName + "_" + simulationName + "_zoom.mp4", abs(finalScale - scale));
 
 			return 0;
 		}
@@ -368,24 +281,15 @@ int main(int argc, char * argv[]) {
 	}
 
 	// Run simulation
-	else if (mainCommand == "-r" or mainCommand == "-run") {
-		int frames = stoi((string)argv[4]);
-		int currentFrames = stoi((string)argv[5]);
-		
-		if (frames == 0) {
-			cout << "Simulation must run for at least 1 frame." << endl;
-			cout << usageStatement << endl;
-			return 1;
-		}
-
-		//LoadBodiesFromFile("init/output.txt", bodyList);
+	else if (mainCommand == "run") {
+		int currentFrames = 0;
 
 		Video video = Video("images/", "image_", width, height, framerate);
 		video.ClearImageFolder();
 
 		double elapsedTime = 0;
 
-		for (int f = 0; f < frames; f++) {
+		for (int f = 0; f < framesToSimulate; f++) {
 			// Reset force counter on each body
 			body = bodyList.GetHead();
 			while (body != NULL) {
@@ -425,7 +329,7 @@ int main(int argc, char * argv[]) {
 				bodyA = bodyA->next;
 			}
 
-			string imageFileName = "images/image_" + PadWithZeroes(f, frames) + ".png";
+			string imageFileName = "images/image_" + PadWithZeroes(f, framesToSimulate) + ".png";
 			Image image = Image(imageFileName, width, height, scale);
 
 			// Calculate next position for each body
@@ -580,12 +484,21 @@ int main(int argc, char * argv[]) {
 			image.DrawScale(scale, 10, height - 15, 55, 55, 55);
 
 			image.Save();
+
+			/*
+			// Create output.txt for each frame
+			string filePath = outputFolderName + simulationName + "_";
+			string fileID = PadWithZeroes(f, framesToSimulate);
+			Output output(filePath + fileID + ".csv", simulationName, width, height, scale, framerate, dt);
+			output.AddAllBodies(bodyList);
+			output.Save();
+			*/
 		}
 
-		video.Build("result_run.mp4", frames);
+		video.Build(outputFolderName + "_" + simulationName + "_run.mp4", framesToSimulate);
 
 		// Create output.txt
-		Output output("init/output.txt");
+		Output output(outputFolderName + simulationName + "_output" + ".csv", simulationName, width, height, scale, framerate, dt);
 		output.AddAllBodies(bodyList);
 		output.Save();
 
