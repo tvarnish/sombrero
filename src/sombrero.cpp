@@ -31,6 +31,7 @@ class Simulation {
 	double scale = 100;
 	double dt = DAY / 2;
 	int framerate = 60;
+	double gravConst = GR;
 
 	List bodyList;
 	Body * body;
@@ -48,8 +49,9 @@ class Simulation {
   	void SetScale(double _scale) { scale = _scale; };
   	void SetTimestep(double _dt) { dt = _dt; };
   	void SetFramerate(int _framerate) { framerate = _framerate; };
-  	void SetOutputDirectory();
-  	void SetSimulationName();
+  	void SetOutputDirectory(string _outputFolder) { outputFolder = _outputFolder; };
+  	void SetSimulationName(string _name) { name = _name; };
+  	void SetGravitationalConstant(double _gravConst) { gravConst = _gravConst; };
 
   	void LoadBodiesFromFile(string filename);
   	void GenerateRandomShell(int _bodyCount);
@@ -242,15 +244,31 @@ void Simulation::Scale(double finalScale) {
 
 void Simulation::Run(int framesToSimulate) {
 	int currentFrames = 0;
-	string outputFolderName = "";
-	string simulationName = "potato";
 
 	Video video = Video("images/", "image_", width, height, framerate);
 	video.ClearImageFolder();
 
 	double elapsedTime = 0;
 
-	for (int f = 0; f < framesToSimulate; f++) {
+	// Produce frame showing initial setup of bodies
+	// Format elapsed time - Need to figure out how to define this!
+	string minimumTimeUnits = "DAYS";
+
+	string imageFileName = "images/image_" + PadWithZeroes(0, framesToSimulate) + ".png";
+	Image image = Image(imageFileName, width, height, scale);
+
+	// Draw information on frame
+	image.DrawText("SIMULATION  (" + minimumTimeUnits + ") " + "0", 10, 10, 155, 155, 155);
+	image.DrawText("F: 0", 10, 20, 155, 155, 155);
+	image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 155, 155, 155);
+
+	image.DrawScale(scale, 10, height - 15, 55, 55, 55);
+
+	image.Save();
+
+	// Simulate the next frames
+	// <=, as it simulates 0->1, 1->2 therefore needs to simulate -> n.
+	for (int f = 1; f <= framesToSimulate; f++) {
 		// Reset force counter on each body
 		body = bodyList.GetHead();
 		while (body != NULL) {
@@ -277,7 +295,7 @@ void Simulation::Run(int framesToSimulate) {
 				double thetaAngle = atan2(yDistance, xDistance);
 
 				// Calculate force
-				double force = GR * ((bodyA->GetMass() * bodyB->GetMass()) / (pow(totalDistance, 2)));
+				double force = gravConst * ((bodyA->GetMass() * bodyB->GetMass()) / (pow(totalDistance, 2)));
 
 				// Add forces to totals
 				bodyA->AddForce(force, phiAngle, thetaAngle);
@@ -290,8 +308,8 @@ void Simulation::Run(int framesToSimulate) {
 			bodyA = bodyA->next;
 		}
 
-		string imageFileName = "images/image_" + PadWithZeroes(f, framesToSimulate) + ".png";
-		Image image = Image(imageFileName, width, height, scale);
+		imageFileName = "images/image_" + PadWithZeroes(f, framesToSimulate) + ".png";
+		image = Image(imageFileName, width, height, scale);
 
 		// Calculate next position for each body
 		body = bodyList.GetHead();
@@ -447,20 +465,26 @@ void Simulation::Run(int framesToSimulate) {
 		image.Save();
 	}
 
-	video.Build(outputFolderName + "_" + simulationName + "_run.mp4", framesToSimulate);
+	video.Build(outputFolder + "_" + name + "_run.mp4", framesToSimulate);
 
 	// Create output.txt
-	Output output(outputFolderName + simulationName + "_output" + ".csv", simulationName, width, height, scale, framerate, dt);
+	Output output(outputFolder + name + "_output" + ".csv", name, width, height, scale, framerate, dt);
 	output.AddAllBodies(bodyList);
 	output.Save();
 }
 
 int main() {
+	/*
 	Simulation sim = Simulation();
 	sim.GenerateRandomShell(200);
 	sim.Run(70);
 	sim.Rotate();
 	sim.Scale(20);
+	*/
+	Simulation sim = Simulation();
+	sim.SetGravitationalConstant(1);
+	sim.GenerateRandomShell(200);
+	sim.Run(50);
 }
 
 // Some validation stuff
