@@ -38,6 +38,9 @@ class Simulation {
 	Body * bodyA;
 	Body * bodyB;
 
+	bool ValidateOutputFolder(string _outputFolder);
+	bool ValidateBodyFile(string _filename, bool _mustBeEmpty);
+
   public:
   	// Constructors
   	Simulation();
@@ -53,13 +56,54 @@ class Simulation {
   	void SetSimulationName(string _name) { name = _name; };
   	void SetGravitationalConstant(double _gravConst) { gravConst = _gravConst; };
 
-  	void LoadBodiesFromFile(string filename);
+  	void LoadBodiesFromFile(string _filename);
   	void GenerateRandomShell(int _bodyCount);
   	void GenerateRandomDistribution(int _bodyCount);
-  	void Rotate();
-  	void Scale(double finalScale);
-  	void Run(int framesToSimulate);
+  	void Rotate(string outputVideoName);
+  	void Scale(string outputVideoName, double finalScale, bool updateScale);
+  	void Run(string outputVideoName, int framesToSimulate);
 };
+
+bool ValidateOutputFolder(string _outputFolder) {
+	regex validFolder("(/*[\\w\\-. ]+)+/");
+
+	if (regex_match(_outputFolder, validFolder)) {
+		if (!FileExists(_outputFolder)) {
+			// Create folder if it doesn't exist (as path is valid)
+			system(("mkdir " + _outputFolder).c_str());
+		}
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool ValidateBodyFile(string _filename, bool _mustBeEmpty = false) {
+	regex validFileName("(/*[\\w\\-. ]+)+.(csv)|(txt)");
+
+	if (regex_match(_filename, validFileName)) {
+		if (FileExists(_filename)) {
+			// TODO: Check if this is actually a body of files!
+			// Check if there are any bodies in the input file
+			Simulation::LoadBodiesFromFile(_filename);
+			
+			if (bodyList.GetLength() != 0 && _mustBeEmpty == true) {
+				// Bodies must be present
+				return false;
+			}
+			else {
+				return true;
+			}
+		}
+		else {
+			return false;
+		}
+	}
+	else {
+		return false;
+	}
+}
 
 Simulation::Simulation() {
 	bodyList = List();
@@ -86,8 +130,8 @@ Simulation::Simulation(string _name, int _width, int _height, double _scale, dou
 	framerate = _framerate;
 }
 
-void Simulation::LoadBodiesFromFile(string filename) {
-	ifstream inputFile(filename);
+void Simulation::LoadBodiesFromFile(string _filename) {
+	ifstream inputFile(_filename);
 	string fileLine;
 
 	// Read in body details
@@ -166,7 +210,7 @@ void Simulation::GenerateRandomDistribution(int _bodyCount) {
 	output.Save();
 }
 
-void Simulation::Rotate() {
+void Simulation::Rotate(string outputVideoName) {
 	Video video = Video("images/", "image_", width, height, framerate);
 	video.ClearImageFolder();
 
@@ -201,10 +245,10 @@ void Simulation::Rotate() {
 	}
 
 	// Build video from images
-	video.Build(outputFolder + "_" + name + "_rotate.mp4", 360);
+	video.Build(outputFolder + outputVideoName + ".mp4", 360);
 }
 
-void Simulation::Scale(double finalScale) {
+void Simulation::Scale(string outputVideoName, double finalScale, bool updateScale) {
 	Video video = Video("images/", "image_", width, height, framerate);
 	video.ClearImageFolder();
 
@@ -238,11 +282,15 @@ void Simulation::Scale(double finalScale) {
 		currentScale += scaleStep;
 	}
 
+	if (updateScale) {
+		scale = finalScale;
+	}
+
 	// Build video from images
-	video.Build(outputFolder + "_" + name + "_zoom.mp4", abs(finalScale - scale));
+	video.Build(outputFolder + name + "_zoom.mp4", abs(finalScale - scale));
 }
 
-void Simulation::Run(int framesToSimulate) {
+void Simulation::Run(string outputVideoName, int framesToSimulate) {
 	int currentFrames = 0;
 
 	Video video = Video("images/", "image_", width, height, framerate);
@@ -267,7 +315,7 @@ void Simulation::Run(int framesToSimulate) {
 	image.Save();
 
 	// Simulate the next frames
-	// <=, as it simulates 0->1, 1->2 therefore needs to simulate -> n.
+	// <=, as it simulates 0->1, 1->2 therefore needs to simulate -> n.	
 	for (int f = 1; f <= framesToSimulate; f++) {
 		// Reset force counter on each body
 		body = bodyList.GetHead();
@@ -465,7 +513,7 @@ void Simulation::Run(int framesToSimulate) {
 		image.Save();
 	}
 
-	video.Build(outputFolder + "_" + name + "_run.mp4", framesToSimulate);
+	video.Build(outputFolder + name + "_run.mp4", framesToSimulate);
 
 	// Create output.txt
 	Output output(outputFolder + name + "_output" + ".csv", name, width, height, scale, framerate, dt);
@@ -474,133 +522,11 @@ void Simulation::Run(int framesToSimulate) {
 }
 
 int main() {
-	/*
 	Simulation sim = Simulation();
-	sim.GenerateRandomShell(200);
-	sim.Run(70);
-	sim.Rotate();
-	sim.Scale(20);
-	*/
-	Simulation sim = Simulation();
-	sim.SetGravitationalConstant(1);
-	sim.GenerateRandomShell(200);
-	sim.Run(50);
+	sim.SetOutputDimensions(1920, 1080);
+	sim.GenerateRandomShell(500);
+	sim.Run("simulation_run", 50);
+	sim.Rotate("simulation_rotate1");
+	sim.Scale("simulation_scale", 20, true);
+	sim.Rotate("simulation_rotate2");
 }
-
-// Some validation stuff
-/*
-int main(int argc, char * argv[]) {
-	string usageStatement = "Usage: " + (string)argv[0] + " mainCommand subCommand inputfilename.csv outputfolder/";
-
-	string simulationName;
-	int bodyCount;
-	int width, height;
-	double scale;
-	double dt;
-	int framerate;
-
-	string mainCommand, subCommand;
-	string inputFileName;
-	string outputFolderName;
-	int framesToSimulate;
-
-	List bodyList = List();
-	Body * body;
-	Body * bodyA;
-	Body * bodyB;
-
-	Video video;
-
-	// Input Arguments
-	if (argc == 5) {
-		mainCommand = argv[1];
-		subCommand = argv[2];
-		inputFileName = argv[3];
-		outputFolderName = argv[4];
-	}
-	else {
-		cout << usageStatement << endl;
-		cout << "Must supply all arguments." << endl;
-		return 1;
-	}
-
-	// Validate commands
-	bool generatingCommand;
-
-	if (mainCommand == "run") {
-		// Check that subCommand is an integer
-		regex validFrameCount("[1-9][0-9]*");
-		if (regex_match(subCommand, validFrameCount)) {
-			framesToSimulate = stoi(subCommand);
-		}
-		else {
-			cout << usageStatement << endl;
-			cout << "Frame count (subCommand) is not valid (must be integer greater than 0)" << endl;
-			return 1;
-		}
-	}
-	else if (mainCommand == "generate") {
-		if (subCommand == "shell") {
-			generatingCommand = true;
-			bodyCount = 250;
-		}
-		else if (subCommand == "random") {
-			generatingCommand = true;
-			bodyCount = 250;
-		}
-		else if (subCommand == "rotate") {
-			generatingCommand = false;
-		}
-		else {
-			cout << usageStatement << endl;
-			cout << "Not a valid sub command: shell, random, rotate" << endl;
-		}
-	}
-	else {
-		cout << usageStatement << endl;
-		cout << "Not a valid main command: run, generate" << endl;
-		return 1;
-	}
-
-	// Validate input file
-	regex validCSV("(/*[\\w\\-. ]+)+.csv");
-	if (regex_match(inputFileName, validCSV)) {
-		if (FileExists(inputFileName)) {
-			// Check if there are any bodies in the input file
-			LoadFromFile(inputFileName, simulationName, width, height, scale, framerate, dt, bodyList);
-			
-			if (bodyList.GetLength() == 0) {
-				// Check if bodies are going to be generated
-				if (!generatingCommand) {
-					cout << usageStatement << endl;
-					cout << "Must supply some bodies in input file, if not generating them." << endl;
-					return 1;
-				}
-			}
-		}
-		else {
-			cout << usageStatement << endl;
-			cout << "Input file does not exist!" << endl;
-			return 1;
-		}
-	}
-	else {
-		cout << usageStatement << endl;
-		cout << "Input filename is not valid. Must be a .csv" << endl;
-		return 1;
-	}
-
-	// Validate output folder
-	regex validFolder("(/*[\\w\\-. ]+)+/");
-	if (regex_match(outputFolderName, validFolder)) {
-		if (!FileExists(outputFolderName)) {
-			// Create folder if it doesn't exist.
-			system(("mkdir " + outputFolderName).c_str());
-		}
-	}
-	else {
-		cout << usageStatement << endl;
-		cout << "Not a valid output folder path." << endl;
-		return 1;
-	}
-*/
