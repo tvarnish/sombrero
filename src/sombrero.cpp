@@ -28,7 +28,7 @@ class Simulation {
 	int bodyCount;
 	int width = 640;
 	int height = 480;
-	double scale = 100;
+	double scale = (AU / 100);
 	double dt = DAY / 2;
 	int framerate = 60;
 	double gravConst = GR;
@@ -64,6 +64,7 @@ class Simulation {
   	void Run(string outputVideoName, int framesToSimulate);
 };
 
+/*
 bool ValidateOutputFolder(string _outputFolder) {
 	regex validFolder("(/*[\\w\\-. ]+)+/");
 
@@ -104,6 +105,7 @@ bool ValidateBodyFile(string _filename, bool _mustBeEmpty = false) {
 		return false;
 	}
 }
+*/
 
 Simulation::Simulation() {
 	bodyList = List();
@@ -300,10 +302,13 @@ void Simulation::Run(string outputVideoName, int framesToSimulate) {
 
 	// Produce frame showing initial setup of bodies
 	// Format elapsed time - Need to figure out how to define this!
-	string minimumTimeUnits = "DAYS";
+	// -	this will depend on dt, i.e. what would 1 dt be?
+	string minimumTimeUnits = "Seconds";
 
 	string imageFileName = "images/image_" + PadWithZeroes(0, framesToSimulate) + ".png";
 	Image image = Image(imageFileName, width, height, scale);
+
+	image.DrawAllBodies(bodyList, 255, 255, 255);
 
 	// Draw information on frame
 	image.DrawText("SIMULATION  (" + minimumTimeUnits + ") " + "0", 10, 10, 155, 155, 155);
@@ -523,10 +528,13 @@ void Simulation::Run(string outputVideoName, int framesToSimulate) {
 
 int main() {
 	Simulation sim = Simulation();
-	sim.SetOutputDimensions(1920, 1080);
-	sim.GenerateRandomShell(500);
-	sim.Run("simulation_run", 50);
-	sim.Rotate("simulation_rotate1");
-	sim.Scale("simulation_scale", 20, true);
-	sim.Rotate("simulation_rotate2");
+
+	sim.SetSimulationName("barycentre_1");
+	sim.SetGravitationalConstant(1);
+	sim.SetScale(0.01);
+	sim.SetFramerate(20);
+	sim.SetTimestep(1);
+
+	sim.LoadBodiesFromFile("bary.csv");
+	sim.Run("simulation_run", 20);
 }

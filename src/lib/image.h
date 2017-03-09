@@ -22,7 +22,7 @@ class Image {
 
 	public:
 		Image(std::string filename, int w, int h, double _scale);
-		int Scale(double coordinate, double scale);
+		int Scale(double position, double scale);
 		void Draw(int x, int y, int r, int g, int b);
 		void DrawLine(int x1, int y1, int x2, int y2, int r, int g, int b);
 		void DrawBody(double x, double y, double radius, int r, int g, int b);

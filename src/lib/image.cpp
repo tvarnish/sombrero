@@ -37,9 +37,9 @@ void Image::DrawLine(int x1, int y1, int x2, int y2, int r, int g, int b) {
 	png.line(x1, height - y1, x2, height - y2, redValue, greenValue, blueValue);
 }
 
-int Image::Scale(double coordinate, double scale) {
-	int position = (int)(coordinate / AU * scale);
-	return position;
+int Image::Scale(double position, double scale) {
+	int coordinate = (int)(position / scale);
+	return coordinate;
 }
 
 void Image::DrawBody(double x, double y, double radius, int r, int g, int b) {
