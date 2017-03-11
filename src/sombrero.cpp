@@ -59,9 +59,9 @@ class Simulation {
   	void LoadBodiesFromFile(string _filename);
   	void GenerateRandomShell(int _bodyCount);
   	void GenerateRandomDistribution(int _bodyCount);
-  	void Rotate(string outputVideoName);
-  	void Scale(string outputVideoName, double finalScale, bool updateScale);
-  	void Run(string outputVideoName, int framesToSimulate);
+  	void Rotate();
+  	void Scale(double finalScale, bool updateScale);
+  	void Run(int framesToSimulate);
 };
 
 /*
@@ -212,7 +212,7 @@ void Simulation::GenerateRandomDistribution(int _bodyCount) {
 	output.Save();
 }
 
-void Simulation::Rotate(string outputVideoName) {
+void Simulation::Rotate() {
 	Video video = Video("images/", "image_", width, height, framerate);
 	video.ClearImageFolder();
 
@@ -247,10 +247,10 @@ void Simulation::Rotate(string outputVideoName) {
 	}
 
 	// Build video from images
-	video.Build(outputFolder + outputVideoName + ".mp4", 360);
+	video.Build(outputFolder + name + ".mp4", 360);
 }
 
-void Simulation::Scale(string outputVideoName, double finalScale, bool updateScale) {
+void Simulation::Scale(double finalScale, bool updateScale) {
 	Video video = Video("images/", "image_", width, height, framerate);
 	video.ClearImageFolder();
 
@@ -292,7 +292,7 @@ void Simulation::Scale(string outputVideoName, double finalScale, bool updateSca
 	video.Build(outputFolder + name + "_zoom.mp4", abs(finalScale - scale));
 }
 
-void Simulation::Run(string outputVideoName, int framesToSimulate) {
+void Simulation::Run(int framesToSimulate) {
 	int currentFrames = 0;
 
 	Video video = Video("images/", "image_", width, height, framerate);
@@ -529,12 +529,11 @@ void Simulation::Run(string outputVideoName, int framesToSimulate) {
 int main() {
 	Simulation sim = Simulation();
 
-	sim.SetSimulationName("barycentre_1");
-	sim.SetGravitationalConstant(1);
-	sim.SetScale(0.01);
-	sim.SetFramerate(20);
-	sim.SetTimestep(1);
+	sim.SetSimulationName("plutocharon");
+	sim.SetScale(1.28e7 / 100); // 1.28e7 m = 100 px, maybe set it as SetScale(real distance, pixel distance)
+	sim.SetFramerate(60);
+	sim.SetTimestep(3600 * 3);
 
-	sim.LoadBodiesFromFile("bary.csv");
-	sim.Run("simulation_run", 20);
+	sim.LoadBodiesFromFile("plutocharon.csv");
+	sim.Run(400);
 }
