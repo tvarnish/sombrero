@@ -20,6 +20,6 @@ class Output {
 		void Save();
 };
 
-std::string ToStandardForm(double value);
+//std::string ToStandardForm(double value);
 
 #endif

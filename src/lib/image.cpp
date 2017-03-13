@@ -138,6 +138,31 @@ void Image::DrawText(string text, int x, int y, int r, int g, int b) {
 }
 
 void Image::DrawScale(double scale, int x, int y, int r, int g, int b) {
+	// Scale = x distance / pixel
+	// 100px scale
+	// double representedDistance = 100 * scale;
+	string scaleString = ToStandardForm(scale) + " m / px";;
+
+	// If we have one or more AU, show the scale as a number of AUs
+	/*
+	cout << scale / AU << endl;
+	if ((scale / AU) >= 1.0) {
+		scaleString = RemoveTrailingZeroes(to_string(scale / AU)) + " AU / px";
+	}
+	else {
+		scaleString = RemoveTrailingZeroes(to_string(scale)) + " m / px";
+	}
+	*/
+
+	/*
+	DrawLine(x, y, x + 100, y, r, g, b);
+	Draw(x, height - y + 1, r, g, b);
+	Draw(x + 100, height - y + 1, r, g, b);
+	*/
+
+	DrawText(scaleString.c_str(), x, y - 2, r, g, b);
+
+	/*
 	double distanceOfScale = 1.0;
 	string scaleString = "1.0 AU";
 
@@ -168,6 +193,7 @@ void Image::DrawScale(double scale, int x, int y, int r, int g, int b) {
 
 		DrawText(scaleString.c_str(), x + scale + 5, y - 2, r, g, b);
 	}
+	*/
 }
 
 void Image::Save() {

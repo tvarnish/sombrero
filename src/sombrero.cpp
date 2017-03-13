@@ -49,7 +49,7 @@ class Simulation {
 
   	// Methods
   	void SetOutputDimensions(int _width, int _height) { width = _width; height = _height; };
-  	void SetScale(double _scale) { scale = _scale; };
+  	void SetScale(double realDistance, double pixelDistance) { scale = realDistance / pixelDistance; };
   	void SetTimestep(double _dt) { dt = _dt; };
   	void SetFramerate(int _framerate) { framerate = _framerate; };
   	void SetOutputDirectory(string _outputFolder) { outputFolder = _outputFolder; };
@@ -186,7 +186,7 @@ void Simulation::GenerateRandomShell(int _bodyCount) {
 	bodyList.Append(new Body(0.0, 0.0, 0.0, 1e30, 1e8, 0.0, 0.0, 0.0));
 
 	// Save bodies to output.txt
-	Output output(outputFolder + "_" + name + ".csv");
+	Output output(outputFolder + name + ".csv");
 	output.AddAllBodies(bodyList);
 	output.Save();
 }
@@ -207,7 +207,7 @@ void Simulation::GenerateRandomDistribution(int _bodyCount) {
 	}
 
 	// Save bodies to output.txt
-	Output output(outputFolder + "_" + name + ".csv");
+	Output output(outputFolder + name + ".csv");
 	output.AddAllBodies(bodyList);
 	output.Save();
 }
@@ -529,11 +529,14 @@ void Simulation::Run(int framesToSimulate) {
 int main() {
 	Simulation sim = Simulation();
 
-	sim.SetSimulationName("energy");
-	sim.SetScale(AU / 200); // 1.28e7 m = 100 px, maybe set it as SetScale(real distance, pixel distance)
-	sim.SetFramerate(240);
+	sim.SetSimulationName("Testing");
+	sim.SetScale(AU, 100);
+	sim.SetFramerate(60);
 	sim.SetTimestep(DAY / 4);
 
-	sim.LoadBodiesFromFile("energy.csv");
-	sim.Run(1200);
+	sim.GenerateRandomShell(200);
+
+	sim.Run(100);
+
+	// 1.28e7 m = 100 px, maybe set it as SetScale(real distance, pixel distance)
 }

@@ -15,5 +15,6 @@ int RandomInteger(int min, int max);
 double Random(double min, double max);
 bool FileExists(std::string filename);
 std::string RemoveTrailingZeroes(std::string inputString);
+std::string ToStandardForm(double value);
 
 #endif
