@@ -186,7 +186,7 @@ void Simulation::GenerateRandomShell(int _bodyCount) {
 	bodyList.Append(new Body(0.0, 0.0, 0.0, 1e30, 1e8, 0.0, 0.0, 0.0));
 
 	// Save bodies to output.txt
-	Output output(outputFolder + "_" + name + ".txt", name, width, height, scale, framerate, dt);
+	Output output(outputFolder + "_" + name + ".csv");
 	output.AddAllBodies(bodyList);
 	output.Save();
 }
@@ -207,7 +207,7 @@ void Simulation::GenerateRandomDistribution(int _bodyCount) {
 	}
 
 	// Save bodies to output.txt
-	Output output(outputFolder + "_" + name + ".csv", name, width, height, scale, framerate, dt);
+	Output output(outputFolder + "_" + name + ".csv");
 	output.AddAllBodies(bodyList);
 	output.Save();
 }
@@ -521,7 +521,7 @@ void Simulation::Run(int framesToSimulate) {
 	video.Build(outputFolder + name + "_run.mp4", framesToSimulate);
 
 	// Create output.txt
-	Output output(outputFolder + name + "_output" + ".csv", name, width, height, scale, framerate, dt);
+	Output output(outputFolder + name + "_output" + ".csv");
 	output.AddAllBodies(bodyList);
 	output.Save();
 }
@@ -529,11 +529,11 @@ void Simulation::Run(int framesToSimulate) {
 int main() {
 	Simulation sim = Simulation();
 
-	sim.SetSimulationName("plutocharon");
-	sim.SetScale(1.28e7 / 100); // 1.28e7 m = 100 px, maybe set it as SetScale(real distance, pixel distance)
-	sim.SetFramerate(60);
-	sim.SetTimestep(3600 * 3);
+	sim.SetSimulationName("energy");
+	sim.SetScale(AU / 200); // 1.28e7 m = 100 px, maybe set it as SetScale(real distance, pixel distance)
+	sim.SetFramerate(240);
+	sim.SetTimestep(DAY / 4);
 
-	sim.LoadBodiesFromFile("plutocharon.csv");
-	sim.Run(400);
+	sim.LoadBodiesFromFile("energy.csv");
+	sim.Run(1200);
 }
