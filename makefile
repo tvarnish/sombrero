@@ -6,7 +6,6 @@ EXEC = sombrero
 # Make sure that there is a build directory, so that the output files can be generated.
 MAKEDIR_BUILD = mkdir -p build
 MAKEDIR_IMAGE = mkdir -p images
-MAKEDIR_INIT = mkdir -p init
 
 # Build the executable
 sombrero: build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o build/linkedlist.o
@@ -55,7 +54,6 @@ clean:
 setup:
 	$(MAKEDIR_BUILD)
 	$(MAKEDIR_IMAGE)
-	$(MAKEDIR_INIT)
 	make
 
 # Run make install for everything else.
