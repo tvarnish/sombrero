@@ -61,7 +61,7 @@ class Simulation {
   	void GenerateRandomDistribution(int _bodyCount);
   	void Rotate();
   	void Scale(double finalScale, bool updateScale);
-  	void Run(int framesToSimulate);
+  	void Run(int startingFrame, int framesToSimulate);
 };
 
 /*
@@ -292,36 +292,42 @@ void Simulation::Scale(double finalScale, bool updateScale) {
 	video.Build(outputFolder + name + "_zoom.mp4", abs(finalScale - scale));
 }
 
-void Simulation::Run(int framesToSimulate) {
+void Simulation::Run(int startingFrame, int framesToSimulate) {
 	int currentFrames = 0;
+	int initialFrameCounter = startingFrame;
 
 	Video video = Video("images/", "image_", width, height, framerate);
 	video.ClearImageFolder();
 
-	double elapsedTime = 0;
+	double elapsedTime = (startingFrame - 1) * dt;
 
-	// Produce frame showing initial setup of bodies
-	// Format elapsed time - Need to figure out how to define this!
-	// -	this will depend on dt, i.e. what would 1 dt be?
-	string minimumTimeUnits = "Seconds";
+	if (startingFrame == 0) {
+		// Produce frame showing initial setup of bodies (if starting from frame 0)
+		// Format elapsed time - Need to figure out how to define this!
+		// -	this will depend on dt, i.e. what would 1 dt be?
+		string minimumTimeUnits = "Seconds";
 
-	string imageFileName = "images/image_" + PadWithZeroes(0, framesToSimulate) + ".png";
-	Image image = Image(imageFileName, width, height, scale);
+		string imageFileName = "images/image_" + PadWithZeroes(0, framesToSimulate) + ".png";
+		Image image = Image(imageFileName, width, height, scale);
 
-	image.DrawAllBodies(bodyList, 255, 255, 255);
+		image.DrawAllBodies(bodyList, 255, 255, 255);
 
-	// Draw information on frame
-	image.DrawText("SIMULATION  (" + minimumTimeUnits + ") " + "0", 10, 10, 155, 155, 155);
-	image.DrawText("F: 0", 10, 20, 155, 155, 155);
-	image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 155, 155, 155);
+		// Draw information on frame
+		image.DrawText("SIMULATION  (" + minimumTimeUnits + ") " + "0", 10, 10, 155, 155, 155);
+		image.DrawText("F: 0", 10, 20, 155, 155, 155);
+		image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 155, 155, 155);
 
-	image.DrawScale(scale, 10, height - 15, 55, 55, 55);
+		image.DrawScale(scale, 10, height - 15, 55, 55, 55);
 
-	image.Save();
+		image.Save();
+
+		initialFrameCounter++;
+		elapsedTime = 0;
+	}
 
 	// Simulate the next frames
 	// <=, as it simulates 0->1, 1->2 therefore needs to simulate -> n.	
-	for (int f = 1; f <= framesToSimulate; f++) {
+	for (int f = initialFrameCounter; f <= framesToSimulate + startingFrame; f++) {
 		// Reset force counter on each body
 		body = bodyList.GetHead();
 		while (body != NULL) {
@@ -361,8 +367,8 @@ void Simulation::Run(int framesToSimulate) {
 			bodyA = bodyA->next;
 		}
 
-		imageFileName = "images/image_" + PadWithZeroes(f, framesToSimulate) + ".png";
-		image = Image(imageFileName, width, height, scale);
+		string imageFileName = "images/image_" + PadWithZeroes(f - startingFrame, framesToSimulate) + ".png";
+		Image image = Image(imageFileName, width, height, scale);
 
 		// Calculate next position for each body
 		body = bodyList.GetHead();
@@ -529,14 +535,36 @@ void Simulation::Run(int framesToSimulate) {
 int main() {
 	Simulation sim = Simulation();
 
-	sim.SetSimulationName("Testing");
+	sim.SetSimulationName("join");
 	sim.SetScale(AU, 100);
 	sim.SetFramerate(60);
-	sim.SetTimestep(DAY / 4);
+	sim.SetTimestep(DAY / 2);
 
-	sim.GenerateRandomShell(200);
+	sim.GenerateRandomShell(100);
 
-	sim.Run(100);
+	sim.Run(0, 100);
+
+	sim = Simulation();
+
+	sim.SetSimulationName("join2");
+	sim.SetScale(AU, 100);
+	sim.SetFramerate(60);
+	sim.SetTimestep(DAY / 2);
+	sim.LoadBodiesFromFile("join_output.csv");
+
+	sim.Run(101, 100);
+
+	//// Testing
+	sim = Simulation();
+	
+	sim.SetSimulationName("join_test");
+	sim.SetScale(AU, 100);
+	sim.SetFramerate(60);
+	sim.SetTimestep(DAY / 2);
+
+	sim.LoadBodiesFromFile("join.csv");
+
+	sim.Run(0, 201);
 
 	// 1.28e7 m = 100 px, maybe set it as SetScale(real distance, pixel distance)
 }
