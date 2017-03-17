@@ -29,14 +29,6 @@ void Image::Draw(int x, int y, int r, int g, int b) {
 	png.plot(x, y, redValue, greenValue, blueValue);
 }
 
-void Image::DrawLine(int x1, int y1, int x2, int y2, int r, int g, int b) {
-	double redValue = ((double)r / 255.0);
-	double greenValue = ((double)g / 255.0);
-	double blueValue = ((double)b / 255.0);
-
-	png.line(x1, height - y1, x2, height - y2, redValue, greenValue, blueValue);
-}
-
 int Image::Scale(double position, double scale) {
 	int coordinate = (int)(position / scale);
 	return coordinate;
@@ -138,62 +130,7 @@ void Image::DrawText(string text, int x, int y, int r, int g, int b) {
 }
 
 void Image::DrawScale(double scale, int x, int y, int r, int g, int b) {
-	// Scale = x distance / pixel
-	// 100px scale
-	// double representedDistance = 100 * scale;
-	string scaleString = ToStandardForm(scale) + " m / px";;
-
-	// If we have one or more AU, show the scale as a number of AUs
-	/*
-	cout << scale / AU << endl;
-	if ((scale / AU) >= 1.0) {
-		scaleString = RemoveTrailingZeroes(to_string(scale / AU)) + " AU / px";
-	}
-	else {
-		scaleString = RemoveTrailingZeroes(to_string(scale)) + " m / px";
-	}
-	*/
-
-	/*
-	DrawLine(x, y, x + 100, y, r, g, b);
-	Draw(x, height - y + 1, r, g, b);
-	Draw(x + 100, height - y + 1, r, g, b);
-	*/
-
-	DrawText(scaleString.c_str(), x, y - 2, r, g, b);
-
-	/*
-	double distanceOfScale = 1.0;
-	string scaleString = "1.0 AU";
-
-	if (scale >= 3.0) {
-		// Long enough to a line
-		// Check if line + text will fit on screen
-		while (x + scale + 10 + (6 * scaleString.length()) >= width) {
-			scale /= 10;
-			distanceOfScale /= 10;
-			scaleString = RemoveTrailingZeroes(to_string(distanceOfScale)) + " AU";
-		}
-
-		DrawLine(x, y, x + scale, y, r, g, b);
-		Draw(x, height - y + 1, r, g, b);
-		Draw(x + scale, height - y + 1, r, g, b);
-
-		DrawText(scaleString.c_str(), x + scale + 5, y - 2, r, g, b);
-	}
-	else {
-		// Too short - must extend to fill screen
-		scale *= 100;
-		distanceOfScale *= 100;
-		scaleString = RemoveTrailingZeroes(to_string(distanceOfScale)) + " AU";
-
-		DrawLine(x, y, x + scale, y, r, g, b);
-		Draw(x, height - y + 1, r, g, b);
-		Draw(x + scale, height - y + 1, r, g, b);
-
-		DrawText(scaleString.c_str(), x + scale + 5, y - 2, r, g, b);
-	}
-	*/
+	DrawText(ToStandardForm(scale) + "m / px", x, y - 2, r, g, b);
 }
 
 void Image::Save() {
