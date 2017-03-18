@@ -11,6 +11,12 @@ In order to produce the output `.mp4` files, you will need to have `avconv` inst
 sudo apt-get install libav-tools
 ```
 
+If you don't have `cmake` installed already, you will also need to install it.
+
+```
+sudo apt-get install cmake
+```
+
 You will also need a copy of `pngwriter` installed on your machine.
 
 ```
@@ -30,10 +36,10 @@ g++ --version
 If you don't already have g++-4.9 installed, you can install it with the following commands:
 
 ```
-sudo apt-get install software-properties-common python-software-properties
+sudo apt-get install software-properties-common
 sudo add-apt-repository ppa:ubuntu-toolchain-r/test
 sudo apt-get update
-sudo apg-get install g++-4.9
+sudo apt-get install g++-4.9
 sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 50
 ```
 
