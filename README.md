@@ -21,6 +21,22 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr/
 sudo make install
 ```
 
+It is also important to note that you will require **g++-4.9** in order to compile Sombrero (as regex is used). You can check your installed version of g++ using the command. If it says that you have 4.9.x installed, you should be good to go!
+
+```
+g++ --version
+```
+
+If you don't already have g++-4.9 installed, you can install it with the following commands:
+
+```
+sudo apt-get install software-properties-common python-software-properties
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt-get update
+sudo apg-get install g++-4.9
+sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 50
+```
+
 ### Installing from source
 To download a copy of the repository, you will need to type the following commands:
 
