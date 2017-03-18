@@ -135,7 +135,7 @@ Simulation::Simulation(string _name, int _width, int _height, double _scale, dou
 }
 
 bool Simulation::LoadBodiesFromFile(string _filename) {
-	regex validLine("(\\s*([+\\-]?[0-9]+(.[0-9]+)?(e[+\\-]?[0-9]+)?)\\s*,){7}\\s*[+\\-]?[0-9]+(.[0-9]+)?(e[+\\-]?[0-9]+)?\\s*\r?");
+	regex validLine("(\\s*([+\\-]?[0-9]+(.[0-9]+)?(e[+\\-]?[0-9]+)?)\\s*,){7}\\s*[+\\-]?[0-9]+(.[0-9]+)?(e[+\\-]?[0-9]+)?\\s*(//(\\s*\\S*)*)?\r?");
 	regex validCommentLine("\\s*//(\\s*\\S*)*\r?");
 
 	ifstream inputFile(_filename);
@@ -160,6 +160,9 @@ bool Simulation::LoadBodiesFromFile(string _filename) {
 
 			while (getline(bodyDetails, parameter, ','))
 			{
+				cout << parameter << endl;
+				cout << stod(parameter) << endl;
+				cout << endl;
 				detailArray[i] = parameter;
 				i++;
 			}
