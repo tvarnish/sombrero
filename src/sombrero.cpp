@@ -56,7 +56,9 @@ class Simulation {
   	void SetSimulationName(string _name) { name = _name; };
   	void SetGravitationalConstant(double _gravConst) { gravConst = _gravConst; };
 
-  	void LoadBodiesFromFile(string _filename);
+  	int GetNumberOfBodies() { return bodyList.GetLength(); };
+
+  	bool LoadBodiesFromFile(string _filename);
   	void GenerateRandomShell(int _bodyCount);
   	void GenerateRandomDistribution(int _bodyCount);
   	void Rotate();
@@ -132,7 +134,10 @@ Simulation::Simulation(string _name, int _width, int _height, double _scale, dou
 	framerate = _framerate;
 }
 
-void Simulation::LoadBodiesFromFile(string _filename) {
+bool Simulation::LoadBodiesFromFile(string _filename) {
+	regex validLine("(\\s*([+\\-]?[0-9]+(.[0-9]+)?(e[+\\-]?[0-9]+)?)\\s*,){7}\\s*[+\\-]?[0-9]+(.[0-9]+)?(e[+\\-]?[0-9]+)?\\s*\r?");
+	regex validCommentLine("\\s*//(\\s*\\S*)*\r?");
+
 	ifstream inputFile(_filename);
 	string fileLine;
 
@@ -142,27 +147,37 @@ void Simulation::LoadBodiesFromFile(string _filename) {
 
 	while (getline(inputFile, fileLine))
 	{
-		stringstream bodyDetails(fileLine);
-		string detailArray [8];
-		i = 0;
-
-		while (getline(bodyDetails, parameter, ','))
-		{
-			detailArray[i] = parameter;
-			i++;
+		if (regex_match(fileLine, validCommentLine)) {
+			continue;
 		}
+		else if (!regex_match(fileLine, validLine)) {
+			return false;
+		}
+		else {
+			stringstream bodyDetails(fileLine);
+			string detailArray [8];
+			i = 0;
 
-		double x = stod(detailArray[0]);
-		double y = stod(detailArray[1]);
-		double z = stod(detailArray[2]);
-		double mass = stod(detailArray[3]);
-		double radius = stod(detailArray[4]);
-		double xVelocity = stod(detailArray[5]);
-		double yVelocity = stod(detailArray[6]);
-		double zVelocity = stod(detailArray[7]);
+			while (getline(bodyDetails, parameter, ','))
+			{
+				detailArray[i] = parameter;
+				i++;
+			}
 
-		bodyList.Append(new Body(x, y, z, mass, radius, xVelocity, yVelocity, zVelocity));
+			double x = stod(detailArray[0]);
+			double y = stod(detailArray[1]);
+			double z = stod(detailArray[2]);
+			double mass = stod(detailArray[3]);
+			double radius = stod(detailArray[4]);
+			double xVelocity = stod(detailArray[5]);
+			double yVelocity = stod(detailArray[6]);
+			double zVelocity = stod(detailArray[7]);
+
+			bodyList.Append(new Body(x, y, z, mass, radius, xVelocity, yVelocity, zVelocity));
+		}
 	}
+
+	return true;
 }
 
 void Simulation::GenerateRandomShell(int _bodyCount) {
@@ -533,38 +548,40 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 }
 
 int main() {
+	/*
 	Simulation sim = Simulation();
 
-	sim.SetSimulationName("join");
-	sim.SetScale(AU, 100);
+	sim.SetSimulationName("shell");
+	sim.SetScale(AU, 150);
 	sim.SetFramerate(60);
-	sim.SetTimestep(DAY / 2);
+	sim.SetTimestep(3600);
 
 	sim.GenerateRandomShell(100);
 
 	sim.Run(0, 100);
+	*/
 
-	sim = Simulation();
+	/*
+	Simulation sim = Simulation();
 
-	sim.SetSimulationName("join2");
-	sim.SetScale(AU, 100);
-	sim.SetFramerate(60);
-	sim.SetTimestep(DAY / 2);
-	sim.LoadBodiesFromFile("join_output.csv");
+	sim.SetSimulationName("PlutoCharon");
+	sim.SetScale(1.3e7, 100);
+	sim.SetFramerate(120);
+	sim.SetTimestep(DAY / 16);
 
-	sim.Run(101, 100);
+	sim.LoadBodiesFromFile("plutocharon.csv");
 
-	//// Testing
-	sim = Simulation();
-	
-	sim.SetSimulationName("join_test");
-	sim.SetScale(AU, 100);
-	sim.SetFramerate(60);
-	sim.SetTimestep(DAY / 2);
+	sim.Run(0, 800);
+	*/
 
-	sim.LoadBodiesFromFile("join.csv");
+	Simulation sim = Simulation();
 
-	sim.Run(0, 201);
+	if (sim.LoadBodiesFromFile("test.csv")) {
+		cout << "Read successfully!" << endl;
+	}
+	else {
+		cout << "Failed to load bodies!" << endl;
+	}
 
-	// 1.28e7 m = 100 px, maybe set it as SetScale(real distance, pixel distance)
+	cout << sim.GetNumberOfBodies() << endl;
 }
