@@ -17,56 +17,13 @@
 #include "lib/linkedlist.h"
 #include "lib/units.h"
 
+#include "sombrero.h"
+
 #include <pngwriter.h>
 
 using namespace std;
 
-class Simulation {
-	// Parameters initialised with defaults
-	string name = "simulation";
-	string outputFolder = "";
-	int bodyCount;
-	int width = 640;
-	int height = 480;
-	double scale = (AU / 100);
-	double dt = DAY / 2;
-	int framerate = 60;
-	double gravConst = GR;
-
-	List bodyList;
-	Body * body;
-	Body * bodyA;
-	Body * bodyB;
-
-	bool ValidateOutputFolder(string _outputFolder);
-	bool ValidateBodyFile(string _filename, bool _mustBeEmpty);
-
-  public:
-  	// Constructors
-  	Simulation();
-  	Simulation(int _width, int _height, double _scale, double _dt, int _framerate);
-  	Simulation(string _name, int _width, int _height, double _scale, double _dt, int _framerate);
-
-  	// Methods
-  	void SetOutputDimensions(int _width, int _height) { width = _width; height = _height; };
-  	void SetScale(double realDistance, double pixelDistance) { scale = realDistance / pixelDistance; };
-  	void SetTimestep(double _dt) { dt = _dt; };
-  	void SetFramerate(int _framerate) { framerate = _framerate; };
-  	void SetOutputDirectory(string _outputFolder) { outputFolder = _outputFolder; };
-  	void SetSimulationName(string _name) { name = _name; };
-  	void SetGravitationalConstant(double _gravConst) { gravConst = _gravConst; };
-
-  	int GetNumberOfBodies() { return bodyList.GetLength(); };
-
-  	bool LoadBodiesFromFile(string _filename);
-  	void GenerateRandomShell(int _bodyCount);
-  	void GenerateRandomDistribution(int _bodyCount);
-  	void Rotate();
-  	void Scale(double finalScale, bool updateScale);
-  	void Run(int startingFrame, int framesToSimulate);
-};
-
-string GetTimeUnits(double time) {
+string Simulation::GetTimeUnits(double time) {
 	regex validInteger("[1-9][0-9]*");
 	string timeUnits;
 
@@ -542,9 +499,7 @@ int main() {
 	sim.GenerateRandomShell(100);
 
 	sim.Run(0, 100);
-	*/
 
-	/*
 	Simulation sim = Simulation();
 
 	sim.SetSimulationName("PlutoCharon");
