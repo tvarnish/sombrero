@@ -12,7 +12,7 @@ int main() {
 	sim.SetFramerate(60);
 	sim.SetScale(AU, 100);
 
-	if (sim.LoadBodiesFromFile("_realsolarsystem.csv")) {
+	if (sim.LoadBodiesFromFile("init/realsolarsystem.csv")) {
 		sim.Run(0, 100);
 	}
 	else {
