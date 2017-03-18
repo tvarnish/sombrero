@@ -9,7 +9,7 @@
 // length of 1 AU.
 
 #define DAY 86400 // Day in seconds
-#define YR 365.25 * DAY // Year in Seconds
+#define YR (365.25 * DAY) // Year in Seconds
 
 #define M 1.9891e30 // Mass of the Sun
 

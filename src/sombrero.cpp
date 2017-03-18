@@ -66,48 +66,33 @@ class Simulation {
   	void Run(int startingFrame, int framesToSimulate);
 };
 
-/*
-bool ValidateOutputFolder(string _outputFolder) {
-	regex validFolder("(/*[\\w\\-. ]+)+/");
+string GetTimeUnits(double time) {
+	regex validInteger("[1-9][0-9]*");
+	string timeUnits;
 
-	if (regex_match(_outputFolder, validFolder)) {
-		if (!FileExists(_outputFolder)) {
-			// Create folder if it doesn't exist (as path is valid)
-			system(("mkdir " + _outputFolder).c_str());
-		}
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-bool ValidateBodyFile(string _filename, bool _mustBeEmpty = false) {
-	regex validFileName("(/*[\\w\\-. ]+)+.(csv)|(txt)");
-
-	if (regex_match(_filename, validFileName)) {
-		if (FileExists(_filename)) {
-			// TODO: Check if this is actually a body of files!
-			// Check if there are any bodies in the input file
-			Simulation::LoadBodiesFromFile(_filename);
-			
-			if (bodyList.GetLength() != 0 && _mustBeEmpty == true) {
-				// Bodies must be present
-				return false;
+	if (time < DAY) {
+			if (regex_match(to_string(1 / (time / DAY)), validInteger)) {
+				// if it is in the form DAY / n where n is an integer
+				timeUnits = "DAYS ";
 			}
 			else {
-				return true;
+				timeUnits = "SECS ";
 			}
+	}
+	else if (time > DAY) {
+		if (time < 2 * YR) {
+			timeUnits = "DAYS ";
 		}
 		else {
-			return false;
+			timeUnits = "YEARS";
 		}
 	}
-	else {
-		return false;
+	else if (time == DAY) {
+		timeUnits = "DAYS ";
 	}
+
+	return timeUnits;
 }
-*/
 
 Simulation::Simulation() {
 	bodyList = List();
@@ -322,9 +307,7 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 
 	if (startingFrame == 0) {
 		// Produce frame showing initial setup of bodies (if starting from frame 0)
-		// Format elapsed time - Need to figure out how to define this!
-		// -	this will depend on dt, i.e. what would 1 dt be?
-		string minimumTimeUnits = "Seconds";
+		string minimumTimeUnits = GetTimeUnits(dt);
 
 		string imageFileName = "images/image_" + PadWithZeroes(0, framesToSimulate) + ".png";
 		Image image = Image(imageFileName, width, height, scale);
@@ -332,7 +315,7 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 		image.DrawAllBodies(bodyList, 255, 255, 255);
 
 		// Draw information on frame
-		image.DrawText("SIMULATION  (" + minimumTimeUnits + ") " + "0", 10, 10, 155, 155, 155);
+		image.DrawText("SIMULATION  " + minimumTimeUnits + " " + "0.0", 10, 10, 155, 155, 155);
 		image.DrawText("F: 0", 10, 20, 155, 155, 155);
 		image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 155, 155, 155);
 
@@ -517,24 +500,20 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 
 		// Format elapsed time
 		string elapsedTimeString;
-		string timeUnits;
+		string timeUnits = GetTimeUnits(elapsedTime);
 
-		if (elapsedTime >= 2 * YR) {
-			timeUnits = " YEARS";
-			elapsedTimeString =  RemoveTrailingZeroes(to_string(elapsedTime / ((double)YR))); 
+		if (timeUnits == "YEARS") {
+			elapsedTimeString = RemoveTrailingZeroes(to_string(elapsedTime / (double)YR));
 		}
-		else {
-			if (elapsedTime == DAY) {
-				timeUnits = " DAY";
-			}
-			else {
-				timeUnits = " DAYS";
-			}
-			elapsedTimeString =  RemoveTrailingZeroes(to_string(elapsedTime / (double)DAY));
+		else if (timeUnits == "DAYS ") {
+			elapsedTimeString = RemoveTrailingZeroes(to_string(elapsedTime / (double)DAY));
+		}
+		else if (timeUnits == "SECS ") {
+			elapsedTimeString = RemoveTrailingZeroes(to_string(elapsedTime));
 		}
 
 		// Draw information on frame
-		image.DrawText("SIMULATION  (" + timeUnits + ") " + elapsedTimeString, 10, 10, 155, 155, 155);
+		image.DrawText("SIMULATION  " + timeUnits + " " + elapsedTimeString, 10, 10, 155, 155, 155);
 		image.DrawText("F: " + to_string(f + currentFrames), 10, 20, 155, 155, 155);
 		image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 155, 155, 155);
 
@@ -545,7 +524,7 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 
 	video.Build(outputFolder + name + "_run.mp4", framesToSimulate);
 
-	// Create output.txt
+	// Create _output.csv
 	Output output(outputFolder + name + "_output" + ".csv");
 	output.AddAllBodies(bodyList);
 	output.Save();
@@ -588,4 +567,7 @@ int main() {
 	}
 
 	cout << sim.GetNumberOfBodies() << endl;
+
+	sim.SetTimestep(YR);
+	sim.Run(0, 2);
 }
