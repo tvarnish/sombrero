@@ -145,6 +145,10 @@ bool Simulation::LoadBodiesFromFile(string _filename) {
 	string parameter;
 	int i;
 
+	if (!FileExists(_filename)) {
+		return false;
+	}
+
 	while (getline(inputFile, fileLine))
 	{
 		if (regex_match(fileLine, validCommentLine)) {
@@ -160,9 +164,6 @@ bool Simulation::LoadBodiesFromFile(string _filename) {
 
 			while (getline(bodyDetails, parameter, ','))
 			{
-				cout << parameter << endl;
-				cout << stod(parameter) << endl;
-				cout << endl;
 				detailArray[i] = parameter;
 				i++;
 			}
