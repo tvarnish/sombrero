@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -std=c++0x `freetype-config --cflags`
+CXXFLAGS = -Wall -std=c++11 `freetype-config --cflags`
 LIBS = -lpng -lpngwriter -lz -lfreetype
 EXEC = sombrero
 
@@ -8,8 +8,16 @@ MAKEDIR_BUILD = mkdir -p build
 MAKEDIR_IMAGE = mkdir -p images
 
 # Build the executable
-sombrero: build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o build/linkedlist.o
-	$(CXX) $(CXXFLAGS) -g -o $(EXEC) build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o build/linkedlist.o $(LIBS)
+#sombrero: build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o build/linkedlist.o
+#	$(CXX) $(CXXFLAGS) -g -o $(EXEC) build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o build/linkedlist.o $(LIBS)
+
+# Build testing executable
+sombrero: build/testing.o build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o build/linkedlist.o
+	$(CXX) $(CXXFLAGS) -g -o $(EXEC) build/testing.o build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o build/linkedlist.o $(LIBS)
+
+# Build testing.o
+build/testing.o: src/testing.cpp src/sombrero.h
+	$(CXX) $(CXXFLAGS) -c src/testing.cpp -o build/testing.o
 
 # Build sombrero.o
 build/sombrero.o: src/sombrero.cpp src/sombrero.h src/lib/font.h src/lib/body.h src/lib/image.h src/lib/video.h src/lib/output.h src/lib/misc.h src/lib/units.h

@@ -77,7 +77,7 @@ Simulation::Simulation(string _name, int _width, int _height, double _scale, dou
 }
 
 bool Simulation::LoadBodiesFromFile(string _filename) {
-	regex validLine("(\\s*([+\\-]?[0-9]+(.[0-9]+)?(e[+\\-]?[0-9]+)?)\\s*,){7}\\s*[+\\-]?[0-9]+(.[0-9]+)?(e[+\\-]?[0-9]+)?\\s*(//(\\s*\\S*)*)?\r?");
+	regex validLine("(\\s*([+\\-]?[0-9]+(.[0-9]+)?([eE][+\\-]?[0-9]+)?)\\s*,){7}\\s*[+\\-]?[0-9]+(.[0-9]+)?([eE][+\\-]?[0-9]+)?\\s*(//(\\s*\\S*)*)?\r?");
 	regex validCommentLine("\\s*//(\\s*\\S*)*\r?");
 
 	ifstream inputFile(_filename);
@@ -487,8 +487,8 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 	output.Save();
 }
 
+/*
 int main() {
-	/*
 	Simulation sim = Simulation();
 
 	sim.SetSimulationName("shell");
@@ -510,7 +510,6 @@ int main() {
 	sim.LoadBodiesFromFile("plutocharon.csv");
 
 	sim.Run(0, 800);
-	*/
 
 	Simulation sim = Simulation();
 
@@ -526,3 +525,4 @@ int main() {
 	sim.SetTimestep(YR);
 	sim.Run(0, 2);
 }
+*/
