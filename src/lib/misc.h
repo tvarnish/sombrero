@@ -14,4 +14,6 @@ double Random(double min, double max);
 
 bool FileExists(string filename);
 
+double ToRadians(double angle);
+
 #endif

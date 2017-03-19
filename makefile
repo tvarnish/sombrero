@@ -12,15 +12,15 @@ MAKEDIR_IMAGE = mkdir -p images
 #	$(CXX) $(CXXFLAGS) -g -o $(EXEC) build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o build/linkedlist.o $(LIBS)
 
 # Build testing executable
-sombrero: build/testing.o build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o build/linkedlist.o
-	$(CXX) $(CXXFLAGS) -g -o $(EXEC) build/testing.o build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o build/linkedlist.o $(LIBS)
+sombrero: build/testing.o build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o build/position_vector.o build/linkedlist.o
+	$(CXX) $(CXXFLAGS) -g -o $(EXEC) build/testing.o build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o build/position_vector.o build/linkedlist.o $(LIBS)
 
 # Build testing.o
 build/testing.o: src/testing.cpp src/sombrero.h
 	$(CXX) $(CXXFLAGS) -c src/testing.cpp -o build/testing.o
 
 # Build sombrero.o
-build/sombrero.o: src/sombrero.cpp src/sombrero.h src/lib/font.h src/lib/body.h src/lib/image.h src/lib/video.h src/lib/output.h src/lib/misc.h src/lib/units.h
+build/sombrero.o: src/sombrero.cpp src/sombrero.h src/lib/font.h src/lib/body.h src/lib/image.h src/lib/video.h src/lib/output.h src/lib/misc.h src/lib/units.h src/lib/position_vector.h src/lib/matrix.h
 	$(CXX) $(CXXFLAGS) -c src/sombrero.cpp -o build/sombrero.o
 
 # Build font.o
@@ -44,8 +44,12 @@ build/output.o: src/lib/output.cpp src/lib/output.h src/lib/body.h
 	$(CXX) $(CXXFLAGS) -c src/lib/output.cpp -o build/output.o
 
 # Build misc.o
-build/misc.o: src/lib/misc.cpp src/lib/misc.h src/lib/body.h
+build/misc.o: src/lib/misc.cpp src/lib/misc.h
 	$(CXX) $(CXXFLAGS) -c src/lib/misc.cpp -o build/misc.o
+
+# Build position_vector.o
+build/position_vector.o: src/lib/position_vector.cpp src/lib/position_vector.h src/lib/matrix.h src/lib/misc.h
+	$(CXX) $(CXXFLAGS) -c src/lib/position_vector.cpp -o build/position_vector.o
 
 # Build matrix.o
 build/matrix.o: src/lib/matrix.cpp src/lib/matrix.h
@@ -63,5 +67,3 @@ setup:
 	$(MAKEDIR_BUILD)
 	$(MAKEDIR_IMAGE)
 	make
-
-# Run make install for everything else.

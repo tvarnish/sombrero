@@ -121,3 +121,7 @@ bool FileExists(string filename) {
 	ifstream file(filename.c_str());
 	return file.good();
 }
+
+double ToRadians(double angle) {
+	return angle * (PI / 180.0);
+}

@@ -17,6 +17,7 @@
 #include "lib/output.h"
 #include "lib/misc.h"
 #include "lib/matrix.h"
+#include "lib/position_vector.h"
 #include "lib/linkedlist.h"
 #include "lib/units.h"
 
