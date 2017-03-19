@@ -10,9 +10,7 @@ using namespace std;
 
 class Matrix {
 	int rows, columns;
-	
-  	protected:
-	   	vector<vector<double>> data;
+	vector<vector<double>> data;
 
 	public:
 		Matrix(int _rows, int _columns);
