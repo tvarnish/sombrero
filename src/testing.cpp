@@ -7,12 +7,12 @@ int main() {
 	Simulation sim = Simulation();
 
 	sim.SetSimulationName("HelloWorld");
-	sim.SetTimestep(DAY);
+	sim.SetTimestep(YR / 365);
 	sim.SetFramerate(60);
 	sim.SetScale(AU, 100);
 
 	if (sim.LoadBodiesFromFile("init/realsolarsystem.csv")) {
-		sim.Run(0, 100);
+		sim.Run(0, 365);
 	}
 	else {
 		cout << "Error in reading body file." << endl;

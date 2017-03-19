@@ -186,14 +186,11 @@ void Simulation::Rotate() {
 		body = bodyList.GetHead();
 		while (body != NULL) {
 			// Rotate body
-			Vector p;
-			p.Set(body->GetX(), body->GetY(), body->GetZ());
+			Vector position = body->GetPosition();
+			Vector transformedPosition = position.RotateY(angle);
+			transformedPosition = transformedPosition.RoundValues();
 
-			Vector t;
-			t = p.RotateY(angle);
-			t = t.RoundValues();
-
-			image.DrawBody(t.GetX(), t.GetY(), body->GetRadius(), 255, 255, 255);
+			image.DrawBody(transformedPosition.GetX(), transformedPosition.GetY(), body->GetRadius(), 255, 255, 255);
 
 			body = body->next;
 		}
@@ -304,14 +301,12 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 
 			while (bodyB != NULL) {
 				// Calculate distance
-				double xDistance = bodyA->GetX() - bodyB->GetX();
-				double yDistance = bodyA->GetY() - bodyB->GetY();
-				double zDistance = bodyA->GetZ() - bodyB->GetZ();
-				double totalDistance = sqrt(pow(xDistance, 2) + pow(yDistance, 2) + pow(zDistance, 2));
+				Vector distance = bodyA->GetPosition().Subtract(bodyB->GetPosition());
+				double totalDistance = distance.Magnitude();
 
 				// Calculate angles
-				double phiAngle = atan2(zDistance, sqrt(pow(xDistance, 2) + pow(yDistance, 2)));
-				double thetaAngle = atan2(yDistance, xDistance);
+				double phiAngle = atan2(distance.GetZ(), sqrt(pow(distance.GetX(), 2) + pow(distance.GetY(), 2)));
+				double thetaAngle = atan2(distance.GetY(), distance.GetX());
 
 				// Calculate force
 				double force = gravConst * ((bodyA->GetMass() * bodyB->GetMass()) / (pow(totalDistance, 2)));
@@ -347,19 +342,13 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 			while (bodyB != NULL) {
 				double collisionTime = -1;
 
-				// Set up position vectors
-				Vector initialA;
-				initialA.Set(bodyA->GetX(), bodyA->GetY(), bodyA->GetZ());
-
-				Vector finalA;
-				finalA.Set(bodyA->GetNextX(), bodyA->GetNextY(), bodyA->GetNextZ());
-
-				Vector initialB;
-				initialB.Set(bodyB->GetX(), bodyB->GetY(), bodyB->GetZ());
-
-				Vector finalB;
-				finalB.Set(bodyB->GetNextX(), bodyB->GetNextY(), bodyB->GetNextZ());
-
+				// Set up position vector
+				Vector initialA = bodyA->GetPosition();
+				Vector finalA = bodyA->GetNextPosition();
+				
+				Vector initialB = bodyB->GetPosition();
+				Vector finalB = bodyB->GetNextPosition();
+				
 				// Check the two lines are not parallel
 				Vector lineA = finalA.Subtract(initialA);
 				Vector lineB = finalB.Subtract(initialB);
@@ -394,30 +383,20 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 				if (collisionTime != -1) {
 					double newMass = bodyA->GetMass() + bodyB->GetMass();
 
+					
 					// Conservation of linear momentum
-					// X
-					double aXVelocity = bodyA->GetXVelocity();
-					double bXVelocity = bodyB->GetXVelocity();
-					double newXVelocity = ((bodyA->GetMass() * aXVelocity) + (bodyB->GetMass() * bXVelocity)) / (newMass);
-
-					// Y
-					double aYVelocity = bodyA->GetYVelocity();
-					double bYVelocity = bodyB->GetYVelocity();
-					double newYVelocity = ((bodyA->GetMass() * aYVelocity) + (bodyB->GetMass() * bYVelocity)) / (newMass);
-
-					// Z
-					double aZVelocity = bodyA->GetZVelocity();
-					double bZVelocity = bodyB->GetZVelocity();
-					double newZVelocity = ((bodyA->GetMass() * aZVelocity) + (bodyB->GetMass() * bZVelocity)) / (newMass);
+					Vector aMomentum = bodyA->GetVelocity().Multiply(bodyA->GetMass());
+					Vector bMomentum = bodyB->GetVelocity().Multiply(bodyB->GetMass());
+					Vector newVelocity = (aMomentum.Add(bMomentum)).Divide(newMass);
 
 					// Calculate new position
 					// Use midpoint of the two "new positions"
 					bodyA->Update(collisionTime);
 					bodyB->Update(collisionTime);
 
-					double newX = (bodyA->GetNextX() + bodyB->GetNextX()) / 2;
-					double newY = (bodyA->GetNextY() + bodyB->GetNextY()) / 2;
-					double newZ = (bodyA->GetNextZ() + bodyB->GetNextZ()) / 2;
+					// Average of two velocities
+					//Vector positionSum = bodyA->GetNextPosition().Add(bodyB->GetNextPosition());
+					Vector newPosition = (bodyA->GetNextPosition().Add(bodyB->GetNextPosition())).Divide(2);
 
 					// Calculate new radius
 					// TODO: Figure out way of calculating a new radius given constant density?
@@ -434,7 +413,8 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 					bodyList.Remove(bodyA->id);
 					bodyList.Remove(bodyB->id);
 
-					Body * newBody = new Body(newX, newY, newZ, newMass, newRadius, newXVelocity, newYVelocity, newZVelocity);
+					Body * newBody = new Body(newPosition, newMass, newRadius, newVelocity);
+
 					newBody->Update(dt - collisionTime);
 					bodyList.Append(newBody);
 				}

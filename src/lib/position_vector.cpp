@@ -16,32 +16,27 @@ Vector::Vector(double _x, double _y, double _z) {
 }
 
 Vector Vector::Add(Vector other) {
-	Vector result;
-	result.Set(x + other.x, y + other.y, z + other.z);
+	Vector result = Vector(x + other.GetX(), y + other.GetY(), z + other.GetZ());
 	return result;
 }
 
 Vector Vector::Subtract(Vector other) {
-	Vector result;
-	result.Set(x - other.x, y - other.y, z - other.z);
+	Vector result = Vector(x - other.GetX(), y - other.GetY(), z - other.GetZ());
 	return result;
 }
 
 Vector Vector::Multiply(double scalar) {
-	Vector result;
-	result.Set(x * scalar, y * scalar, z * scalar);
+	Vector result = Vector(x * scalar, y * scalar, z * scalar);
 	return result;
 }
 
 Vector Vector::Divide(double scalar) {
-	Vector result;
-	result.Set(x / scalar, y / scalar, z / scalar);
+	Vector result = Vector(x / scalar, y / scalar, z / scalar);
 	return result;
 }
 
 double Vector::DotProduct(Vector other) {
-	double result;
-	result = (x * other.x) + (y * other.y) + (z * other.z);
+	double result = (x * other.GetX()) + (y * other.GetY()) + (z * other.GetZ());
 	return result;
 }
 
