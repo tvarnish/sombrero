@@ -330,7 +330,7 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 				double thetaAngle = atan2(distance.GetY(), distance.GetX());
 
 				// Calculate force
-				double force = gravConst * ((bodyA->GetMass() * bodyB->GetMass()) / (pow(totalDistance, 2)));
+				double force = -1 * gravConst * ((bodyA->GetMass() * bodyB->GetMass()) / (pow(totalDistance, 2)));
 
 				// Add forces to totals
 				bodyA->AddForce(force, phiAngle, thetaAngle);

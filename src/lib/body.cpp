@@ -46,8 +46,6 @@ void Body::Step() {
 
 void Body::AddForce(double _force, double phi, double theta) {
 	// Add the supplied force to the net force acting on the body
-	_force *= -1;
-
 	force = force.Add(Vector(_force * cos(phi) * cos(theta), _force * cos(phi) * sin(theta), _force * sin(phi)));
 }
 
