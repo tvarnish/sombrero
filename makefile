@@ -1,15 +1,12 @@
 CXX = g++
-CXXFLAGS = -Wall -std=c++11 `freetype-config --cflags`
+# -Wall useful for development (shows all warnings)
+CXXFLAGS = -Wall -std=c++11 `freetype-config --cflags` 
 LIBS = -lpng -lpngwriter -lz -lfreetype
 EXEC = sombrero
 
 # Make sure that there is a build directory, so that the output files can be generated.
 MAKEDIR_BUILD = mkdir -p build
 MAKEDIR_IMAGE = mkdir -p images
-
-# Build the executable
-#sombrero: build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o build/linkedlist.o
-#	$(CXX) $(CXXFLAGS) -g -o $(EXEC) build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o build/linkedlist.o $(LIBS)
 
 # Build testing executable
 sombrero: build/testing.o build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o build/position_vector.o build/linkedlist.o
