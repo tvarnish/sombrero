@@ -10,53 +10,53 @@ void Matrix::Initialise(int _rows, int _columns) {
 	rows = _rows;
 	columns = _columns;
 
-	this->data.assign(rows, vector<double>(columns, 0));
+	data.assign(rows, vector<double>(columns, 0));
 }
 
 void Matrix::Display() {
-	for (int x = 0; x < this->rows; x++) {
-		for (int y = 0; y < this->columns; y++) {
-			cout << this->data.at(x).at(y) << " ";
+	for (int x = 0; x < rows; x++) {
+		for (int y = 0; y < columns; y++) {
+			cout << data.at(x).at(y) << " ";
 		}
 		cout << endl;
 	}
 }
 
 double Matrix::GetAt(int r, int c) {
-	return this->data.at(r).at(c);
+	return data.at(r).at(c);
 }
 
 void Matrix::SetAt(int r, int c, double value) {
-	this->data.at(r).at(c) = value;
+	data.at(r).at(c) = value;
 }
 
 Vector Vector::Add(Vector other) {
 	Vector result;
-	result.Set(this->x + other.x, this->y + other.y, this->z + other.z);
+	result.Set(x + other.x, y + other.y, z + other.z);
 	return result;
 }
 
 Vector Vector::Subtract(Vector other) {
 	Vector result;
-	result.Set(this->x - other.x, this->y - other.y, this->z - other.z);
+	result.Set(x - other.x, y - other.y, z - other.z);
 	return result;
 }
 
 Vector Vector::Multiply(double scalar) {
 	Vector result;
-	result.Set(this->x * scalar, this->y * scalar, this->z * scalar);
+	result.Set(x * scalar, y * scalar, z * scalar);
 	return result;
 }
 
 Vector Vector::Divide(double scalar) {
 	Vector result;
-	result.Set(this->x / scalar, this->y / scalar, this->z / scalar);
+	result.Set(x / scalar, y / scalar, z / scalar);
 	return result;
 }
 
 double Vector::DotProduct(Vector other) {
 	double result;
-	result = (this->x * other.x) + (this->y * other.y) + (this->z * other.z);
+	result = (x * other.x) + (y * other.y) + (z * other.z);
 	return result;
 }
 
@@ -97,7 +97,7 @@ Vector Vector::RotateY(double angle) {
 	rotateMatrix.SetAt(2, 2, cos(angleRadians));
 
 	Vector transformed;
-	transformed = this->Transform(rotateMatrix);
+	transformed = Transform(rotateMatrix);
 
 	return transformed;
 }
@@ -105,9 +105,9 @@ Vector Vector::RotateY(double angle) {
 Vector Vector::RoundValues() {
 	Vector rounded;
 
-	rounded.SetX(round(this->x));
-	rounded.SetY(round(this->y));
-	rounded.SetZ(round(this->z));
+	rounded.SetX(round(x));
+	rounded.SetY(round(y));
+	rounded.SetZ(round(z));
 
 	if (rounded.GetX() == -0.0) rounded.SetX(0.0);
 	if (rounded.GetY() == -0.0) rounded.SetY(0.0);

@@ -12,13 +12,13 @@ using namespace std;
 
 //pngwriter png;
 
-Image::Image(string filename, int w, int h, double _scale) {
-	fileName = filename;
-	width = w;
-	height = h;
+Image::Image(string _fileName, int _width, int _height, double _scale) {
+	fileName = _fileName;
+	width = _width;
+	height = _height;
 	scale = _scale;
 
-	png = pngwriter(width, height, 0, filename.c_str());
+	png = pngwriter(width, height, 0, fileName.c_str());
 }
 
 void Image::Draw(int x, int y, int r, int g, int b) {

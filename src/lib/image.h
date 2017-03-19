@@ -21,7 +21,7 @@ class Image {
 		void DrawTextArray(int textArray [5][5], int xStart, int yStart, int r, int g, int b);
 
 	public:
-		Image(std::string filename, int w, int h, double _scale);
+		Image(std::string _fileName, int _width, int _height, double _scale);
 		int Scale(double position, double scale);
 		void Draw(int x, int y, int r, int g, int b);
 		void DrawLine(int x1, int y1, int x2, int y2, int r, int g, int b);

@@ -6,17 +6,18 @@
 
 class Body {
 		double x, y, z;
-		double nextX, nextY, nextZ;
 		double xVelocity, yVelocity, zVelocity;
 		double mass;
 		double radius;
+
+		double nextX, nextY, nextZ;
 		double xForce, yForce, zForce;
 
 	public:
 		Body * next = NULL;
 		int id;
 
-		Body(double xPos, double yPos, double zPos, double bodyMass, double r, double xVel, double yVel, double zVel);
+		Body(double _x, double _y, double _z, double _mass, double _radius, double _xVelocity, double _yVelocity, double _zVelocity);
 
 		double GetMass() { return mass; };
 		double GetX() { return x; };
@@ -26,11 +27,11 @@ class Body {
 		double GetNextY() { return nextY; };
 		double GetNextZ() { return nextZ; };
 		double GetRadius() { return radius; };
-		void SetPosition(double xPos, double yPos, double zPos) { x = xPos; y = yPos; z = zPos; };
+		void SetPosition(double _x, double _y, double _z) { x = _x; y = _y; z = _z; };
 		double GetXVelocity() { return xVelocity; };
 		double GetYVelocity() { return yVelocity; };
 		double GetZVelocity() { return zVelocity; };
-		void SetVelocity(double xVel, double yVel, double zVel) { xVelocity = xVel; yVelocity = yVel; zVelocity = zVel; };
+		void SetVelocity(double _xVelocity, double _yVelocity, double _zVelocity) { xVelocity = _xVelocity; yVelocity = _yVelocity; zVelocity = _zVelocity; };
 
 		void AddForce(double force, double phi, double theta);
 		void ResetForce();

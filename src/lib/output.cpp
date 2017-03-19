@@ -8,8 +8,8 @@
 
 using namespace std;
 
-Output::Output(string filename) {
-	fileName = filename;
+Output::Output(string _fileName) {
+	fileName = _fileName;
 	fileContents = "";
 }
 

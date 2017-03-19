@@ -1,5 +1,4 @@
 #include <iostream>
-
 #include "sombrero.h"
 
 using namespace std;

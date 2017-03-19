@@ -1,5 +1,6 @@
 #include "font.h"
 
+// Kerning is the spacing between characters
 int kerning = 1;
 int fontWidth = 5;
 

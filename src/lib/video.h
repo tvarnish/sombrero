@@ -3,18 +3,20 @@
 
 #include <iostream>
 
+using namespace std;
+
 class Video {
-		std::string outputFileName;
-		std::string imageFolder;
-		std::string imagePrefix;
-		std::string width;
-		std::string height;
-		std::string framerate;
+		string outputFileName;
+		string imageFolder;
+		string imagePrefix;
+		string width;
+		string height;
+		string framerate;
 
 	public:
-		Video(std::string imgFolder, std::string imgPrefix, int w, int h, int frate);
+		Video(string _imageFolder, string _imagePrefix, int _width, int _height, int _framerate);
 		void ClearImageFolder();
-		void Build(std::string outputFName, int frameCount);
+		void Build(string _outputFileName, int frameCount);
 		void Open();
 };
 

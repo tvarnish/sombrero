@@ -24,14 +24,14 @@ class Vector {
 	double z;
 
   public:
-	void Set(double x, double y, double z) { this->x = x; this->y = y; this->z = z; }
-	void SetX(double x) { this->x = x; };
-	void SetY(double y) { this->y = y; };
-	void SetZ(double z) { this->z = z; };
+	void Set(double _x, double _y, double _z) { x = _x; y = _y; z = _z; }
+	void SetX(double _x) { x = _x; };
+	void SetY(double _y) { y = _y; };
+	void SetZ(double _z) { z = _z; };
 
-	double GetX() { return this->x; };
-	double GetY() { return this->y; };
-	double GetZ() { return this->z; };
+	double GetX() { return x; };
+	double GetY() { return y; };
+	double GetZ() { return z; };
 
 	Vector Add(Vector other);
 	Vector Subtract(Vector other);

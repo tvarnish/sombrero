@@ -5,22 +5,22 @@
 
 using namespace std;
 
-Video::Video(string imgFolder, string imgPrefix, int w, int h, int frate) {
-	imageFolder = imgFolder;
-	imagePrefix = imgPrefix;
+Video::Video(string _imageFolder, string _imagePrefix, int _width, int _height, int _framerate) {
+	imageFolder = _imageFolder;
+	imagePrefix = _imagePrefix;
 
-	width = to_string(w);
-	height = to_string(h);
+	width = to_string(_width);
+	height = to_string(_height);
 
-	framerate = to_string(frate);
+	framerate = to_string(_framerate);
 }
 
 void Video::ClearImageFolder() {
 	system( ("rm " + imageFolder + "*.png").c_str() );
 }
 
-void Video::Build(string outputFName, int frameCount) {
-	outputFileName = outputFName;
+void Video::Build(string _outputFileName, int frameCount) {
+	outputFileName = _outputFileName;
 
 	/*
 	//string command = "/usr/local/bin/ffmpeg ";
