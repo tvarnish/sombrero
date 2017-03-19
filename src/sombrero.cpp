@@ -25,12 +25,14 @@
 using namespace std;
 
 string Simulation::GetTimeUnits(double time) {
+	// Determine, and return, the time units (Seconds, Days, Years) for the given time.
 	regex validInteger("[1-9][0-9]*");
 	string timeUnits;
 
+	// Note: space included for "DAYS " purely for spacing when output
 	if (time < DAY) {
 			if (regex_match(to_string(1 / (time / DAY)), validInteger)) {
-				// if it is in the form DAY / n where n is an integer
+				// Check if the time is in the form DAY / n, where n is an integer
 				timeUnits = "DAYS ";
 			}
 			else {
@@ -53,10 +55,12 @@ string Simulation::GetTimeUnits(double time) {
 }
 
 Simulation::Simulation() {
+	// Constructor for Simulation object with default parameters
 	bodyList = List();
 }
 
 Simulation::Simulation(int _width, int _height, double _scale, double _dt, int _framerate) {
+	// Constructor for Simulation object - key parameters defined
 	bodyList = List();
 
 	width = _width;
@@ -67,6 +71,7 @@ Simulation::Simulation(int _width, int _height, double _scale, double _dt, int _
 }
 
 Simulation::Simulation(string _name, int _width, int _height, double _scale, double _dt, int _framerate) {
+	// Constructor for Simulation object - key parameters defined (except simulation name)
 	bodyList = List();
 
 	name = _name;
@@ -77,48 +82,51 @@ Simulation::Simulation(string _name, int _width, int _height, double _scale, dou
 	framerate = _framerate;
 }
 
-bool Simulation::LoadBodiesFromFile(string _filename) {
+bool Simulation::LoadBodiesFromFile(string _fileName) {
+	// Load a simulation set-up from a body .csv file, into the bodyList
 	regex validLine("(\\s*([+\\-]?[0-9]+(.[0-9]+)?([eE][+\\-]?[0-9]+)?)\\s*,){7}\\s*[+\\-]?[0-9]+(.[0-9]+)?([eE][+\\-]?[0-9]+)?\\s*(//(\\s*\\S*)*)?\r?");
 	regex validCommentLine("\\s*//(\\s*\\S*)*\r?");
 
-	ifstream inputFile(_filename);
-	string fileLine;
-
-	// Read in body details
-	string parameter;
+	ifstream inputFile(_fileName);
+	string fileLine, parameter;
 	int i;
 
-	if (!FileExists(_filename)) {
+	// Return false if the file does not exist (raise error)
+	if (!FileExists(_fileName)) {
 		return false;
 	}
 
+	// Iterate through lines in the file
 	while (getline(inputFile, fileLine))
 	{
 		if (regex_match(fileLine, validCommentLine)) {
+			// Ignore line if it is a comment line
 			continue;
 		}
 		else if (!regex_match(fileLine, validLine)) {
+			// Return false if the line is not valid (raise error)
 			return false;
 		}
 		else {
 			stringstream bodyDetails(fileLine);
-			string detailArray [8];
+			double detailArray [8];
 			i = 0;
 
+			// Iterate through each comma separated value, and store each in the detailArray (for easy access later)
 			while (getline(bodyDetails, parameter, ','))
 			{
-				detailArray[i] = parameter;
+				detailArray[i] = stod(parameter);
 				i++;
 			}
 
-			double x = stod(detailArray[0]);
-			double y = stod(detailArray[1]);
-			double z = stod(detailArray[2]);
-			double mass = stod(detailArray[3]);
-			double radius = stod(detailArray[4]);
-			double xVelocity = stod(detailArray[5]);
-			double yVelocity = stod(detailArray[6]);
-			double zVelocity = stod(detailArray[7]);
+			double x = detailArray[0];
+			double y = detailArray[1];
+			double z = detailArray[2];
+			double mass = detailArray[3];
+			double radius = detailArray[4];
+			double xVelocity = detailArray[5];
+			double yVelocity = detailArray[6];
+			double zVelocity = detailArray[7];
 
 			bodyList.Append(new Body(x, y, z, mass, radius, xVelocity, yVelocity, zVelocity));
 		}
@@ -128,14 +136,17 @@ bool Simulation::LoadBodiesFromFile(string _filename) {
 }
 
 void Simulation::GenerateRandomShell(int _bodyCount) {
+	// Generate a set up of bodies, in a randomly spaced shell (equidistant to the centre) around a central heavy body
 	srand(time(NULL));
 	bodyList = List();
 
 	for (int i = 0; i < _bodyCount - 1; i++) {
+		// Generate the body's location with spherical coordinates
 		double r = 0.5e11;
 		double theta = Random(0, 2 * PI);
 		double phi = Random(0, 2 * PI);
 
+		// Convert spherical coordinates to cartesian coordinates
 		double x = r * cos(theta) * cos(phi);
 		double y = r * sin(theta);
 		double z = r * cos(theta) * sin(phi);
@@ -145,9 +156,10 @@ void Simulation::GenerateRandomShell(int _bodyCount) {
 		bodyList.Append(new Body(x, y, z, mass, Random(1e6, 9e6), 0, 0, 0));
 	}
 
+	// Add the central heavy body to the body list
 	bodyList.Append(new Body(0.0, 0.0, 0.0, 1e30, 1e8, 0.0, 0.0, 0.0));
 
-	// Save bodies to output.txt
+	// Save bodies to _output.csv
 	Output output(outputFolder + name + ".csv");
 	output.AddAllBodies(bodyList);
 	output.Save();
@@ -175,14 +187,16 @@ void Simulation::GenerateRandomDistribution(int _bodyCount) {
 }
 
 void Simulation::Rotate() {
+	// Generate a video, rotating the three-dimensional set up around the y-axis
 	Video video = Video("images/", "image_", width, height, framerate);
 	video.ClearImageFolder();
 
-	// Rotate bodies about the y-axis
+	// Iterate through each frame of the video (to be generated) / angle
 	for (double angle = 0.0; angle < 360.0; angle ++) {
 		string imageFileName = "images/image_" + PadWithZeroes(angle, 360) + ".png";
 		Image image = Image(imageFileName, width, height, scale);
 
+		// Iterate through the bodies and transform their positions
 		body = bodyList.GetHead();
 		while (body != NULL) {
 			// Rotate body
@@ -195,7 +209,7 @@ void Simulation::Rotate() {
 			body = body->next;
 		}
 
-		// Add details to image
+		// Draw details of simulation to frame
 		image.DrawText("ROTATION", 10, 10, 155, 155, 155);
 		image.DrawText("A: " + to_string((int)angle), 10, 20, 155, 155, 155);
 		image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 155, 155, 155);
@@ -210,11 +224,13 @@ void Simulation::Rotate() {
 }
 
 void Simulation::Scale(double finalScale, bool updateScale) {
+	// Create a video, zooming in or out of (scaling) the simulation
 	Video video = Video("images/", "image_", width, height, framerate);
 	video.ClearImageFolder();
 
 	double scaleStep;
 
+	// Determine the "direction" of the scaling (in or out)
 	if (finalScale < scale) {
 		scaleStep = -1;
 	}
@@ -224,14 +240,16 @@ void Simulation::Scale(double finalScale, bool updateScale) {
 
 	int frameCount = abs(finalScale - scale);
 
+	// Generate the frames of the video
 	double currentScale = scale;
 	while (abs(finalScale - currentScale) != 0) {
+		// Image is scaled by passing in a modified scale to the image object (simulation scale is unaffected unless updateScale is true)
 		string imageFileName = "images/image_" + PadWithZeroes(abs(currentScale - scale), frameCount) + ".png";
 		Image image = Image(imageFileName, width, height, currentScale);
 
 		image.DrawAllBodies(bodyList, 255, 255, 0);
 
-		// Add details to image
+		// Draw details of simulation to frame
 		image.DrawText("ZOOM", 10, 10, 155, 155, 155);
 		image.DrawText("S: " + RemoveTrailingZeroes(to_string(currentScale)), 10, 20, 155, 155, 155);
 		image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 155, 155, 155);
@@ -243,6 +261,7 @@ void Simulation::Scale(double finalScale, bool updateScale) {
 		currentScale += scaleStep;
 	}
 
+	// If updateScale is true, change the simulation's scale (update the scale for run, rotate, etc.)
 	if (updateScale) {
 		scale = finalScale;
 	}
@@ -283,16 +302,18 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 	}
 
 	// Simulate the next frames
-	// <=, as it simulates 0->1, 1->2 therefore needs to simulate -> n.	
+	// <=, as it simulates 0->1, 1->2 therefore needs to simulate up to n.	
 	for (int f = initialFrameCounter; f <= framesToSimulate + startingFrame; f++) {
 		// Reset force counter on each body
+		// (as force is used to count the net force on the body for that frame)
 		body = bodyList.GetHead();
 		while (body != NULL) {
 			body->ResetForce();
 			body = body->next;
 		}
 
-		// n-body Algorithm (optimised)
+		// n-body algorithm (optimised)
+		// i.e. (1: 2,3,4,5; 2: 3,4,5; etc)
 		bodyA = bodyList.GetHead();
 		bodyB = NULL;
 
@@ -300,7 +321,7 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 			bodyB = bodyA->next;
 
 			while (bodyB != NULL) {
-				// Calculate distance
+				// Calculate distance between objects
 				Vector distance = bodyA->GetPosition().Subtract(bodyB->GetPosition());
 				double totalDistance = distance.Magnitude();
 
@@ -342,14 +363,14 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 			while (bodyB != NULL) {
 				double collisionTime = -1;
 
-				// Set up position vector
+				// Set up position vectors
 				Vector initialA = bodyA->GetPosition();
 				Vector finalA = bodyA->GetNextPosition();
 				
 				Vector initialB = bodyB->GetPosition();
 				Vector finalB = bodyB->GetNextPosition();
 				
-				// Check the two lines are not parallel
+				// Check the two lines are not parallel (using direction vectors)
 				Vector lineA = finalA.Subtract(initialA);
 				Vector lineB = finalB.Subtract(initialB);
 
@@ -368,7 +389,7 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 					bool timeValid1 = time1 >= 0 && time1 <= 1;
 					bool timeValid2 = time2 >= 0 && time2 <= 1;
 
-					// Check validity
+					// Check if the collision occurs within the timestep
 					if (timeValid1 && timeValid2) {
 						if (time1 <= time2) {
 							collisionTime = time1 * dt;
@@ -379,28 +400,24 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 					}
 				}
 
-				// Collide particles if collision has occured
+				// Collide particles if collision will occur
 				if (collisionTime != -1) {
 					double newMass = bodyA->GetMass() + bodyB->GetMass();
 
-					
-					// Conservation of linear momentum
+					// Conservation of linear momentum (assuming bodies will combine)
 					Vector aMomentum = bodyA->GetVelocity().Multiply(bodyA->GetMass());
 					Vector bMomentum = bodyB->GetVelocity().Multiply(bodyB->GetMass());
 					Vector newVelocity = (aMomentum.Add(bMomentum)).Divide(newMass);
 
-					// Calculate new position
-					// Use midpoint of the two "new positions"
+					// Calculate position of new body
+					// Use midpoint of the two "collision positions"
 					bodyA->Update(collisionTime);
 					bodyB->Update(collisionTime);
 
-					// Average of two velocities
-					//Vector positionSum = bodyA->GetNextPosition().Add(bodyB->GetNextPosition());
+					// Average the centres of the bodies at their collision positions
 					Vector newPosition = (bodyA->GetNextPosition().Add(bodyB->GetNextPosition())).Divide(2);
 
-					// Calculate new radius
-					// TODO: Figure out way of calculating a new radius given constant density?
-					// At the moment, use larger radius of the two bodies
+					// Calculate new radius - use the larger of the radii
 					double newRadius;
 					if (bodyA->GetRadius() >= bodyB->GetRadius()) {
 						newRadius = bodyA->GetRadius();
@@ -429,14 +446,16 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 		body = bodyList.GetHead();
 		while (body != NULL) {
 			body->Step();
+
 			image.DrawBody(body->GetX(), body->GetY(), body->GetRadius(), 255, 255, 255);
 
 			body = body->next;
 		}
 
+		// Update the elapsed time
 		elapsedTime += dt;
 
-		// Format elapsed time
+		// Format elapsed time (for image output)
 		string elapsedTimeString;
 		string timeUnits = GetTimeUnits(elapsedTime);
 
@@ -467,43 +486,3 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 	output.AddAllBodies(bodyList);
 	output.Save();
 }
-
-/*
-int main() {
-	Simulation sim = Simulation();
-
-	sim.SetSimulationName("shell");
-	sim.SetScale(AU, 150);
-	sim.SetFramerate(60);
-	sim.SetTimestep(3600);
-
-	sim.GenerateRandomShell(100);
-
-	sim.Run(0, 100);
-
-	Simulation sim = Simulation();
-
-	sim.SetSimulationName("PlutoCharon");
-	sim.SetScale(1.3e7, 100);
-	sim.SetFramerate(120);
-	sim.SetTimestep(DAY / 16);
-
-	sim.LoadBodiesFromFile("plutocharon.csv");
-
-	sim.Run(0, 800);
-
-	Simulation sim = Simulation();
-
-	if (sim.LoadBodiesFromFile("test.csv")) {
-		cout << "Read successfully!" << endl;
-	}
-	else {
-		cout << "Failed to load bodies!" << endl;
-	}
-
-	cout << sim.GetNumberOfBodies() << endl;
-
-	sim.SetTimestep(YR);
-	sim.Run(0, 2);
-}
-*/

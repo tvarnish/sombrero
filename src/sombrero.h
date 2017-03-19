@@ -48,7 +48,7 @@ class Simulation {
   	Simulation(int _width, int _height, double _scale, double _dt, int _framerate);
   	Simulation(string _name, int _width, int _height, double _scale, double _dt, int _framerate);
 
-  	// Methods
+  	// Set Methods
   	void SetOutputDimensions(int _width, int _height) { width = _width; height = _height; };
   	void SetScale(double realDistance, double pixelDistance) { scale = realDistance / pixelDistance; };
   	void SetTimestep(double _dt) { dt = _dt; };
@@ -57,12 +57,17 @@ class Simulation {
   	void SetSimulationName(string _name) { name = _name; };
   	void SetGravitationalConstant(double _gravConst) { gravConst = _gravConst; };
 
+    // Get Methods
   	int GetNumberOfBodies() { return bodyList.GetLength(); };
   	string GetTimeUnits(double time);
 
-  	bool LoadBodiesFromFile(string _filename);
+  	bool LoadBodiesFromFile(string _fileName);
+
+    // Generate body setup commands
   	void GenerateRandomShell(int _bodyCount);
   	void GenerateRandomDistribution(int _bodyCount);
+
+    // Simulation Methods
   	void Rotate();
   	void Scale(double finalScale, bool updateScale);
   	void Run(int startingFrame, int framesToSimulate);

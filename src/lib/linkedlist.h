@@ -1,3 +1,6 @@
+// linkedlist.h
+// Linked List object - stores body object in simulation
+
 #ifndef __LIST_H_INCLUDED__
 #define __LIST_H_INCLUDED__
 

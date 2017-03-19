@@ -1,4 +1,6 @@
-// include guard
+// image.h
+// Image class - single image that body positions etc. are drawn onto
+
 #ifndef __IMAGE_H_INCLUDED__
 #define __IMAGE_H_INCLUDED__
 
@@ -18,6 +20,8 @@ class Image {
 
 		pngwriter png;
 
+		// This method is not required outside of the image class, so it is private
+		// It is only used by public methods (in the Image class)
 		void DrawTextArray(int textArray [5][5], int xStart, int yStart, int r, int g, int b);
 
 	public:

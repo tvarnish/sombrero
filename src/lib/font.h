@@ -1,3 +1,6 @@
+// font.h
+// Font bitmaps defined here
+
 #ifndef __FONT_H_INCLUDED__
 #define __FONT_H_INCLUDED__
 

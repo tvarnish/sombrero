@@ -1,3 +1,6 @@
+// video.cpp
+// Video object, used for wrangling image folder and video compilation
+
 #include "video.h"
 #include "misc.h"
 
@@ -6,6 +9,7 @@
 using namespace std;
 
 Video::Video(string _imageFolder, string _imagePrefix, int _width, int _height, int _framerate) {
+	// Constructor - set the image folder and prefix, etc.
 	imageFolder = _imageFolder;
 	imagePrefix = _imagePrefix;
 
@@ -16,37 +20,22 @@ Video::Video(string _imageFolder, string _imagePrefix, int _width, int _height, 
 }
 
 void Video::ClearImageFolder() {
+	// Clear the image folder
 	system( ("rm " + imageFolder + "*.png").c_str() );
 }
 
 void Video::Build(string _outputFileName, int frameCount) {
+	// Build the video from the images using avconv
 	outputFileName = _outputFileName;
 
-	/*
-	//string command = "/usr/local/bin/ffmpeg ";
-	string command = "avconv ";
-	//command += "-loglevel panic ";
-	command += "-loglevel error ";
-	command += "-r " + to_string(framerate) + " ";
-	command += "-s " + width + "x" + height + " ";
-	command += "-i " + imageFolder + imagePrefix + "%0" + to_string(NumberLength(frameCount - 1)) + "d.png ";
-	command += "-vcodec libx264 ";
-	command += "-y ";
-	command += outputFileName;
-	*/
-
+	// Form the avconv command
 	string command = "avconv -r " + framerate + " ";
 	command += "-i " + imageFolder + imagePrefix + "%0" + to_string(GetLengthOfNumber(frameCount - 1)) + "d.png ";
 	command += "-s " + width + "x" + height + " ";
-	//command += "-vcodec qtrle ";
 	command += "-y -loglevel error ";
 	command += outputFileName;
 
 	cout << command << endl;
 
 	system(command.c_str());
-}
-
-void Video::Open() {
-	system( ("open " + outputFileName).c_str() );
 }

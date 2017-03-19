@@ -1,3 +1,6 @@
+// matrix.cpp
+// Matrix object used to describe and perform transformations
+
 #include <iostream>
 #include <cmath>
 
@@ -7,6 +10,7 @@
 using namespace std;
 
 Matrix::Matrix(int _rows, int _columns) {
+	// Constructor - set the size of the matrix
 	rows = _rows;
 	columns = _columns;
 
@@ -14,6 +18,7 @@ Matrix::Matrix(int _rows, int _columns) {
 }
 
 void Matrix::Display() {
+	// Used for debugging - display the contents of a Matrix (console)
 	for (int x = 0; x < rows; x++) {
 		for (int y = 0; y < columns; y++) {
 			cout << data.at(x).at(y) << " ";
@@ -23,9 +28,11 @@ void Matrix::Display() {
 }
 
 double Matrix::GetAt(int r, int c) {
+	// Return the value stored in the matrix at the specified position
 	return data.at(r).at(c);
 }
 
 void Matrix::SetAt(int r, int c, double value) {
+	// Set the value stored in the matrix at the specified position
 	data.at(r).at(c) = value;
 }

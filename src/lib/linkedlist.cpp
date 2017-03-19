@@ -1,17 +1,21 @@
+// linkedlist.cpp
+// Linked List object - stores body object in simulation
+
 #include <iostream>
 #include "linkedlist.h"
 
 using namespace std;
 
 List::List() {
+	// Constructor - set default parameter values (for empty list)
 	head = NULL;
 	length = 0;
 	nextId = 0;
 }
 
 void List::Append(Body * node) {
-	// Update the List's length
-	length++;
+	// Add a new body object (node) to the end of the list
+	// This is the only function that adds a body to the list as order is irrelevant
 
 	// Give the new node an id
 	node->id = nextId;
@@ -28,14 +32,17 @@ void List::Append(Body * node) {
 			pointer = pointer->next;
 		}
 
+		// Point the last node to the new node
 		pointer->next = node;
 	}
+
+	// Update the List's length
+	length++;
 }
 
 void List::Remove(int id) {
+	// Remove a node (body object) from the list
 	if (Contains(id) && head != NULL) {
-		length--;
-
 		if (head->id == id) {
 			head = head->next;
 		}
@@ -54,38 +61,14 @@ void List::Remove(int id) {
 				pointer = pointer->next;
 			}
 		}
+
+		// Update the List's length
+		length--;
 	}
-
-	/*
-	length--;
-	cout << "1" << endl;
-
-	Body * pointer = head;
-	cout << "2" << endl;
-	Body * previous = NULL;
-	cout << "3" << endl;
-
-	while (pointer != NULL) {
-		cout << "4" << endl;
-		if (pointer->id == id) {
-			cout << "5" << endl;
-			previous->next = pointer->next;
-			cout << "6" << endl;
-			pointer->next = NULL;
-			cout << "7" << endl;
-			break;
-		}
-
-		cout << "8" << endl;
-		previous = pointer;
-		cout << "9" << endl;
-		pointer = pointer->next;
-		cout << "0" << endl;
-	}
-	*/
 }
 
 Body * List::GetAt(int id) {
+	// Get a specific body from the list, if it's id is known
 	Body * pointer = head;
 
 	while (pointer != NULL) {
@@ -96,11 +79,12 @@ Body * List::GetAt(int id) {
 		pointer = pointer->next;
 	}
 
-	// If this code is reached, id doesn't exist
+	// If the object is not in the list, return NULL
 	return NULL;
 }
 
 bool List::Contains(int id) {
+	// Check if the body exists in the list
 	Body * pointer = head;
 
 	while (pointer != NULL) {

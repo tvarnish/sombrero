@@ -1,3 +1,6 @@
+// matrix.h
+// Matrix object used to describe and perform transformations
+
 #ifndef __MATRIX_H_INCLUDED__
 #define __MATRIX_H_INCLUDED__
 

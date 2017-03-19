@@ -1,9 +1,13 @@
+// font.cpp
+// Font bitmaps defined here
+
 #include "font.h"
 
 // Kerning is the spacing between characters
 int kerning = 1;
 int fontWidth = 5;
 
+// Bitmaps for alphabetical characters
 int fontAlphabet [26][5][5] = {
 	 // A
 	{{0, 1, 1, 1, 0},
@@ -163,6 +167,7 @@ int fontAlphabet [26][5][5] = {
  	 {1, 1, 1, 1, 1}}
 };
 
+// Bitmaps for digits
 int fontNumbers [10][5][5] = {
 	 // 0
 	{{0, 1, 1, 1, 0},
@@ -226,6 +231,7 @@ int fontNumbers [10][5][5] = {
  	 {0, 0, 0, 1, 0}}
 };
 
+// Bitmap for period character - .
 int fontPERIOD [5][5] = {
 	{0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0},
@@ -234,6 +240,7 @@ int fontPERIOD [5][5] = {
 	{0, 1, 1, 0, 0}
 };
 
+// Bitmap for colon character - :
 int fontCOLON [5][5] = {
 	{0, 1, 1, 0, 0},
 	{0, 1, 1, 0, 0},
@@ -242,6 +249,7 @@ int fontCOLON [5][5] = {
 	{0, 1, 1, 0, 0}
 };
 
+// Bitmap for hyphen character - -
 int fontHYPHEN [5][5] = {
 	{0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0},
@@ -250,6 +258,7 @@ int fontHYPHEN [5][5] = {
 	{0, 0, 0, 0, 0}
 };
 
+// Bitmap for forward slash character - /
 int fontSLASH [5][5] = {
 	{0, 0, 0, 0, 1},
 	{0, 0, 0, 1, 0},
