@@ -18,7 +18,7 @@ void List::Append(Body * node) {
 	// This is the only function that adds a body to the list as order is irrelevant
 
 	// Give the new node an id
-	node->id = nextId;
+	node->SetID(nextId);
 	nextId++;
 
 	// Follow pointers through list until you reach a NULL pointer
@@ -28,12 +28,12 @@ void List::Append(Body * node) {
 		head = node;
 	}
 	else {
-		while (pointer->next != NULL) {
-			pointer = pointer->next;
+		while (pointer->GetNext() != NULL) {
+			pointer = pointer->GetNext();
 		}
 
 		// Point the last node to the new node
-		pointer->next = node;
+		pointer->SetNext(node);
 	}
 
 	// Update the List's length
@@ -43,22 +43,22 @@ void List::Append(Body * node) {
 void List::Remove(int id) {
 	// Remove a node (body object) from the list
 	if (Contains(id) && head != NULL) {
-		if (head->id == id) {
-			head = head->next;
+		if (head->GetID() == id) {
+			head = head->GetNext();
 		}
 		else {
-			Body * pointer = head->next;
+			Body * pointer = head->GetNext();
 			Body * previous = head;
 
 			while (pointer != NULL) {
-				if (pointer->id == id) {
-					previous->next = pointer->next;
-					pointer->next = NULL;
+				if (pointer->GetID() == id) {
+					previous->SetNext(pointer->GetNext());
+					pointer->SetNext(NULL);
 					break;
 				}
 
 				previous = pointer;
-				pointer = pointer->next;
+				pointer = pointer->GetNext();
 			}
 		}
 
@@ -72,11 +72,11 @@ Body * List::GetAt(int id) {
 	Body * pointer = head;
 
 	while (pointer != NULL) {
-		if (pointer->id == id) {
+		if (pointer->GetID() == id) {
 			return pointer;
 		}
 
-		pointer = pointer->next;
+		pointer = pointer->GetNext();
 	}
 
 	// If the object is not in the list, return NULL
@@ -88,11 +88,11 @@ bool List::Contains(int id) {
 	Body * pointer = head;
 
 	while (pointer != NULL) {
-		if (pointer->id == id) {
+		if (pointer->GetID() == id) {
 			return true;
 		}
 
-		pointer = pointer->next;
+		pointer = pointer->GetNext();
 	}
 
 	// If this code is reached, id doesn't exist

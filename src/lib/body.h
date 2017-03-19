@@ -18,10 +18,11 @@ class Body {
 		Vector nextPosition;
 		Vector force;
 
-	public:
+		// Used for linked list
 		Body * next = NULL;
 		int id;
 
+	public:
 		// Constructors
 		Body(double _x, double _y, double _z, double _mass, double _radius, double _xVelocity, double _yVelocity, double _zVelocity);
 		Body(Vector position, double _mass, double _radius, Vector velocity);
@@ -45,12 +46,18 @@ class Body {
 		double GetZVelocity() { return velocity.GetZ(); };
 		Vector GetVelocity() { return velocity; };
 
+		Body * GetNext() { return next; };
+		int GetID() { return id; };
+
 		// Set Methods
 		void SetPosition(double _x, double _y, double _z) { position.Set(_x, _y, _z); };
 		void SetPosition(Vector _position) { position = _position; };
 
 		void SetVelocity(double _xVelocity, double _yVelocity, double _zVelocity) { velocity.Set(_xVelocity, _yVelocity, _zVelocity); };
 		void SetVelocity(Vector _velocity) { velocity = _velocity; };
+
+		void SetNext(Body * _next) { next = _next; };
+		void SetID(int _id) { id = _id; };
 
 		// Calculation Methods
 		void AddForce(double _force, double phi, double theta);

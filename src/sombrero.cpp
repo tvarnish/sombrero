@@ -206,7 +206,7 @@ void Simulation::Rotate() {
 
 			image.DrawBody(transformedPosition.GetX(), transformedPosition.GetY(), body->GetRadius(), 255, 255, 255);
 
-			body = body->next;
+			body = body->GetNext();
 		}
 
 		// Draw details of simulation to frame
@@ -309,7 +309,7 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 		body = bodyList.GetHead();
 		while (body != NULL) {
 			body->ResetForce();
-			body = body->next;
+			body = body->GetNext();
 		}
 
 		// n-body algorithm (optimised)
@@ -318,7 +318,7 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 		bodyB = NULL;
 
 		while (bodyA != NULL) {
-			bodyB = bodyA->next;
+			bodyB = bodyA->GetNext();
 
 			while (bodyB != NULL) {
 				// Calculate distance between objects
@@ -337,10 +337,10 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 				bodyB->AddForce(-force, phiAngle, thetaAngle);
 
 				// Advance pointer
-				bodyB = bodyB->next;
+				bodyB = bodyB->GetNext();
 			}
 
-			bodyA = bodyA->next;
+			bodyA = bodyA->GetNext();
 		}
 
 		string imageFileName = "images/image_" + PadWithZeroes(f - startingFrame, framesToSimulate) + ".png";
@@ -350,7 +350,7 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 		body = bodyList.GetHead();
 		while (body != NULL) {
 			body->Update(dt);
-			body = body->next;
+			body = body->GetNext();
 		}
 
 		// Collision Physics
@@ -358,7 +358,7 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 		bodyB = NULL;
 
 		while (bodyA != NULL) {
-			bodyB = bodyA->next;
+			bodyB = bodyA->GetNext();
 
 			while (bodyB != NULL) {
 				double collisionTime = -1;
@@ -427,8 +427,8 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 					}
 
 					// Create a new (combined) body, and remove A and B;
-					bodyList.Remove(bodyA->id);
-					bodyList.Remove(bodyB->id);
+					bodyList.Remove(bodyA->GetID());
+					bodyList.Remove(bodyB->GetID());
 
 					Body * newBody = new Body(newPosition, newMass, newRadius, newVelocity);
 
@@ -436,10 +436,10 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 					bodyList.Append(newBody);
 				}
 
-				bodyB = bodyB->next;
+				bodyB = bodyB->GetNext();
 			}
 
-			bodyA = bodyA->next;
+			bodyA = bodyA->GetNext();
 		}
 
 		// Move each body to their new positions
@@ -449,7 +449,7 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 
 			image.DrawBody(body->GetX(), body->GetY(), body->GetRadius(), 255, 255, 255);
 
-			body = body->next;
+			body = body->GetNext();
 		}
 
 		// Update the elapsed time

@@ -42,6 +42,6 @@ void Output::AddAllBodies(List bodyList) {
 
 	while (body != NULL) {
 		AddBody(body);
-		body = body->next;
+		body = body->GetNext();
 	}
 }

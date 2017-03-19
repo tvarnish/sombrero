@@ -72,7 +72,7 @@ void Image::DrawAllBodies(List bodyList, int r, int g, int b) {
 	Body * body = bodyList.GetHead();
 	while (body != NULL) {
 		DrawBody(body->GetX(), body->GetY(), body->GetRadius(), r, g, b);
-		body = body->next;
+		body = body->GetNext();
 	}
 }
 
