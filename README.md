@@ -1,5 +1,5 @@
 # Sombrero
-Sombrero is my A-Level Computer Science project (AQA), focused on simulating the N-Body Problem (with a (very stretchy) stretch goal of SPH for simulating star formation). Hence, I cannot accept any offers of support with this project until after August 2017, due to exam board regulations. However, I do intend to continue work on this project after I finish the course.
+Sombrero is my A-Level Computer Science project (AQA), focused on simulating the three-dimensional N-Body Problem.
 
 ## Getting Started
 These instructions will get a copy of the project running on your local machine, for development and testing purposes (I haven't written the `make install` command yet).
