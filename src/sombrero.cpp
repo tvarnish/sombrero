@@ -417,14 +417,12 @@ void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMes
 					// Average the centres of the bodies at their collision positions
 					Vector newPosition = (bodyA->GetNextPosition().Add(bodyB->GetNextPosition())).Divide(2);
 
-					// Calculate new radius - use the larger of the radii
-					double newRadius;
-					if (bodyA->GetRadius() >= bodyB->GetRadius()) {
-						newRadius = bodyA->GetRadius();
-					}
-					else {
-						newRadius = bodyB->GetRadius();
-					}
+					// Calculate new radius - use volumes of the two materials
+					double volumeA = (4/3) * PI * pow(bodyA->GetRadius(), 3);
+					double volumeB = (4/3) * PI * pow(bodyB->GetRadius(), 3);
+					double newVolume = volumeA + volumeB;
+
+					double newRadius = pow(newVolume / ((4/3) * PI), (1/3));
 
 					// Create a new (combined) body, and remove A and B;
 					bodyList.Remove(bodyA->GetID());
