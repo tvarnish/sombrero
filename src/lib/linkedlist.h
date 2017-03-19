@@ -18,8 +18,6 @@ class List {
 		int GetLength() { return length; };
 		void Append(Body * node);
 		void Remove(int id);
-
-		Body * GetAt(int id);
 		bool Contains(int id);
 };
 

@@ -67,22 +67,6 @@ void List::Remove(int id) {
 	}
 }
 
-Body * List::GetAt(int id) {
-	// Get a specific body from the list, if it's id is known
-	Body * pointer = head;
-
-	while (pointer != NULL) {
-		if (pointer->GetID() == id) {
-			return pointer;
-		}
-
-		pointer = pointer->GetNext();
-	}
-
-	// If the object is not in the list, return NULL
-	return NULL;
-}
-
 bool List::Contains(int id) {
 	// Check if the body exists in the list
 	Body * pointer = head;
