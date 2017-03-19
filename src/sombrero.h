@@ -68,9 +68,9 @@ class Simulation {
   	void GenerateRandomDistribution(int _bodyCount);
 
     // Simulation Methods
-  	void Rotate();
-  	void Scale(double finalScale, bool updateScale);
-  	void Run(int startingFrame, int framesToSimulate);
+  	void Rotate(string buildingMessage = "");
+  	void Scale(double finalScale, bool updateScale, string buildingMessage = "");
+  	void Run(int startingFrame, int framesToSimulate, string buildingMessage = "");
 };
 
 #endif

@@ -20,7 +20,7 @@ class Video {
 		Video(string _imageFolder, string _imagePrefix, int _width, int _height, int _framerate);
 
 		void ClearImageFolder();
-		void Build(string _outputFileName, int frameCount);
+		void Build(string _outputFileName, int frameCount, string buildingMessage = "");
 };
 
 #endif

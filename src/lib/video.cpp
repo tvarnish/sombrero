@@ -24,7 +24,7 @@ void Video::ClearImageFolder() {
 	system( ("rm " + imageFolder + "*.png").c_str() );
 }
 
-void Video::Build(string _outputFileName, int frameCount) {
+void Video::Build(string _outputFileName, int frameCount, string buildingMessage) {
 	// Build the video from the images using avconv
 	outputFileName = _outputFileName;
 
@@ -35,7 +35,9 @@ void Video::Build(string _outputFileName, int frameCount) {
 	command += "-y -loglevel error ";
 	command += outputFileName;
 
-	cout << command << endl;
+	if (buildingMessage != "") {
+		cout << buildingMessage << endl;
+	}
 
 	system(command.c_str());
 }

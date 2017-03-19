@@ -186,7 +186,7 @@ void Simulation::GenerateRandomDistribution(int _bodyCount) {
 	output.Save();
 }
 
-void Simulation::Rotate() {
+void Simulation::Rotate(string buildingMessage) {
 	// Generate a video, rotating the three-dimensional set up around the y-axis
 	Video video = Video("images/", "image_", width, height, framerate);
 	video.ClearImageFolder();
@@ -220,10 +220,10 @@ void Simulation::Rotate() {
 	}
 
 	// Build video from images
-	video.Build(outputFolder + name + ".mp4", 360);
+	video.Build(outputFolder + name + ".mp4", 360, buildingMessage);
 }
 
-void Simulation::Scale(double finalScale, bool updateScale) {
+void Simulation::Scale(double finalScale, bool updateScale, string buildingMessage) {
 	// Create a video, zooming in or out of (scaling) the simulation
 	Video video = Video("images/", "image_", width, height, framerate);
 	video.ClearImageFolder();
@@ -267,10 +267,10 @@ void Simulation::Scale(double finalScale, bool updateScale) {
 	}
 
 	// Build video from images
-	video.Build(outputFolder + name + "_zoom.mp4", abs(finalScale - scale));
+	video.Build(outputFolder + name + "_zoom.mp4", abs(finalScale - scale), buildingMessage);
 }
 
-void Simulation::Run(int startingFrame, int framesToSimulate) {
+void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMessage) {
 	int currentFrames = 0;
 	int initialFrameCounter = startingFrame;
 
@@ -479,7 +479,7 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 		image.Save();
 	}
 
-	video.Build(outputFolder + name + "_run.mp4", framesToSimulate);
+	video.Build(outputFolder + name + "_run.mp4", framesToSimulate, buildingMessage);
 
 	// Create _output.csv
 	Output output(outputFolder + name + "_output" + ".csv");
