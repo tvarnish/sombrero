@@ -41,9 +41,6 @@ class Simulation {
 	Body * bodyA;
 	Body * bodyB;
 
-	bool ValidateOutputFolder(string _outputFolder);
-	bool ValidateBodyFile(string _filename, bool _mustBeEmpty);
-
   public:
   	// Constructors
   	Simulation();

@@ -36,7 +36,7 @@ void Video::Build(string _outputFileName, int frameCount) {
 	*/
 
 	string command = "avconv -r " + framerate + " ";
-	command += "-i " + imageFolder + imagePrefix + "%0" + to_string(NumberLength(frameCount - 1)) + "d.png ";
+	command += "-i " + imageFolder + imagePrefix + "%0" + to_string(GetLengthOfNumber(frameCount - 1)) + "d.png ";
 	command += "-s " + width + "x" + height + " ";
 	//command += "-vcodec qtrle ";
 	command += "-y -loglevel error ";
