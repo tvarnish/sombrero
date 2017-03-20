@@ -42,8 +42,10 @@ class Simulation {
 	Body * bodyA;
 	Body * bodyB;
 
+  string GetTimeUnits(double time);
+
   public:
-  	// Constructors
+    // Constructors
   	Simulation();
   	Simulation(int _width, int _height, double _scale, double _dt, int _framerate);
   	Simulation(string _name, int _width, int _height, double _scale, double _dt, int _framerate);
@@ -59,7 +61,6 @@ class Simulation {
 
     // Get Methods
   	int GetNumberOfBodies() { return bodyList.GetLength(); };
-  	string GetTimeUnits(double time);
 
   	bool LoadBodiesFromFile(string _fileName);
 
