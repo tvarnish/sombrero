@@ -27,7 +27,7 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr/
 sudo make install
 ```
 
-It is also important to note that you will require **g++-4.9** in order to compile Sombrero (as regex is used). You can check your installed version of g++ using the command. If it says that you have 4.9.x installed, you should be good to go!
+It is also important to note that you will require **g++-4.9** in order to compile Sombrero (as regex is used). You can check your installed version of g++ using the following command. If it says that you have 4.9.x installed, you should be good to go!
 
 ```
 g++ --version
