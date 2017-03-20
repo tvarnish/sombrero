@@ -180,7 +180,7 @@ void Simulation::GenerateRandomDistribution(int _bodyCount) {
 		bodyList.Append(new Body(x, y, z, mass, radius, 0, 0, 0));
 	}
 
-	// Save bodies to output.txt
+	// Save bodies to output.csv
 	Output output(outputFolder + name + ".csv");
 	output.AddAllBodies(bodyList);
 	output.Save();
@@ -483,4 +483,19 @@ void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMes
 	Output output(outputFolder + name + "_output" + ".csv");
 	output.AddAllBodies(bodyList);
 	output.Save();
+}
+
+void Simulation::SaveOutputFile() {
+	// Save bodies to output.csv
+	Output output(outputFolder + name + ".csv");
+	output.AddAllBodies(bodyList);
+	output.Save();
+}
+
+void Simulation::AddBody(Body * body) {
+	bodyList.Append(body);
+}
+
+void Simulation::ClearBodyList() {
+	bodyList = List();
 }

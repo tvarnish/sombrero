@@ -26,21 +26,21 @@
 using namespace std;
 
 class Simulation {
-	// Parameters initialised with defaults
-	string name = "simulation";
-	string outputFolder = "";
-	int bodyCount;
-	int width = 640;
-	int height = 480;
-	double scale = (AU / 100);
-	double dt = DAY / 2;
-	int framerate = 60;
-	double gravConst = GR;
+  // Parameters initialised with defaults
+  string name = "simulation";
+  string outputFolder = "";
+  int bodyCount;
+  int width = 640;
+  int height = 480;
+  double scale = (AU / 100);
+  double dt = DAY / 2;
+  int framerate = 60;
+  double gravConst = GR;
 
-	List bodyList;
-	Body * body;
-	Body * bodyA;
-	Body * bodyB;
+  List bodyList;
+  Body * body;
+  Body * bodyA;
+  Body * bodyB;
 
   string GetTimeUnits(double time);
 
@@ -63,10 +63,14 @@ class Simulation {
   	int GetNumberOfBodies() { return bodyList.GetLength(); };
 
   	bool LoadBodiesFromFile(string _fileName);
+    void SaveOutputFile();
 
     // Generate body setup commands
   	void GenerateRandomShell(int _bodyCount);
   	void GenerateRandomDistribution(int _bodyCount);
+
+    void AddBody(Body * body);
+    void ClearBodyList();
 
     // Simulation Methods
   	void Rotate(string buildingMessage = "");
