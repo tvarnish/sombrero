@@ -159,10 +159,8 @@ void Simulation::GenerateRandomShell(int _bodyCount) {
 	// Add the central heavy body to the body list
 	bodyList.Append(new Body(0.0, 0.0, 0.0, 1e30, 1e8, 0.0, 0.0, 0.0));
 
-	// Save bodies to _output.csv
-	Output output(outputFolder + name + ".csv");
-	output.AddAllBodies(bodyList);
-	output.Save();
+	// Save bodies to file
+	SaveOutputFile(outputFolder + name);
 }
 
 void Simulation::GenerateRandomDistribution(int _bodyCount) {
@@ -180,10 +178,8 @@ void Simulation::GenerateRandomDistribution(int _bodyCount) {
 		bodyList.Append(new Body(x, y, z, mass, radius, 0, 0, 0));
 	}
 
-	// Save bodies to output.csv
-	Output output(outputFolder + name + ".csv");
-	output.AddAllBodies(bodyList);
-	output.Save();
+	// Save bodies to file
+	SaveOutputFile(outputFolder + name);
 }
 
 void Simulation::Rotate(string buildingMessage) {
@@ -480,14 +476,18 @@ void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMes
 	video.Build(outputFolder + name + "_run.mp4", framesToSimulate, buildingMessage);
 
 	// Create _output.csv
-	Output output(outputFolder + name + "_output" + ".csv");
-	output.AddAllBodies(bodyList);
-	output.Save();
+	SaveOutputFile();
 }
 
-void Simulation::SaveOutputFile() {
+void Simulation::SaveOutputFile(string _fileName) {
 	// Save bodies to output.csv
-	Output output(outputFolder + name + ".csv");
+	string outputFileName = outputFolder + name + ".csv";
+
+	if (fileName != "") {
+		outputFileName = _fileName;
+	}
+
+	Output output(outputFileName + ".csv");
 	output.AddAllBodies(bodyList);
 	output.Save();
 }
