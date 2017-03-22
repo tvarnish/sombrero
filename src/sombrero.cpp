@@ -499,3 +499,9 @@ void Simulation::AddBody(Body * body) {
 void Simulation::ClearBodyList() {
 	bodyList = List();
 }
+
+void Simulation::SetOutputDirectory(string _outputFolder) {
+	outputFolder = _outputFolder;
+	string command = "mkdir -p " + outputFolder;
+	system(command.c_str());
+}

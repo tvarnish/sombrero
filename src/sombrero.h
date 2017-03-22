@@ -55,7 +55,7 @@ class Simulation {
   	void SetScale(double realDistance, double pixelDistance) { scale = realDistance / pixelDistance; };
   	void SetTimestep(double _dt) { dt = _dt; };
   	void SetFramerate(int _framerate) { framerate = _framerate; };
-  	void SetOutputDirectory(string _outputFolder) { outputFolder = _outputFolder; };
+  	void SetOutputDirectory(string _outputFolder);
   	void SetSimulationName(string _name) { name = _name; };
   	void SetGravitationalConstant(double _gravConst) { gravConst = _gravConst; };
 
