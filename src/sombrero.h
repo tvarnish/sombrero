@@ -63,7 +63,7 @@ class Simulation {
   	int GetNumberOfBodies() { return bodyList.GetLength(); };
 
   	bool LoadBodiesFromFile(string _fileName);
-    void SaveOutputFile(string _fileName);
+    void SaveOutputFile(string _fileName = "");
 
     // Generate body setup commands
   	void GenerateRandomShell(int _bodyCount);

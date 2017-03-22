@@ -483,7 +483,7 @@ void Simulation::SaveOutputFile(string _fileName) {
 	// Save bodies to output.csv
 	string outputFileName = outputFolder + name + ".csv";
 
-	if (fileName != "") {
+	if (_fileName != "") {
 		outputFileName = _fileName;
 	}
 
