@@ -481,13 +481,13 @@ void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMes
 
 void Simulation::SaveOutputFile(string _fileName) {
 	// Save bodies to output.csv
-	string outputFileName = outputFolder + name + ".csv";
+	string outputFileName = outputFolder + name + "_output.csv";
 
 	if (_fileName != "") {
 		outputFileName = _fileName;
 	}
 
-	Output output(outputFileName + ".csv");
+	Output output(outputFileName);
 	output.AddAllBodies(bodyList);
 	output.Save();
 }
