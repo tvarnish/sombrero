@@ -322,15 +322,12 @@ void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMes
 				bool t1Valid = (t1 >= 0 && t1 <= 1);
 				bool t2Valid = (t2 >= 0 && t2 <= 1);
 
-				if (t1 <= t2) {
-					if (t1Valid) {
-						CollideBodies(bodyA, bodyB, t1);
-					}
+				// Select the first valid (0 <= t <= 1) collision time (smallest t)
+				if (t1 <= t2 && t1Valid) {
+					CollideBodies(bodyA, bodyB, t1);
 				}
-				else {
-					if (t2Valid) {
-						CollideBodies(bodyA, bodyB, t2);
-					}
+				else if (t2Valid) {
+					CollideBodies(bodyA, bodyB, t2);
 				}
 
 				bodyB = bodyB->GetNext();
