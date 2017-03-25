@@ -52,6 +52,7 @@ class Body {
 		// Set Methods
 		void SetPosition(double _x, double _y, double _z) { position.Set(_x, _y, _z); };
 		void SetPosition(Vector _position) { position = _position; };
+		void SetNextPosition(Vector _nextPosition) { nextPosition = _nextPosition; };
 
 		void SetVelocity(double _xVelocity, double _yVelocity, double _zVelocity) { velocity.Set(_xVelocity, _yVelocity, _zVelocity); };
 		void SetVelocity(Vector _velocity) { velocity = _velocity; };

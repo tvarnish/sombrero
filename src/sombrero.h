@@ -44,6 +44,9 @@ class Simulation {
 
   string GetTimeUnits(double time);
 
+  // Private Simulation Methods
+  void CollideBodies(Body * bodyA, Body * bodyB, double t);
+
   public:
     // Constructors
   	Simulation();

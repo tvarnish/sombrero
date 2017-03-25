@@ -24,36 +24,6 @@
 
 using namespace std;
 
-string Simulation::GetTimeUnits(double time) {
-	// Determine, and return, the time units (Seconds, Days, Years) for the given time.
-	regex validInteger("[1-9][0-9]*");
-	string timeUnits;
-
-	// Note: space included for "DAYS " purely for spacing when output
-	if (time < DAY) {
-			if (regex_match(to_string(1 / (time / DAY)), validInteger)) {
-				// Check if the time is in the form DAY / n, where n is an integer
-				timeUnits = "DAYS ";
-			}
-			else {
-				timeUnits = "SECS ";
-			}
-	}
-	else if (time > DAY) {
-		if (time < 2 * YR) {
-			timeUnits = "DAYS ";
-		}
-		else {
-			timeUnits = "YEARS";
-		}
-	}
-	else if (time == DAY) {
-		timeUnits = "DAYS ";
-	}
-
-	return timeUnits;
-}
-
 Simulation::Simulation() {
 	// Constructor for Simulation object with default parameters
 	bodyList = List();
@@ -268,38 +238,15 @@ void Simulation::Scale(double finalScale, bool updateScale, string buildingMessa
 
 void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMessage) {
 	int currentFrames = 0;
-	int initialFrameCounter = startingFrame;
 
 	Video video = Video("images/", "image_", width, height, framerate);
 	video.ClearImageFolder();
 
-	double elapsedTime = (startingFrame - 1) * dt;
-
-	if (startingFrame == 0) {
-		// Produce frame showing initial setup of bodies (if starting from frame 0)
-		string minimumTimeUnits = GetTimeUnits(dt);
-
-		string imageFileName = "images/image_" + PadWithZeroes(0, framesToSimulate) + ".png";
-		Image image = Image(imageFileName, width, height, scale);
-
-		image.DrawAllBodies(bodyList, 255, 255, 255);
-
-		// Draw information on frame
-		image.DrawText("SIMULATION  " + minimumTimeUnits + " " + "0.0", 10, 10, 155, 155, 155);
-		image.DrawText("F: 0", 10, 20, 155, 155, 155);
-		image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 155, 155, 155);
-
-		image.DrawScale(scale, 10, height - 15, 55, 55, 55);
-
-		image.Save();
-
-		initialFrameCounter++;
-		elapsedTime = 0;
-	}
+	double elapsedTime = startingFrame * dt;
 
 	// Simulate the next frames
-	// <=, as it simulates 0->1, 1->2 therefore needs to simulate up to n.	
-	for (int f = initialFrameCounter; f <= framesToSimulate + startingFrame; f++) {
+	// <=, as it simulates 0->1, 1->2 therefore needs to simulate up to n.
+	for (int f = startingFrame; f <= framesToSimulate + startingFrame; f++) {
 		// Reset force counter on each body
 		// (as force is used to count the net force on the body for that frame)
 		body = bodyList.GetHead();
@@ -339,13 +286,11 @@ void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMes
 			bodyA = bodyA->GetNext();
 		}
 
-		string imageFileName = "images/image_" + PadWithZeroes(f - startingFrame, framesToSimulate) + ".png";
-		Image image = Image(imageFileName, width, height, scale);
-
 		// Calculate next position for each body
 		body = bodyList.GetHead();
 		while (body != NULL) {
 			body->Update(dt);
+
 			body = body->GetNext();
 		}
 
@@ -357,77 +302,35 @@ void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMes
 			bodyB = bodyA->GetNext();
 
 			while (bodyB != NULL) {
-				double collisionTime = -1;
+				// Check for collision
+				Vector bodyAPosition = bodyA->GetPosition();
+				Vector bodyBPosition = bodyB->GetPosition();
+				Vector bodyANextPosition = bodyA->GetNextPosition();
+				Vector bodyBNextPosition = bodyB->GetNextPosition();
 
-				// Set up position vectors
-				Vector initialA = bodyA->GetPosition();
-				Vector finalA = bodyA->GetNextPosition();
-				
-				Vector initialB = bodyB->GetPosition();
-				Vector finalB = bodyB->GetNextPosition();
-				
-				// Check the two lines are not parallel (using direction vectors)
-				Vector lineA = finalA.Subtract(initialA);
-				Vector lineB = finalB.Subtract(initialB);
+				Vector lambda = bodyBPosition.Subtract(bodyAPosition);
+				Vector mu = bodyBNextPosition.Subtract(bodyANextPosition).Add(bodyAPosition).Subtract(bodyBPosition);
 
-				if (lineA.DotProduct(lineB) != 0) {
-					// Calculate collision times
-					Vector vectorA = initialB.Subtract(initialA);
-					Vector vectorB = (finalB.Subtract(finalA)).Add(initialA.Subtract(initialB));
+				// Quadratic coefficients => at^2 + bt + c = 0
+				double a = pow(mu.Magnitude(), 2);
+				double b = 2 * lambda.DotProduct(mu);
+				double c = pow(lambda.Magnitude(), 2) - pow(bodyA->GetRadius() + bodyB->GetRadius(), 2);
 
-					double dotProduct = vectorA.DotProduct(vectorB);
-					double radiiSum = bodyA->GetRadius() + bodyB->GetRadius();
+				double t1 = ((-1 * b) + (sqrt(pow(b, 2) - (4 * a * c))))/(2 * a);
+				double t2 = ((-1 * b) - (sqrt(pow(b, 2) - (4 * a * c))))/(2 * a);
 
-					double determinant = (4 * pow(dotProduct, 2)) - (4 * pow(vectorB.Magnitude(), 2) * (pow(vectorA.Magnitude(), 2) - pow(radiiSum, 2)));
-					double time1 = (-2 * dotProduct + sqrt(determinant)) / (2 * pow(vectorB.Magnitude(), 2));
-					double time2 = (-2 * dotProduct - sqrt(determinant)) / (2 * pow(vectorB.Magnitude(), 2));
+				bool t1Valid = (t1 >= 0 && t1 <= 1);
+				bool t2Valid = (t2 >= 0 && t2 <= 1);
 
-					bool timeValid1 = time1 >= 0 && time1 <= 1;
-					bool timeValid2 = time2 >= 0 && time2 <= 1;
-
-					// Check if the collision occurs within the timestep
-					if (timeValid1 && timeValid2) {
-						if (time1 <= time2) {
-							collisionTime = time1 * dt;
-						}
-						else {
-							collisionTime = time2 * dt;
-						}
+				if (t1 <= t2) {
+					if (t1Valid) {
+						CollideBodies(bodyA, bodyB, t1);
 					}
 				}
-
-				// Collide particles if collision will occur
-				if (collisionTime != -1) {
-					double newMass = bodyA->GetMass() + bodyB->GetMass();
-
-					// Conservation of linear momentum (assuming bodies will combine)
-					Vector aMomentum = bodyA->GetVelocity().Multiply(bodyA->GetMass());
-					Vector bMomentum = bodyB->GetVelocity().Multiply(bodyB->GetMass());
-					Vector newVelocity = (aMomentum.Add(bMomentum)).Divide(newMass);
-
-					// Calculate position of new body
-					// Use midpoint of the two "collision positions"
-					bodyA->Update(collisionTime);
-					bodyB->Update(collisionTime);
-
-					// Average the centres of the bodies at their collision positions
-					Vector newPosition = (bodyA->GetNextPosition().Add(bodyB->GetNextPosition())).Divide(2);
-
-					// Calculate new radius - use volumes of the two materials
-					double volumeA = (4/3) * PI * pow(bodyA->GetRadius(), 3);
-					double volumeB = (4/3) * PI * pow(bodyB->GetRadius(), 3);
-					double newVolume = volumeA + volumeB;
-
-					double newRadius = pow(newVolume / ((4/3) * PI), (1/3));
-
-					// Create a new (combined) body, and remove A and B;
-					bodyList.Remove(bodyA->GetID());
-					bodyList.Remove(bodyB->GetID());
-
-					Body * newBody = new Body(newPosition, newMass, newRadius, newVelocity);
-
-					newBody->Update(dt - collisionTime);
-					bodyList.Append(newBody);
+				else {
+					if (t2Valid) {
+						CollideBodies(bodyA, bodyB, t2);
+					}
 				}
 
 				bodyB = bodyB->GetNext();
@@ -435,19 +338,6 @@ void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMes
 
 			bodyA = bodyA->GetNext();
 		}
-
-		// Move each body to their new positions
-		body = bodyList.GetHead();
-		while (body != NULL) {
-			body->Step();
-
-			image.DrawBody(body->GetX(), body->GetY(), body->GetRadius(), 255, 255, 255);
-
-			body = body->GetNext();
-		}
-
-		// Update the elapsed time
-		elapsedTime += dt;
 
 		// Format elapsed time (for image output)
 		string elapsedTimeString;
@@ -464,13 +354,30 @@ void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMes
 		}
 
 		// Draw information on frame
+		string imageFileName = "images/image_" + PadWithZeroes(f - startingFrame, framesToSimulate) + ".png";
+		Image image = Image(imageFileName, width, height, scale);
+
 		image.DrawText("SIMULATION  " + timeUnits + " " + elapsedTimeString, 10, 10, 155, 155, 155);
 		image.DrawText("F: " + to_string(f + currentFrames), 10, 20, 155, 155, 155);
 		image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 155, 155, 155);
 
 		image.DrawScale(scale, 10, height - 15, 55, 55, 55);
 
+		image.DrawAllBodies(bodyList, 255, 255, 255);
+
+		// Save image
 		image.Save();
+
+		// Move each body to their new positions
+		body = bodyList.GetHead();
+		while (body != NULL) {
+			body->Step();
+
+			body = body->GetNext();
+		}
+
+		// Update the elapsed time
+		elapsedTime += dt;
 	}
 
 	video.Build(outputFolder + name + "_run.mp4", framesToSimulate, buildingMessage);
@@ -504,4 +411,72 @@ void Simulation::SetOutputDirectory(string _outputFolder) {
 	outputFolder = _outputFolder;
 	string command = "mkdir -p " + outputFolder;
 	system(command.c_str());
+}
+
+string Simulation::GetTimeUnits(double time) {
+	// Determine, and return, the time units (Seconds, Days, Years) for the given time.
+	regex validInteger("[1-9][0-9]*");
+	string timeUnits;
+
+	// Note: space included for "DAYS " purely for spacing when output
+	if (time < DAY) {
+			if (regex_match(to_string(1 / (time / DAY)), validInteger)) {
+				// Check if the time is in the form DAY / n, where n is an integer
+				timeUnits = "DAYS ";
+			}
+			else {
+				timeUnits = "SECS ";
+			}
+	}
+	else if (time > DAY) {
+		if (time < 2 * YR) {
+			timeUnits = "DAYS ";
+		}
+		else {
+			timeUnits = "YEARS";
+		}
+	}
+	else if (time == DAY) {
+		timeUnits = "DAYS ";
+	}
+
+	return timeUnits;
+}
+
+void Simulation::CollideBodies(Body * bodyA, Body * bodyB, double t) {
+	// Calculate new Mass (sum of original bodies)
+	double newMass = bodyA->GetMass() + bodyB->GetMass();
+
+	// Conservation of linear momentum (assuming bodies will combine)
+	Vector aMomentum = bodyA->GetVelocity().Multiply(bodyA->GetMass());
+	Vector bMomentum = bodyB->GetVelocity().Multiply(bodyB->GetMass());
+	Vector newVelocity = (aMomentum.Add(bMomentum)).Divide(newMass);
+
+	// Calculate position of new body
+	// Average the centres of the bodies at their collision positions
+	bodyA->Update(t * dt);
+	bodyB->Update(t * dt);
+
+	Vector bodyAPosition = bodyA->GetNextPosition();
+	Vector bodyBPosition = bodyB->GetNextPosition();
+
+	Vector newPosition = (bodyAPosition.Add(bodyBPosition)).Divide(2.0);
+
+	// Calculate new radius - use volumes of the two materials
+	double volumeA = (4/3) * PI * pow(bodyA->GetRadius(), 3);
+	double volumeB = (4/3) * PI * pow(bodyB->GetRadius(), 3);
+	double newVolume = volumeA + volumeB;
+
+	double newRadius = pow(newVolume / ((4/3) * PI), (1/3));
+
+	// Create a new (combined) body, and remove A and B;
+	bodyList.Remove(bodyA->GetID());
+	bodyList.Remove(bodyB->GetID());
+
+	Body * newBody = new Body(newPosition, newMass, newRadius, newVelocity);
+	//newBody->SetNextPosition(newPosition);
+
+	newBody->Update((1 - t) * dt);
+
+	bodyList.Append(newBody);
 }
