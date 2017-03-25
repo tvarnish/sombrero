@@ -70,7 +70,6 @@ string ToStandardForm(double value) {
 	// Convert a double to a standard form string
 	// e.g. 12857 -> 1.2857e4
 	string standardForm = "";
-	string valueString = to_string(value);
 	bool negative = false;
 
 	// Calculate the power
@@ -83,35 +82,28 @@ string ToStandardForm(double value) {
 		v *= -1;
 	}
 
-	if ((value < 1.0) && (value > 0.0)) {
-		while (v < 1.0) {
-			v *= 10;
-			power --;
-		}
+	// Decrease value until it is below 10.0 (and increase power counter)
+	while (v >= 10.0) {
+		v /= 10;
+		power ++;
 	}
-	else {
-		while (v >= 10.0) {
-			v /= 10;
-			power ++;
-		}
+
+	// Increase value until it is above 1.0 (and decrease power counter)
+	while (v < 1.0) {
+		v *= 10;
+		power --;
 	}
+
+	string valueString = to_string(v);
 
 	// Create standard form string
 	if (power != 0) {
 		// Deal with the negative sign at the front of negative numbers
 		if (negative) {
-			standardForm += "-";
-			// Remove "-" from the value string
-			valueString = valueString.substr(1, valueString.length() - 1);
+			standardForm = "-";
 		}
 
-		// Append significant figures
-		standardForm += valueString[0];
-		standardForm += ".";
-		for (size_t i = 1; i < valueString.length() - 1; i++) {
-			if (valueString[i] == '.') break;
-			standardForm += valueString[i];
-		}
+		standardForm += RemoveTrailingZeroes(valueString);
 
 		// Append exponent
 		standardForm += "e";
@@ -120,7 +112,11 @@ string ToStandardForm(double value) {
 	else {
 		// Doesn't need to be put into standard form if number is e0
 		// e.g. 1.8793e0 = 1.8793, so standard form not required
-		standardForm = valueString;
+		if (negative) {
+			standardForm = "-";
+		}
+
+		standardForm += RemoveTrailingZeroes(valueString);
 	}
 
 	return standardForm;
