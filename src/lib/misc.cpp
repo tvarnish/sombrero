@@ -89,7 +89,7 @@ string ToStandardForm(double value) {
 	}
 
 	// Increase value until it is above 1.0 (and decrease power counter)
-	while (v < 1.0) {
+	while (v < 1.0 && v != 0.0) {
 		v *= 10;
 		power --;
 	}
