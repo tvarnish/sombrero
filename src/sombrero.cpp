@@ -322,15 +322,28 @@ void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMes
 				bool t1Valid = (t1 >= 0 && t1 <= 1);
 				bool t2Valid = (t2 >= 0 && t2 <= 1);
 
+				double separation = bodyBPosition.Subtract(bodyAPosition).Magnitude();
+				double radiiSum = bodyA->GetRadius() + bodyB->GetRadius();
+				
 				// Select the first valid (0 <= t <= 1) collision time (smallest t)
-				if (t1 <= t2 && t1Valid) {
+				if (separation <= radiiSum) {
+					CollideBodies(bodyA, bodyB, 0);
+					bodyA = bodyList.GetHead();
+					bodyB = bodyA->GetNext();
+				}
+				else if ((t1 <= t2 && t1Valid)) {
 					CollideBodies(bodyA, bodyB, t1);
+					bodyA = bodyList.GetHead();
+					bodyB = bodyA->GetNext();
 				}
 				else if (t2Valid) {
 					CollideBodies(bodyA, bodyB, t2);
+					bodyA = bodyList.GetHead();
+					bodyB = bodyA->GetNext();
 				}
-
-				bodyB = bodyB->GetNext();
+				else {
+					bodyB = bodyB->GetNext();
+				}
 			}
 
 			bodyA = bodyA->GetNext();
@@ -467,13 +480,13 @@ void Simulation::CollideBodies(Body * bodyA, Body * bodyB, double t) {
 	double newRadius = pow(newVolume / ((4/3) * PI), (1/3));
 
 	// Create a new (combined) body, and remove A and B;
-	bodyList.Remove(bodyA->GetID());
-	bodyList.Remove(bodyB->GetID());
-
 	Body * newBody = new Body(newPosition, newMass, newRadius, newVelocity);
 	//newBody->SetNextPosition(newPosition);
 
 	newBody->Update((1 - t) * dt);
 
 	bodyList.Append(newBody);
+	
+	bodyList.Remove(bodyA->GetID());
+	bodyList.Remove(bodyB->GetID());
 }
