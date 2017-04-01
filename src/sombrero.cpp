@@ -327,16 +327,19 @@ void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMes
 				// Select the first valid (0 <= t <= 1) collision time (smallest t)
 				if (separation <= radiiSum) {
 					CollideBodies(bodyA, bodyB, 0);
+					// Update the body pointers (as both bodyA and bodyB have been deleted from the list)
 					bodyA = bodyList.GetHead();
 					bodyB = bodyA->GetNext();
 				}
 				else if ((t1 <= t2 && t1Valid)) {
 					CollideBodies(bodyA, bodyB, t1);
+					// Update the body pointers
 					bodyA = bodyList.GetHead();
 					bodyB = bodyA->GetNext();
 				}
 				else if (t2Valid) {
 					CollideBodies(bodyA, bodyB, t2);
+					// Update the body pointers
 					bodyA = bodyList.GetHead();
 					bodyB = bodyA->GetNext();
 				}
@@ -472,16 +475,14 @@ void Simulation::CollideBodies(Body * bodyA, Body * bodyB, double t) {
 	Vector newPosition = (bodyAPosition.Add(bodyBPosition)).Divide(2.0);
 
 	// Calculate new radius - use volumes of the two materials
-	double volumeA = (4/3) * PI * pow(bodyA->GetRadius(), 3);
-	double volumeB = (4/3) * PI * pow(bodyB->GetRadius(), 3);
+	double volumeA = (4.0/3.0) * PI * pow(bodyA->GetRadius(), 3);
+	double volumeB = (4.0/3.0) * PI * pow(bodyB->GetRadius(), 3);
 	double newVolume = volumeA + volumeB;
 
-	double newRadius = pow(newVolume / ((4/3) * PI), (1/3));
+	double newRadius = pow(newVolume / ((4.0/3.0) * PI), (1.0/3.0));
 
 	// Create a new (combined) body, and remove A and B;
 	Body * newBody = new Body(newPosition, newMass, newRadius, newVelocity);
-	//newBody->SetNextPosition(newPosition);
-
 	newBody->Update((1 - t) * dt);
 
 	bodyList.Append(newBody);
