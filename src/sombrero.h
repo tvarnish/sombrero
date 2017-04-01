@@ -77,7 +77,7 @@ class Simulation {
 
     // Simulation Methods
   	void Rotate(string buildingMessage = "");
-  	void Scale(double finalScale, bool updateScale, string buildingMessage = "");
+  	void Scale(double finalRealDistance, double finalPixelDistance, int frameCount, bool updateScale, string buildingMessage = "");
   	void Run(int startingFrame, int framesToSimulate, string buildingMessage = "");
 };
 

@@ -130,7 +130,7 @@ void Simulation::GenerateRandomShell(int _bodyCount) {
 	bodyList.Append(new Body(0.0, 0.0, 0.0, 1e30, 1e8, 0.0, 0.0, 0.0));
 
 	// Save bodies to file
-	SaveOutputFile(outputFolder + name);
+	SaveOutputFile(outputFolder + name + ".csv");
 }
 
 void Simulation::GenerateRandomDistribution(int _bodyCount) {
@@ -149,7 +149,7 @@ void Simulation::GenerateRandomDistribution(int _bodyCount) {
 	}
 
 	// Save bodies to file
-	SaveOutputFile(outputFolder + name);
+	SaveOutputFile(outputFolder + name + ".csv");
 }
 
 void Simulation::Rotate(string buildingMessage) {
@@ -186,38 +186,37 @@ void Simulation::Rotate(string buildingMessage) {
 	}
 
 	// Build video from images
-	video.Build(outputFolder + name + ".mp4", 360, buildingMessage);
+	video.Build(outputFolder + name + "_rotate.mp4", 360, buildingMessage);
 }
 
-void Simulation::Scale(double finalScale, bool updateScale, string buildingMessage) {
+void Simulation::Scale(double finalRealDistance, double finalPixelDistance, int frameCount, bool updateScale, string buildingMessage) {
+	double finalScale = finalRealDistance / finalPixelDistance;
+
 	// Create a video, zooming in or out of (scaling) the simulation
 	Video video = Video("images/", "image_", width, height, framerate);
 	video.ClearImageFolder();
 
-	double scaleStep;
+	double scaleStep = (finalScale - scale) / frameCount;
 
 	// Determine the "direction" of the scaling (in or out)
-	if (finalScale < scale) {
-		scaleStep = -1;
+	/*
+	if (finalScale > scale) {
+		scaleStep *= -1;
 	}
-	else {
-		scaleStep = 1;
-	}
-
-	int frameCount = abs(finalScale - scale);
+	*/
 
 	// Generate the frames of the video
 	double currentScale = scale;
-	while (abs(finalScale - currentScale) != 0) {
-		// Image is scaled by passing in a modified scale to the image object (simulation scale is unaffected unless updateScale is true)
-		string imageFileName = "images/image_" + PadWithZeroes(abs(currentScale - scale), frameCount) + ".png";
+
+	for (int i = 0; i < frameCount; i++) {
+		string imageFileName = "images/image_" + PadWithZeroes(i, frameCount) + ".png";
 		Image image = Image(imageFileName, width, height, currentScale);
 
 		image.DrawAllBodies(bodyList, 255, 255, 0);
 
 		// Draw details of simulation to frame
 		image.DrawText("ZOOM", 10, 10, 155, 155, 155);
-		image.DrawText("S: " + RemoveTrailingZeroes(to_string(currentScale)), 10, 20, 155, 155, 155);
+		image.DrawText("F: " + RemoveTrailingZeroes(to_string(i)), 10, 20, 155, 155, 155);
 		image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 155, 155, 155);
 
 		image.DrawScale(currentScale, 10, height - 15, 55, 55, 55);
@@ -233,7 +232,7 @@ void Simulation::Scale(double finalScale, bool updateScale, string buildingMessa
 	}
 
 	// Build video from images
-	video.Build(outputFolder + name + "_zoom.mp4", abs(finalScale - scale), buildingMessage);
+	video.Build(outputFolder + name + "_zoom.mp4", frameCount, buildingMessage);
 }
 
 void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMessage) {
