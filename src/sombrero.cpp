@@ -428,8 +428,6 @@ void Simulation::SetOutputDirectory(string _outputFolder) {
 	if (outputFolder[outputFolder.length() - 1] != '/') {
 		outputFolder += '/';
 	}
-
-	cout << outputFolder << endl;
 }
 
 string Simulation::GetTimeUnits(double time) {
