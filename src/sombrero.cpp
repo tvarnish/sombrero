@@ -423,6 +423,13 @@ void Simulation::SetOutputDirectory(string _outputFolder) {
 	outputFolder = _outputFolder;
 	string command = "mkdir -p " + outputFolder;
 	system(command.c_str());
+
+	// Deal with final slash
+	if (outputFolder[outputFolder.length() - 1] != '/') {
+		outputFolder += '/';
+	}
+
+	cout << outputFolder << endl;
 }
 
 string Simulation::GetTimeUnits(double time) {
