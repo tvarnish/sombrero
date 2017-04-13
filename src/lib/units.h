@@ -10,8 +10,10 @@
 #define MPC 1.0e6 * PC // Megaparsec
 // A Parsec is the distance to a star that subtends 1 arcsecond, at an arc length of 1 AU.
 
+#define MINUTE 60 // 1 Minute in seconds
+#define HOUR 3600 // 1 Hour in seconds
 #define DAY 86400 // 1 Day in seconds
-#define YR (365.25 * DAY) // 1 Year in Seconds
+#define YR (365.25 * DAY) // 1 Year in seconds
 
 #define M 1.9891e30 // Mass of the Sun
 #define GR 6.67e-11 // Gravitational constant, GR because of image.h

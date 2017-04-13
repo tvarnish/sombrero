@@ -361,6 +361,12 @@ void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMes
 		else if (timeUnits == "DAYS ") {
 			elapsedTimeString = RemoveTrailingZeroes(to_string(elapsedTime / (double)DAY));
 		}
+		else if (timeUnits == "HOURS") {
+			elapsedTimeString = RemoveTrailingZeroes(to_string(elapsedTime / (double)HOUR));
+		}
+		else if (timeUnits == "MINS ") {
+			elapsedTimeString = RemoveTrailingZeroes(to_string(elapsedTime / (double)MINUTE));
+		}
 		else if (timeUnits == "SECS ") {
 			elapsedTimeString = RemoveTrailingZeroes(to_string(elapsedTime));
 		}
@@ -440,6 +446,12 @@ string Simulation::GetTimeUnits(double time) {
 			if (regex_match(to_string(1 / (time / DAY)), validInteger)) {
 				// Check if the time is in the form DAY / n, where n is an integer
 				timeUnits = "DAYS ";
+			}
+			else if (time >= HOUR) {
+				timeUnits = "HOURS";
+			}
+			else if (time >= 2 * MINUTE) {
+				timeUnits = "MINS ";
 			}
 			else {
 				timeUnits = "SECS ";
