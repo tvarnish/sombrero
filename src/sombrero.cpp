@@ -142,8 +142,27 @@ void Simulation::GenerateRandomDistribution(int _bodyCount) {
 		double y = Random(-3e11, 3e11);
 		double z = Random(-3e11, 3e11);
 
-		double mass = Random(1e23, 1e27);
+		double mass = Random(1e26, 1e27);
 		double radius = Random(1e6, 1e8);
+
+		bodyList.Append(new Body(x, y, z, mass, radius, 0, 0, 0));
+	}
+
+	// Save bodies to file
+	SaveOutputFile(outputFolder + name + ".csv");
+}
+
+void Simulation::GenerateRandomDistribution(int _bodyCount, double _width, double _bodyMassMin, double _bodyMassMax, double _radiusMin, double _radiusMax) {
+	srand(time(NULL));
+	bodyList = List();
+
+	for (int i = 0; i < _bodyCount; i++) {
+		double x = Random(-_width / 2.0, _width / 2.0);
+		double y = Random(-_width / 2.0, _width / 2.0);
+		double z = Random(-_width / 2.0, _width / 2.0);
+
+		double mass = Random(_bodyMassMin, _bodyMassMax);
+		double radius = Random(_radiusMin, _radiusMax);
 
 		bodyList.Append(new Body(x, y, z, mass, radius, 0, 0, 0));
 	}

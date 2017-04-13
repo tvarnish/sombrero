@@ -71,9 +71,11 @@ class Simulation {
     // Generate body setup commands
   	void GenerateRandomShell(int _bodyCount);
   	void GenerateRandomDistribution(int _bodyCount);
+    void GenerateRandomDistribution(int _bodyCount, double _width, double _bodyMassMin, double _bodyMassMax, double _radiusMin, double _radiusMax);
 
     void AddBody(Body * body);
     void ClearBodyList();
+    List GetBodyList() { return bodyList; };
 
     // Simulation Methods
   	void Rotate(string buildingMessage = "");
