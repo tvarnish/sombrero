@@ -6,6 +6,7 @@ Sombrero is my A-Level Computer Science project (AQA), focused on simulating the
   <img width="200" src="https://i.imgur.com/lDOrYA1.png">
 </p>
 
+> Upon recent inspection of these setup instructions, it appears they may not work... Whoops. I'll make sure to prioritize fixing that! I'm also aiming to add some interesting feature updates in the near future too, so stay tuned. :)
 
 ## Getting Started
 These instructions will get a copy of the project running on your local machine, for development and testing purposes (I haven't written the `make install` command yet).
