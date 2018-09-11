@@ -10,18 +10,13 @@
 #include <regex>
 #include <map>
 
-#include "lib/font.h"
 #include "lib/body.h"
-#include "lib/image.h"
-#include "lib/video.h"
 #include "lib/output.h"
 #include "lib/misc.h"
 #include "lib/matrix.h"
 #include "lib/position_vector.h"
 #include "lib/linkedlist.h"
 #include "lib/units.h"
-
-#include <pngwriter.h>
 
 using namespace std;
 
@@ -78,8 +73,6 @@ class Simulation {
     List GetBodyList() { return bodyList; };
 
     // Simulation Methods
-  	void Rotate(string buildingMessage = "");
-  	void Scale(double finalRealDistance, double finalPixelDistance, int frameCount, bool updateScale, string buildingMessage = "");
   	void Run(int startingFrame, int framesToSimulate, string buildingMessage = "");
 };
 

@@ -7,10 +7,7 @@
 #include <regex>
 #include <map>
 
-#include "lib/font.h"
 #include "lib/body.h"
-#include "lib/image.h"
-#include "lib/video.h"
 #include "lib/output.h"
 #include "lib/misc.h"
 #include "lib/matrix.h"
@@ -19,8 +16,6 @@
 #include "lib/units.h"
 
 #include "sombrero.h"
-
-#include <pngwriter.h>
 
 using namespace std;
 
@@ -171,95 +166,8 @@ void Simulation::GenerateRandomDistribution(int _bodyCount, double _width, doubl
 	SaveOutputFile(outputFolder + name + ".csv");
 }
 
-void Simulation::Rotate(string buildingMessage) {
-	// Generate a video, rotating the three-dimensional set up around the y-axis
-	Video video = Video("images/", "image_", width, height, framerate);
-	video.ClearImageFolder();
-
-	// Iterate through each frame of the video (to be generated) / angle
-	for (double angle = 0.0; angle < 360.0; angle ++) {
-		string imageFileName = "images/image_" + PadWithZeroes(angle, 360) + ".png";
-		Image image = Image(imageFileName, width, height, scale);
-
-		// Iterate through the bodies and transform their positions
-		body = bodyList.GetHead();
-		while (body != NULL) {
-			// Rotate body
-			Vector position = body->GetPosition();
-			Vector transformedPosition = position.RotateY(angle);
-			transformedPosition = transformedPosition.RoundValues();
-
-			image.DrawBody(transformedPosition.GetX(), transformedPosition.GetY(), body->GetRadius(), 255, 255, 255);
-
-			body = body->GetNext();
-		}
-
-		// Draw details of simulation to frame
-		image.DrawText("ROTATION", 10, 10, 155, 155, 155);
-		image.DrawText("A: " + to_string((int)angle), 10, 20, 155, 155, 155);
-		image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 155, 155, 155);
-
-		image.DrawScale(scale, 10, height - 15, 55, 55, 55);
-
-		image.Save();
-	}
-
-	// Build video from images
-	video.Build(outputFolder + name + "_rotate.mp4", 360, buildingMessage);
-}
-
-void Simulation::Scale(double finalRealDistance, double finalPixelDistance, int frameCount, bool updateScale, string buildingMessage) {
-	double finalScale = finalRealDistance / finalPixelDistance;
-
-	// Create a video, zooming in or out of (scaling) the simulation
-	Video video = Video("images/", "image_", width, height, framerate);
-	video.ClearImageFolder();
-
-	double scaleStep = (finalScale - scale) / frameCount;
-
-	// Determine the "direction" of the scaling (in or out)
-	/*
-	if (finalScale > scale) {
-		scaleStep *= -1;
-	}
-	*/
-
-	// Generate the frames of the video
-	double currentScale = scale;
-
-	for (int i = 0; i < frameCount; i++) {
-		string imageFileName = "images/image_" + PadWithZeroes(i, frameCount) + ".png";
-		Image image = Image(imageFileName, width, height, currentScale);
-
-		image.DrawAllBodies(bodyList, 255, 255, 0);
-
-		// Draw details of simulation to frame
-		image.DrawText("ZOOM", 10, 10, 155, 155, 155);
-		image.DrawText("F: " + RemoveTrailingZeroes(to_string(i)), 10, 20, 155, 155, 155);
-		image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 155, 155, 155);
-
-		image.DrawScale(currentScale, 10, height - 15, 55, 55, 55);
-
-		image.Save();
-
-		currentScale += scaleStep;
-	}
-
-	// If updateScale is true, change the simulation's scale (update the scale for run, rotate, etc.)
-	if (updateScale) {
-		scale = finalScale;
-	}
-
-	// Build video from images
-	video.Build(outputFolder + name + "_zoom.mp4", frameCount, buildingMessage);
-}
-
 void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMessage) {
 	int currentFrames = 0;
-
-	Video video = Video("images/", "image_", width, height, framerate);
-	video.ClearImageFolder();
-
 	double elapsedTime = startingFrame * dt;
 
 	// Simulate the next frames
@@ -370,6 +278,7 @@ void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMes
 			bodyA = bodyA->GetNext();
 		}
 
+		/*
 		// Format elapsed time (for image output)
 		string elapsedTimeString;
 		string timeUnits = GetTimeUnits(elapsedTime);
@@ -389,21 +298,12 @@ void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMes
 		else if (timeUnits == "SECS ") {
 			elapsedTimeString = RemoveTrailingZeroes(to_string(elapsedTime));
 		}
+		*/
 
-		// Draw information on frame
-		string imageFileName = "images/image_" + PadWithZeroes(f - startingFrame, framesToSimulate) + ".png";
-		Image image = Image(imageFileName, width, height, scale);
-
-		image.DrawText("SIMULATION  " + timeUnits + " " + elapsedTimeString, 10, 10, 155, 155, 155);
-		image.DrawText("F: " + to_string(f + currentFrames), 10, 20, 155, 155, 155);
-		image.DrawText("N: " + to_string(bodyList.GetLength()), 10, 30, 155, 155, 155);
-
-		image.DrawScale(scale, 10, height - 15, 55, 55, 55);
-
-		image.DrawAllBodies(bodyList, 255, 255, 255);
-
-		// Save image
-		image.Save();
+		// Create _output.csv
+		// TODO: This only creates an output file if the folder structure exists!
+		string dataFileName = outputFolder + "data/bodyData_" + PadWithZeroes(f - startingFrame, framesToSimulate) + ".csv";
+		SaveOutputFile(dataFileName);
 
 		// Move each body to their new positions
 		body = bodyList.GetHead();
@@ -416,11 +316,6 @@ void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMes
 		// Update the elapsed time
 		elapsedTime += dt;
 	}
-
-	video.Build(outputFolder + name + "_run.mp4", framesToSimulate, buildingMessage);
-
-	// Create _output.csv
-	SaveOutputFile();
 }
 
 void Simulation::SaveOutputFile(string _fileName) {
