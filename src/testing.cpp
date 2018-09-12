@@ -10,12 +10,10 @@ int main() {
 	// Set simulation parameters
 	sim.SetSimulationName("HelloWorld");
 	sim.SetTimestep(YR / 365);
-	sim.SetFramerate(60);
-	sim.SetScale(AU, 100);
 
 	// Simulate setup
 	if (sim.LoadBodiesFromFile("init/realsolarsystem.csv")) {
-		sim.Run(0, 365, "Building Video...");
+		sim.Run(0, 365);
 	}
 	else {
 		cout << "Error in reading body file." << endl;

@@ -24,27 +24,23 @@ Simulation::Simulation() {
 	bodyList = List();
 }
 
-Simulation::Simulation(int _width, int _height, double _scale, double _dt, int _framerate) {
+Simulation::Simulation(int _width, int _height, double _dt) {
 	// Constructor for Simulation object - key parameters defined
 	bodyList = List();
 
 	width = _width;
 	height = _height;
-	scale = _scale;
 	dt = _dt;
-	framerate = _framerate;
 }
 
-Simulation::Simulation(string _name, int _width, int _height, double _scale, double _dt, int _framerate) {
+Simulation::Simulation(string _name, int _width, int _height, double _dt) {
 	// Constructor for Simulation object - key parameters defined (except simulation name)
 	bodyList = List();
 
 	name = _name;
 	width = _width;
 	height = _height;
-	scale = _scale;
 	dt = _dt;
-	framerate = _framerate;
 }
 
 bool Simulation::LoadBodiesFromFile(string _fileName) {
@@ -166,7 +162,7 @@ void Simulation::GenerateRandomDistribution(int _bodyCount, double _width, doubl
 	SaveOutputFile(outputFolder + name + ".csv");
 }
 
-void Simulation::Run(int startingFrame, int framesToSimulate, string buildingMessage) {
+void Simulation::Run(int startingFrame, int framesToSimulate) {
 	int currentFrames = 0;
 	double elapsedTime = startingFrame * dt;
 

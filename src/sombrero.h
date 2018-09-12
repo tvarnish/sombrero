@@ -45,14 +45,11 @@ class Simulation {
   public:
     // Constructors
   	Simulation();
-  	Simulation(int _width, int _height, double _scale, double _dt, int _framerate);
-  	Simulation(string _name, int _width, int _height, double _scale, double _dt, int _framerate);
+  	Simulation(int _width, int _height, double _dt);
+  	Simulation(string _name, int _width, int _height, double _dt);
 
   	// Set Methods
-  	void SetOutputDimensions(int _width, int _height) { width = _width; height = _height; };
-  	void SetScale(double realDistance, double pixelDistance) { scale = realDistance / pixelDistance; };
   	void SetTimestep(double _dt) { dt = _dt; };
-  	void SetFramerate(int _framerate) { framerate = _framerate; };
   	void SetOutputDirectory(string _outputFolder);
   	void SetSimulationName(string _name) { name = _name; };
   	void SetGravitationalConstant(double _gravConst) { gravConst = _gravConst; };
@@ -73,7 +70,7 @@ class Simulation {
     List GetBodyList() { return bodyList; };
 
     // Simulation Methods
-  	void Run(int startingFrame, int framesToSimulate, string buildingMessage = "");
+  	void Run(int startingFrame, int framesToSimulate);
 };
 
 #endif
