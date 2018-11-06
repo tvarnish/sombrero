@@ -19,6 +19,72 @@
 
 using namespace std;
 
+int main(int argc, char *argv[]) {
+	Simulation sim = Simulation();
+
+	string bodyFile;
+	double timestep;
+	int stepCount;
+
+	int requiredFlagCount = 3;
+	int validFlagCount = 0;
+
+	if (argc > 1) {
+		// Parse command line arguments
+		string currentFlag = "";
+
+		for (int argumentIndex = 1; argumentIndex < argc; argumentIndex++) {
+			string currentArgument = argv[argumentIndex];
+
+			if (currentArgument[0] == '-') {
+				currentFlag = currentArgument.substr(1);
+			}
+			else if (currentFlag != "") {
+				if (currentFlag == "i") {
+					bodyFile = currentArgument;
+					validFlagCount++;
+				}
+				else if (currentFlag == "s") {
+					try {
+						stepCount = stoi(currentArgument);
+						validFlagCount++;
+					}
+					catch (...) {
+						cout << "ERROR: Simulation step count value is invalid." << endl;
+						return 1;
+					}
+				}
+				else if (currentFlag == "dt") {
+					try {
+						timestep = stod(currentArgument);
+						validFlagCount++;
+					}
+					catch (...) {
+						cout << "ERROR: Simulation time step value (dt) is invalid." << endl;
+						return 1;
+					}
+				}
+			}
+		}
+	}
+
+	// Check all required flags set
+	if (validFlagCount != requiredFlagCount) {
+		cout << "ERROR: Not all required flags have been set." << endl;
+		return 1;
+	}
+	
+	if (sim.LoadBodiesFromFile(bodyFile) == false) {
+		cout << "ERROR: Bodies count not be loaded from supplied filepath." << endl;
+		return 1;
+	}
+
+	sim.SetTimestep(timestep);
+	sim.Run(0, stepCount);
+
+	return 0;
+}
+
 Simulation::Simulation() {
 	// Constructor for Simulation object with default parameters
 	bodyList = List();
