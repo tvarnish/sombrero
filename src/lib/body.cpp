@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-Body::Body(double _x, double _y, double _z, double _mass, double _radius, double _xVelocity, double _yVelocity, double _zVelocity) {
+Body::Body(double _x, double _y, double _z, double _mass, double _radius, double _xVelocity, double _yVelocity, double _zVelocity, string _name) {
 	// Constructor (when cartesian components are supplied)
 	position = Vector(_x, _y, _z);
 
@@ -16,9 +16,11 @@ Body::Body(double _x, double _y, double _z, double _mass, double _radius, double
 	velocity = Vector(_xVelocity, _yVelocity, _zVelocity);
 
 	force = Vector();
+
+	name = _name;
 }
 
-Body::Body(Vector _position, double _mass, double _radius, Vector _velocity) {
+Body::Body(Vector _position, double _mass, double _radius, Vector _velocity, string _name) {
 	// Constructor (when Vectors are supplied)
 	position = _position;
 
@@ -28,6 +30,8 @@ Body::Body(Vector _position, double _mass, double _radius, Vector _velocity) {
 	velocity = _velocity;
 
 	force = Vector();
+
+	name = _name;
 }
 
 void Body::Update(double dt) {

@@ -111,7 +111,7 @@ Simulation::Simulation(string _name, int _width, int _height, double _dt) {
 
 bool Simulation::LoadBodiesFromFile(string _fileName) {
 	// Load a simulation set-up from a body .csv file, into the bodyList
-	regex validLine("(\\s*([+\\-]?[0-9]+(.[0-9]+)?([eE][+\\-]?[0-9]+)?)\\s*,){7}\\s*[+\\-]?[0-9]+(.[0-9]+)?([eE][+\\-]?[0-9]+)?\\s*(//(\\s*\\S*)*)?\r?");
+	regex validLine("(\\s*([+\\-]?[0-9]+(.[0-9]+)?([eE][+\\-]?[0-9]+)?)\\s*,){7}\\s*[+\\-]?[0-9]+(.[0-9]+)?([eE][+\\-]?[0-9]+)?,?([0-9a-zA-Z]*)?\\s*(//(\\s*\\S*)*)?\r?");
 	regex validCommentLine("\\s*//(\\s*\\S*)*\r?");
 
 	ifstream inputFile(_fileName);
@@ -136,26 +136,28 @@ bool Simulation::LoadBodiesFromFile(string _fileName) {
 		}
 		else {
 			stringstream bodyDetails(fileLine);
-			double detailArray [8];
+			string detailArray [9];
 			i = 0;
 
 			// Iterate through each comma separated value, and store each in the detailArray (for easy access later)
 			while (getline(bodyDetails, parameter, ','))
 			{
-				detailArray[i] = stod(parameter);
+				detailArray[i] = parameter;
 				i++;
 			}
 
-			double x = detailArray[0];
-			double y = detailArray[1];
-			double z = detailArray[2];
-			double mass = detailArray[3];
-			double radius = detailArray[4];
-			double xVelocity = detailArray[5];
-			double yVelocity = detailArray[6];
-			double zVelocity = detailArray[7];
+			double x = stod(detailArray[0]);
+			double y = stod(detailArray[1]);
+			double z = stod(detailArray[2]);
+			double mass = stod(detailArray[3]);
+			double radius = stod(detailArray[4]);
+			double xVelocity = stod(detailArray[5]);
+			double yVelocity = stod(detailArray[6]);
+			double zVelocity = stod(detailArray[7]);
+			string bodyName = detailArray[8];
+			// string bodyName = "";
 
-			bodyList.Append(new Body(x, y, z, mass, radius, xVelocity, yVelocity, zVelocity));
+			bodyList.Append(new Body(x, y, z, mass, radius, xVelocity, yVelocity, zVelocity, bodyName));
 		}
 	}
 

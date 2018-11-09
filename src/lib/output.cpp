@@ -27,7 +27,12 @@ void Output::AddBody(Body * body) {
 	fileContents += ToStandardForm( body->GetRadius() ) + ",";
 	fileContents += ToStandardForm( body->GetXVelocity() ) + ",";
 	fileContents += ToStandardForm( body->GetYVelocity() ) + ",";
-	fileContents += ToStandardForm( body->GetZVelocity() ) + "\n";
+	fileContents += ToStandardForm( body->GetZVelocity() );
+	string bodyName = body->GetName();
+	if (bodyName != "") {
+		fileContents += "," + bodyName;
+	}
+	fileContents += "\n";
 }
 
 void Output::Save() {

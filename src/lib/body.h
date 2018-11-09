@@ -13,6 +13,7 @@ class Body {
 		Vector velocity;
 		double mass;
 		double radius;
+		string name;
 
 		// Used for calculations
 		Vector nextPosition;
@@ -24,8 +25,8 @@ class Body {
 
 	public:
 		// Constructors
-		Body(double _x, double _y, double _z, double _mass, double _radius, double _xVelocity, double _yVelocity, double _zVelocity);
-		Body(Vector position, double _mass, double _radius, Vector velocity);
+		Body(double _x, double _y, double _z, double _mass, double _radius, double _xVelocity, double _yVelocity, double _zVelocity, string _name = "");
+		Body(Vector position, double _mass, double _radius, Vector velocity, string _name = "");
 
 		// Get Methods
 		double GetMass() { return mass; };
@@ -49,6 +50,8 @@ class Body {
 		Body * GetNext() { return next; };
 		int GetID() { return id; };
 
+		string GetName() { return name; }
+
 		// Set Methods
 		void SetPosition(double _x, double _y, double _z) { position.Set(_x, _y, _z); };
 		void SetPosition(Vector _position) { position = _position; };
@@ -59,6 +62,8 @@ class Body {
 
 		void SetNext(Body * _next) { next = _next; };
 		void SetID(int _id) { id = _id; };
+
+		void SetName(string _name) { name = _name; }
 
 		// Calculation Methods
 		void AddForce(double _force, double phi, double theta);
