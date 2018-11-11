@@ -111,6 +111,7 @@ Simulation::Simulation(string _name, int _width, int _height, double _dt) {
 
 bool Simulation::LoadBodiesFromFile(string _fileName) {
 	// Load a simulation set-up from a body .csv file, into the bodyList
+	regex validParameterLine("\\s*[0-9]*,(\\s*([+\\-]?[0-9]+(.[0-9]+)?([eE][+\\-]?[0-9]+)?)\\s*,){2}\\s*[0-9]*\r?");
 	regex validLine("(\\s*([+\\-]?[0-9]+(.[0-9]+)?([eE][+\\-]?[0-9]+)?)\\s*,){7}\\s*[+\\-]?[0-9]+(.[0-9]+)?([eE][+\\-]?[0-9]+)?,?([0-9a-zA-Z]*)?\\s*(//(\\s*\\S*)*)?\r?");
 	regex validCommentLine("\\s*//(\\s*\\S*)*\r?");
 
@@ -123,6 +124,8 @@ bool Simulation::LoadBodiesFromFile(string _fileName) {
 		return false;
 	}
 
+	bool bodyLineReached = false;
+
 	// Iterate through lines in the file
 	while (getline(inputFile, fileLine))
 	{
@@ -130,11 +133,34 @@ bool Simulation::LoadBodiesFromFile(string _fileName) {
 			// Ignore line if it is a comment line
 			continue;
 		}
+		else if (regex_match(fileLine, validParameterLine)) {
+			// Parameters must be specified before any bodies
+			if (bodyLineReached) {
+				return false;
+			}
+			else {
+				stringstream parameters(fileLine);
+				string parameterArray [4];
+				i = 0;
+
+				while (getline(parameters, parameter, ','))
+				{
+					parameterArray[i] = parameter;
+					i++;
+				}
+
+				int lastFrame = stoi(parameterArray[0]);
+				double timestep = stod(parameterArray[1]);
+
+				// TODO: Set simulation parameters from entered parameters
+			}
+		}
 		else if (!regex_match(fileLine, validLine)) {
 			// Return false if the line is not valid (raise error)
 			return false;
 		}
 		else {
+			bodyLineReached = true;
 			stringstream bodyDetails(fileLine);
 			string detailArray [9];
 			i = 0;
@@ -158,6 +184,7 @@ bool Simulation::LoadBodiesFromFile(string _fileName) {
 			// string bodyName = "";
 
 			bodyList.Append(new Body(x, y, z, mass, radius, xVelocity, yVelocity, zVelocity, bodyName));
+			bodyCount += 1;
 		}
 	}
 
@@ -367,7 +394,7 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 		// Create _output.csv
 		// TODO: This only creates an output file if the folder structure exists!
 		string dataFileName = outputFolder + "data/bodyData_" + PadWithZeroes(f - startingFrame, framesToSimulate) + ".csv";
-		SaveOutputFile(dataFileName);
+		SaveOutputFile(dataFileName, f, dt, f * dt, bodyCount);
 
 		// Move each body to their new positions
 		body = bodyList.GetHead();
@@ -382,7 +409,7 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 	}
 }
 
-void Simulation::SaveOutputFile(string _fileName) {
+void Simulation::SaveOutputFile(string _fileName, int _stepNumber, double _dt, double _timeElapsed, int _bodyCount) {
 	// Save bodies to output.csv
 	string outputFileName = outputFolder + name + "_output.csv";
 
@@ -391,6 +418,7 @@ void Simulation::SaveOutputFile(string _fileName) {
 	}
 
 	Output output(outputFileName);
+	output.AddParameters(_stepNumber, _dt, _timeElapsed, _bodyCount);
 	output.AddAllBodies(bodyList);
 	output.Save();
 }
@@ -484,4 +512,7 @@ void Simulation::CollideBodies(Body * bodyA, Body * bodyB, double t) {
 	
 	bodyList.Remove(bodyA->GetID());
 	bodyList.Remove(bodyB->GetID());
+
+	// Update body count
+	bodyCount -= 1;
 }

@@ -24,7 +24,7 @@ class Simulation {
   // Parameters initialised with defaults
   string name = "simulation";
   string outputFolder = "";
-  int bodyCount;
+  int bodyCount = 0;
   int width = 640;
   int height = 480;
   double scale = (AU / 100);
@@ -58,7 +58,7 @@ class Simulation {
   	int GetNumberOfBodies() { return bodyList.GetLength(); };
 
   	bool LoadBodiesFromFile(string _fileName);
-    void SaveOutputFile(string _fileName = "");
+	void SaveOutputFile(string _fileName, int _stepNumber = -1, double _dt = -1, double _timeElapsed = -1, int _bodyCount = -1);
 
     // Generate body setup commands
   	void GenerateRandomShell(int _bodyCount);
