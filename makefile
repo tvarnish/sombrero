@@ -1,40 +1,24 @@
 CXX = g++
 # -Wall useful for development (shows all warnings)
-CXXFLAGS = -Wall -std=c++11 `freetype-config --cflags` 
-LIBS = -lpng -lpngwriter -lz -lfreetype
+CXXFLAGS = -Wall -std=c++11
 EXEC = sombrero
 
 # Make sure that there is a build directory, so that the output files can be generated.
 MAKEDIR_BUILD = mkdir -p build
 MAKEDIR_IMAGE = mkdir -p images
+MAKEDIR_DATA = mkdir -p data
 
 # Build testing executable
-sombrero: build/testing.o build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o build/position_vector.o build/linkedlist.o
-	$(CXX) $(CXXFLAGS) -g -o $(EXEC) build/testing.o build/sombrero.o build/font.o build/body.o build/image.o build/video.o build/output.o build/misc.o build/matrix.o build/position_vector.o build/linkedlist.o $(LIBS)
-
-# Build testing.o
-build/testing.o: src/testing.cpp src/sombrero.h
-	$(CXX) $(CXXFLAGS) -c src/testing.cpp -o build/testing.o
+sombrero: build/sombrero.o build/body.o build/output.o build/misc.o build/matrix.o build/position_vector.o build/linkedlist.o
+	$(CXX) $(CXXFLAGS) -g -o $(EXEC) build/sombrero.o build/body.o build/output.o build/misc.o build/matrix.o build/position_vector.o build/linkedlist.o
 
 # Build sombrero.o
-build/sombrero.o: src/sombrero.cpp src/sombrero.h src/lib/font.h src/lib/body.h src/lib/image.h src/lib/video.h src/lib/output.h src/lib/misc.h src/lib/units.h src/lib/position_vector.h src/lib/matrix.h
+build/sombrero.o: src/sombrero.cpp src/sombrero.h src/lib/body.h src/lib/output.h src/lib/misc.h src/lib/units.h src/lib/position_vector.h src/lib/matrix.h
 	$(CXX) $(CXXFLAGS) -c src/sombrero.cpp -o build/sombrero.o
-
-# Build font.o
-build/font.o: src/lib/font.cpp src/lib/font.h
-	$(CXX) $(CXXFLAGS) -c src/lib/font.cpp -o build/font.o
 
 # Build body.o
 build/body.o: src/lib/body.cpp src/lib/body.h
 	$(CXX) $(CXXFLAGS) -c src/lib/body.cpp -o build/body.o
-
-# Build image.o
-build/image.o: src/lib/image.cpp src/lib/image.h src/lib/body.h src/lib/font.h
-	$(CXX) $(CXXFLAGS) -c src/lib/image.cpp -o build/image.o
-
-# Build video.o
-build/video.o: src/lib/video.cpp src/lib/video.h
-	$(CXX) $(CXXFLAGS) -c src/lib/video.cpp -o build/video.o
 
 # Build output.o
 build/output.o: src/lib/output.cpp src/lib/output.h src/lib/body.h
@@ -63,4 +47,5 @@ clean:
 setup:
 	$(MAKEDIR_BUILD)
 	$(MAKEDIR_IMAGE)
+	$(MAKEDIR_DATA)
 	make
