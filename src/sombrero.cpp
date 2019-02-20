@@ -32,15 +32,21 @@ int main(int argc, char *argv[]) {
 	if (argc > 1) {
 		// Parse command line arguments
 		string currentFlag = "";
-
+    
 		for (int argumentIndex = 1; argumentIndex < argc; argumentIndex++) {
 			string currentArgument = argv[argumentIndex];
 
 			if (currentArgument[0] == '-') {
 				currentFlag = currentArgument.substr(1);
+        
+        // Show usage message
+        if (currentFlag == "h") {
+          cout << "Usage: ./sombrero -i init_filename.csv -s step_count -dt time_step" << endl;
+          return 0;
+        }
 			}
-			else if (currentFlag != "") {
-				if (currentFlag == "i") {
+			else if (currentFlag != "") { 
+				if (currentFlag == "i") {         
 					bodyFile = currentArgument;
 					validFlagCount++;
 				}
@@ -71,6 +77,7 @@ int main(int argc, char *argv[]) {
 	// Check all required flags set
 	if (validFlagCount != requiredFlagCount) {
 		cout << "ERROR: Not all required flags have been set." << endl;
+    cout << "Usage: ./sombrero -i init_filename.csv -s step_count -dt time_step" << endl;
 		return 1;
 	}
 	
