@@ -8,7 +8,7 @@ MAKEDIR_BUILD = mkdir -p build
 MAKEDIR_IMAGE = mkdir -p images
 MAKEDIR_DATA = mkdir -p data
 
-# Build testing executable
+# Build executable
 sombrero: build/sombrero.o build/body.o build/output.o build/misc.o build/matrix.o build/position_vector.o build/linkedlist.o
 	$(CXX) $(CXXFLAGS) -g -o $(EXEC) build/sombrero.o build/body.o build/output.o build/misc.o build/matrix.o build/position_vector.o build/linkedlist.o
 

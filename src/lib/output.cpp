@@ -35,6 +35,15 @@ void Output::AddBody(Body * body) {
 	fileContents += "\n";
 }
 
+void Output::AddParameters(int stepNumber, double dt, double timeElapsed, int bodyCount) {
+	// Write parameters to the output file
+	fileContents += to_string(stepNumber) + ",";
+	fileContents += ToStandardForm(dt) + ",";
+	fileContents += ToStandardForm(timeElapsed) + ",";
+	fileContents += to_string(bodyCount);
+	fileContents += "\n";
+}
+
 void Output::Save() {
 	// Write the output file to disk
 	ofstream outputFile(fileName, ios::out);

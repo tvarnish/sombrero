@@ -20,6 +20,7 @@ class Output {
 
 		void AddBody(Body * body);
 		void AddAllBodies(List bodyList);
+		void AddParameters(int stepNumber, double dt, double timeElapsed, int bodyCount);
 		void Save();
 };
 
