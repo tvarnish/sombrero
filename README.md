@@ -1,102 +1,160 @@
 # Sombrero
-
-Sombrero is my A-Level Computer Science project (AQA), focused on simulating the three-dimensional N-Body Problem. Basic documentation can be found at [sombrero.readme.io](https://sombrero.readme.io), and reference for the Simulation class can be found in the Reference section of that site.
+Sombrero is a system, built in C++, for simulating the three-dimensional n-body 
+problem.
 
 <p align="center">
   <img width="200" src="https://i.imgur.com/lDOrYA1.png">
 </p>
 
-> Upon recent inspection of these setup instructions, it appears they may not work... Whoops. I'll make sure to prioritize fixing that! I'm also aiming to add some interesting feature updates in the near future too, so stay tuned. :)
+Currently, Sombrero is capable of:
+- Simulating **gravitational interactions** between non-rotating spherical bodies.
+- Simulating **collisions** between bodies.
+  - *Currently, bodies can only merge upon impact, not split apart.*
+  - *Whenever two bodies "collide", they will merge, regardless of impact speed.*
+
+An overview, and a guide to getting started with Sombrero can be found 
+below.
+
+> More detailed documentation (not yet updated), along with reference for the Simulation
+> class, can be found at [sombrero.readme.io](https://sombrero.readme.io).
 
 ## Getting Started
-These instructions will get a copy of the project running on your local machine, for development and testing purposes (I haven't written the `make install` command yet).
+These instructions will get a copy of the project running on your local 
+machine, for development and testing purposes.
 
+> A `make install` command has not yet been implemented. The `make 
+> setup` command can be used to set up a contained development
+> environment.
+ 
 ### Prerequisites
-In order to produce the output `.mp4` files, you will need to have `avconv` installed.
+Before you begin, you will need a few libraries and tools installed to run
+and render simulations.
+
+In order to run the main Sombrero simulation code, you will need some 
+standard tools to build the project. On a Linux (Ubuntu) terminal:
 
 ```
-sudo apt-get install libav-tools
+sudo apt-get install -y make g++
 ```
 
-If you don't have `cmake` installed already, you will also need to install it.
+### Compiling from source (Development)
+To start using Sombrero, first clone the repository to your local machine.
 
 ```
-sudo apt-get install cmake
+git clone https://github.com/tvarnish/Sombrero.git
 ```
 
-You will also need a copy of `pngwriter` installed on your machine.
+Once the files have been successfully cloned, you can begin to compile the 
+code. First, change into the Sombrero directory,
 
 ```
-sudo apt-get install libpng12-dev libfreetype6-dev
-git clone https://github.com/pngwriter/pngwriter.git
-cd pngwriter
-cmake -DCMAKE_INSTALL_PREFIX=/usr/
-sudo make install
+cd Sombrero/
 ```
 
-It is also important to note that you will require **g++-4.9** in order to compile Sombrero (as regex is used). You can check your installed version of g++ using the following command. If it says that you have 4.9.x installed, you should be good to go!
+and then build the project using the command:
 
 ```
-g++ --version
-```
-
-If you don't already have g++-4.9 installed, you can install it with the following commands:
-
-```
-sudo apt-get install software-properties-common
-sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-sudo apt-get update
-sudo apt-get install g++-4.9
-sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 50
-```
-
-### Installing from source
-To download a copy of the repository, you will need to type the following commands:
-
-```
-git clone https://github.com/tvarnish/sombrero.git
-cd sombrero
 make setup
 ```
 
 ## Usage
-Once the software has been installed, the program can be run from within the `sombrero` directory using the following command:
+After following the setup instructions, the program can be run from within 
+the `Sombrero` directory using the following command:
 
 ```
-./sombrero
+./Sombrero
 ```
 
-If you wish to time the simulation, you can use `time` on the program, like so:
+A usage message will be displayed if no arguments are supplied, or if 
+incorrect arguments are supplied.
+
+### Arguments
+Initialisation files are supplied as follows:
 
 ```
-time ./sombrero
+-i [filepath]
 ```
 
-You can change what the script does by editing the file: `src/testing.cpp`. Once you have changed this file, call `make` in the main directory (`sombrero`), and then run the software as described above. Full scripting / usage notes can be found at [sombrero.readme.io](https://sombrero.readme.io/docs)
+where `[filepath]` is the path to a valid initialisation file. See the section 
+on initialisation files for further information about these.
+
+Currently, simple simulation parameters can be supplied using the `-s` and 
+`-dt` flags. The `-s` flag specifies the number of "frames" or "steps" that 
+the simulation should be run for. Each "frame" or "step" will be equivalent 
+to `-dt` seconds. The argument passed via the `-s` flag should be an integer, 
+and the argument passed via the `-dt` flat should be an integer or a floating 
+point number.
+
+### Example
+An example initialisation file has been included with the repository. To run a 
+simulation using this file, run the following command:
+```
+./Sombrero -i init/realsolarsystem.csv -s 365 -dt 86400
+```
+
+This command will simulate the inner planets of the solar system, over a 
+period of 365 time-steps (`-s`), where each time step (`-dt`) lasts 86400 
+seconds (1 day).
+
+If you wish to time a simulation, you can use `time` on the program, like so:
+
+```
+time ./Sombrero -i init/realsolarsystem.csv -s 365 -dt 86400
+```
+
+Once the simulation finishes running, the total run-time will be displayed.
+
+Documentation for scripting and usage of the Sombrero simulation can be found 
+at [sombrero.readme.io](https://sombrero.readme.io/docs)
 
 ## Initialisation files
-Initialisation files are comprised of a number of lines, each describing one 'body' in the simulation. Each line must be writen as follows (replacing the text in the example below with a numerical value, e.g. 5 or 4.0e10, etc.):
+Initialisation files are comprised of a number of lines, each describing one 
+'body' in the simulation. Each line must be written as follows (replacing the 
+text in the example below with a numerical value, e.g. 5 or 4.0e10, etc.):
 
 ```
-x position,y position,z position,mass,radius,x velocity,y velocity,z velocity
+x_position, y_position, z_position, mass, radius, x_velocity, y_velocity, z_velocity, [object name]
 ```
 
-So, for example, if we were to have the Sun at the centre of the simulation (currently stationary), we could write:
+Here, `[object name]` is an optional parameter which "labels" a body with a 
+string identifier. This can be handy for keeping track of special objects in 
+your simulations.
+
+### Example
+So, for example, if we were to have the Sun at the centre of the simulation 
+(currently stationary), we could write:
 
 ```
-0,0,0,1.989e30,6.955e8,0,0,0
+0,0,0,1.989e30,6.955e8,0,0,0,Sun
 ```
 
-If you wish to write a comment in the file, you can use // to indicate that anything after the double forward slash on that line is a comment. For example:
+### Comments
+If you wish to write a comment in the file, you can use // to indicate that 
+anything after the double forward slash on that line is a comment. For example:
 
 ```
 0,0,0,1.989e30,6.955e8,0,0,0 // An example of a comment
 // Another example of a comment
 ```
 
-You may also place any whitespace (except a newline!) between each of the parameters and the commas, if you wish.
+You can also place any whitespace (except a newline!) between each of the parameters and the commas, if you wish.
 
 ## Output
-The output files generated by the software (in the format `simulationname_output.csv`) follow the same structure as the initialisation files supplied to the software, as described above.
+The output files generated by the software (in the format 
+`./data/bodyData_XX.csv`, where `XX` is the (zero-padded) frame number) follow the same 
+structure as the initialisation files supplied to the software, as 
+described above. However, these output files include an additional simulation 
+parameters line at the beginning of the file. This line is structured like so:
 
-Sombrero will also produce an `.mp4` file of the simulation (still images from the simulation can be found the `images/` directory).
+```
+step_number, dt, time_elapsed, body_count
+```
+
+where, `step_number` is the number of integrations steps between this 
+frame and the initial conditions (initialisation file). Hence, a value 
+of `0` denotes that this file contains the initial starting conditions 
+of the simulation. Here, `dt` is the time (in seconds) between 
+subsequent integration steps (or "frames"), and `time_elapsed` is the 
+total elapsed time (within the simulation, in seconds) since the start 
+of the simulation (`step_number * dt`). Lastly, `body_count` is the 
+number of bodies currently in the situation.
