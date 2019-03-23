@@ -1,6 +1,3 @@
-Sombrero is a C++ code for simulating the three-dimensional n-body 
-problem.
-
 <p align="center">
   <img width="250" src="https://i.imgur.com/lDOrYA1.png">
 </p>
