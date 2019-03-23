@@ -1,0 +1,7 @@
+# Directories used for building/running
+data/
+images/
+build/
+
+# Ignore compiled executable
+sombrero
