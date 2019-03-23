@@ -1,72 +1,56 @@
-# Sombrero
-Sombrero is a system, built in C++, for simulating the three-dimensional n-body 
+Sombrero is a C++ code for simulating the three-dimensional n-body 
 problem.
 
 <p align="center">
-  <img width="200" src="https://i.imgur.com/lDOrYA1.png">
+  <img width="250" src="https://i.imgur.com/lDOrYA1.png">
 </p>
 
 Currently, Sombrero is capable of:
-- Simulating **gravitational interactions** between non-rotating spherical bodies.
+- Simulating **gravitational interactions** between non-rotating 
+  spherical bodies.
 - Simulating **collisions** between bodies.
-  - *Currently, bodies can only merge upon impact, not split apart.*
-  - *Whenever two bodies "collide", they will merge, regardless of impact speed.*
+  - *Right now, bodies can only merge upon impact, not split apart.*
+  - *Whenever two bodies "collide", they will merge, regardless of 
+    impact speed.*
 
-An overview, and a guide to getting started with Sombrero can be found 
-below.
-
-> More detailed documentation (not yet updated), along with reference for the Simulation
-> class, can be found at [sombrero.readme.io](https://sombrero.readme.io).
 
 ## Getting Started
 These instructions will get a copy of the project running on your local 
 machine, for development and testing purposes.
 
-> A `make install` command has not yet been implemented. The `make 
-> setup` command can be used to set up a contained development
+> A `make install` command has not yet been implemented. The `make setup`
+> command should be used to set up a self-contained development
 > environment.
  
 ### Prerequisites
-Before you begin, you will need a few libraries and tools installed to run
-and render simulations.
-
-In order to run the main Sombrero simulation code, you will need some 
-standard tools to build the project. On a Linux (Ubuntu) terminal:
+Before you begin, you will need to make sure you have a few things installed 
+to run and render simulations. On a UNIX (here Ubuntu) terminal:
 
 ```
 sudo apt-get install -y make g++
 ```
 
 ### Compiling from source (Development)
-To start using Sombrero, first clone the repository to your local machine.
+To start using Sombrero, make sure you've installed the prerequisites then:
 
 ```
-git clone https://github.com/tvarnish/Sombrero.git
-```
-
-Once the files have been successfully cloned, you can begin to compile the 
-code. First, change into the Sombrero directory,
-
-```
-cd Sombrero/
-```
-
-and then build the project using the command:
-
-```
+git clone https://github.com/tvarnish/sombrero.git
+cd sombrero/
 make setup
 ```
 
-## Usage
-After following the setup instructions, the program can be run from within 
-the `Sombrero` directory using the following command:
+This will clone the repository to your local machine, create the necessary 
+directories, and build the necessary files for running Sombrero.
+
+## Basic Usage
+Having followed the setup instructions, Sombrero can be run from within 
+the `sombrero/` directory using the following command:
 
 ```
-./Sombrero
+./sombrero
 ```
 
-A usage message will be displayed if no arguments are supplied, or if 
-incorrect arguments are supplied.
+If no (or incorrect) arguments are supplied, a usage message will be displayed.
 
 ### Arguments
 Initialisation files are supplied as follows:
@@ -79,35 +63,25 @@ where `[filepath]` is the path to a valid initialisation file. See the section
 on initialisation files for further information about these.
 
 Currently, simple simulation parameters can be supplied using the `-s` and 
-`-dt` flags. The `-s` flag specifies the number of "frames" or "steps" that 
-the simulation should be run for. Each "frame" or "step" will be equivalent 
-to `-dt` seconds. The argument passed via the `-s` flag should be an integer, 
-and the argument passed via the `-dt` flat should be an integer or a floating 
-point number.
+`-dt` flags. The `-s` flag specifies the number of "frames" or "time steps" 
+that the simulation should be run for. Each "frame" or "time step" will be 
+equivalent to `-dt` seconds. The argument passed via the `-s` flag should be 
+an integer, and the argument passed via the `-dt` flag should be an integer or 
+a floating point number.
 
-### Example
+### Example Simulation
 An example initialisation file has been included with the repository. To run a 
 simulation using this file, run the following command:
 ```
-./Sombrero -i init/realsolarsystem.csv -s 365 -dt 86400
+./sombrero -i init/realsolarsystem.csv -s 365 -dt 86400
 ```
 
 This command will simulate the inner planets of the solar system, over a 
 period of 365 time-steps (`-s`), where each time step (`-dt`) lasts 86400 
 seconds (1 day).
 
-If you wish to time a simulation, you can use `time` on the program, like so:
 
-```
-time ./Sombrero -i init/realsolarsystem.csv -s 365 -dt 86400
-```
-
-Once the simulation finishes running, the total run-time will be displayed.
-
-Documentation for scripting and usage of the Sombrero simulation can be found 
-at [sombrero.readme.io](https://sombrero.readme.io/docs)
-
-## Initialisation files
+## Initialisation Files
 Initialisation files are comprised of a number of lines, each describing one 
 'body' in the simulation. Each line must be written as follows (replacing the 
 text in the example below with a numerical value, e.g. 5 or 4.0e10, etc.):
@@ -120,7 +94,6 @@ Here, `[object name]` is an optional parameter which "labels" a body with a
 string identifier. This can be handy for keeping track of special objects in 
 your simulations.
 
-### Example
 So, for example, if we were to have the Sun at the centre of the simulation 
 (currently stationary), we could write:
 
@@ -129,22 +102,25 @@ So, for example, if we were to have the Sun at the centre of the simulation
 ```
 
 ### Comments
-If you wish to write a comment in the file, you can use // to indicate that 
-anything after the double forward slash on that line is a comment. For example:
+Comments can be written within initialisation files, using // to indicate the 
+rest of the text on that line is a comment. For example:
 
 ```
-0,0,0,1.989e30,6.955e8,0,0,0 // An example of a comment
-// Another example of a comment
+0,0,0,1.989e30,6.955e8,0,0,0 // An example comment.
+// Another example comment. This whole line is a comment.
 ```
 
-You can also place any whitespace (except a newline!) between each of the parameters and the commas, if you wish.
+It is also acceptable to place any whitespace characters (except a newline!) 
+between each of the parameters and the commas, should you wish.
+
 
 ## Output
-The output files generated by the software (in the format 
-`./data/bodyData_XX.csv`, where `XX` is the (zero-padded) frame number) follow the same 
-structure as the initialisation files supplied to the software, as 
-described above. However, these output files include an additional simulation 
-parameters line at the beginning of the file. This line is structured like so:
+The output files generated by the software, are stored as 
+`./data/bodyData_XX.csv`, where `XX` is the (zero-padded) "frame" number. 
+These files follow the same structure as the initialisation files described 
+above. However, these output files include an additional 
+simulation-parameters line at the beginning of the file. 
+This line is structured like so:
 
 ```
 step_number, dt, time_elapsed, body_count
