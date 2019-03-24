@@ -156,10 +156,11 @@ bool Simulation::LoadBodiesFromFile(string _fileName) {
 					i++;
 				}
 
-				int lastFrame = stoi(parameterArray[0]);
-				double timestep = stod(parameterArray[1]);
 
 				// TODO: Set simulation parameters from entered parameters
+				// int lastFrame = stoi(parameterArray[0]);
+				// double timestep = stod(parameterArray[1]);
+
 			}
 		}
 		else if (!regex_match(fileLine, validLine)) {
@@ -265,7 +266,9 @@ void Simulation::GenerateRandomDistribution(int _bodyCount, double _width, doubl
 }
 
 void Simulation::Run(int startingFrame, int framesToSimulate) {
-	int currentFrames = 0;
+	// TODO: Enable starting from a different frame number
+	// int currentFrames = 0;
+
 	double elapsedTime = startingFrame * dt;
 
 	// Simulate the next frames
@@ -351,19 +354,30 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 				
 				// Select the first valid (0 <= t <= 1) collision time (smallest t)
 				if (separation <= radiiSum) {
-					CollideBodies(bodyA, bodyB, 0);
-					// Update the body pointers (as both bodyA and bodyB have been deleted from the list)
+					// TODO: Determine if bodies should combine or bounce.
+					//		 Currently, default: combine (true), (e = 1.0)
+					HandleCollision(bodyA, bodyB, 0);
+
+					// Update the body pointers 
+					// 		(as both bodyA and bodyB have been deleted 
+					//		from the list of bodies)
 					bodyA = bodyList.GetHead();
 					bodyB = bodyA->GetNext();
 				}
 				else if ((t1 <= t2 && t1Valid)) {
-					CollideBodies(bodyA, bodyB, t1);
+					// TODO: Determine if bodies should combine or bounce.
+					//		 Currently, default: combine (true), (e = 1.0)
+					HandleCollision(bodyA, bodyB, t1);
+
 					// Update the body pointers
 					bodyA = bodyList.GetHead();
 					bodyB = bodyA->GetNext();
 				}
 				else if (t2Valid) {
-					CollideBodies(bodyA, bodyB, t2);
+					// TODO: Determine if bodies should combine or bounce.
+					//		 Currently, default: combine (true), (e = 1.0)
+					HandleCollision(bodyA, bodyB, t2);
+					
 					// Update the body pointers
 					bodyA = bodyList.GetHead();
 					bodyB = bodyA->GetNext();
@@ -485,7 +499,21 @@ string Simulation::GetTimeUnits(double time) {
 	return timeUnits;
 }
 
-void Simulation::CollideBodies(Body * bodyA, Body * bodyB, double t) {
+void Simulation::HandleCollision(Body * bodyA, Body * bodyB, double t, double e, bool combine) {
+	// TODO: Improve this function to include a dynamic combine/collide 
+	//		 functionality (depending on certain conditions).
+
+	// Currently decides between combining (2 -> 1) or colliding 
+	// ("bouncing" off one another) bodies, depending on arguments.
+	
+	if (combine == true) {
+		CombineBodies(bodyA, bodyB, t);
+	} else {
+		CollideBodies(bodyA, bodyB, t, e);
+	}
+}
+
+void Simulation::CombineBodies(Body * bodyA, Body * bodyB, double t) {
 	// Calculate new Mass (sum of original bodies)
 	double newMass = bodyA->GetMass() + bodyB->GetMass();
 
@@ -511,7 +539,7 @@ void Simulation::CollideBodies(Body * bodyA, Body * bodyB, double t) {
 
 	double newRadius = pow(newVolume / ((4.0/3.0) * PI), (1.0/3.0));
 
-	// Create a new (combined) body, and remove A and B;
+	// Create a new (combined) body, and remove A and B
 	Body * newBody = new Body(newPosition, newMass, newRadius, newVelocity);
 	newBody->Update((1 - t) * dt);
 
@@ -522,4 +550,33 @@ void Simulation::CollideBodies(Body * bodyA, Body * bodyB, double t) {
 
 	// Update body count
 	bodyCount -= 1;
+}
+
+void Simulation::CollideBodies(Body * bodyA, Body * bodyB, double t, double e) {
+	// Move bodies to point of collision
+	bodyA->Update(t * dt);
+	bodyB->Update(t * dt);
+
+	double mA = bodyA->GetMass();
+	double mB = bodyB->GetMass();
+	double mT = mA + mB;
+
+	// Calculate direction vector connecting centers of the bodies
+	Vector centerLineAB = bodyB->GetPosition().Subtract(bodyA->GetPosition());
+	centerLineAB = centerLineAB.Divide(centerLineAB.Magnitude());
+
+	// Calculate velocities along center line (problem is 1D)
+	double uA = bodyA->GetVelocity().DotProduct(centerLineAB);
+	double uB = bodyB->GetVelocity().DotProduct(centerLineAB);
+
+	double totalMomentum = (mA * uA) + (mB * uB);
+	double vA = (totalMomentum + (mB * e * (uB - uA))) / mT;
+	double vB = (totalMomentum + (mA * e * (uA - uB))) / mT;
+	
+	bodyA->AddVelocity(centerLineAB.Multiply(vA - uA));
+	bodyB->AddVelocity(centerLineAB.Multiply(vB - uB));
+
+	// Move the bodies to the end of the time-step
+	bodyA->Update((1 - t) * dt);
+	bodyB->Update((1 - t) * dt);
 }

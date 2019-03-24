@@ -59,6 +59,7 @@ class Body {
 
 		void SetVelocity(double _xVelocity, double _yVelocity, double _zVelocity) { velocity.Set(_xVelocity, _yVelocity, _zVelocity); };
 		void SetVelocity(Vector _velocity) { velocity = _velocity; };
+		void AddVelocity(Vector _velocity) { velocity = velocity.Add(_velocity); };
 
 		void SetNext(Body * _next) { next = _next; };
 		void SetID(int _id) { id = _id; };
@@ -67,6 +68,7 @@ class Body {
 
 		// Calculation Methods
 		void AddForce(double _force, double phi, double theta);
+		void AddForce(Vector _force) { force = force.Add(_force); };
 		void ResetForce();
 
 		void Update(double dt);

@@ -40,7 +40,9 @@ class Simulation {
   string GetTimeUnits(double time);
 
   // Private Simulation Methods
-  void CollideBodies(Body * bodyA, Body * bodyB, double t);
+  void HandleCollision(Body * bodyA, Body * bodyB, double t, double e = 1.0, bool combine = true);
+  void CollideBodies(Body * bodyA, Body * bodyB, double t, double e);
+  void CombineBodies(Body * bodyA, Body * bodyB, double t);
 
   public:
     // Constructors
@@ -58,7 +60,7 @@ class Simulation {
   	int GetNumberOfBodies() { return bodyList.GetLength(); };
 
   	bool LoadBodiesFromFile(string _fileName);
-	void SaveOutputFile(string _fileName, int _stepNumber = -1, double _dt = -1, double _timeElapsed = -1, int _bodyCount = -1);
+	  void SaveOutputFile(string _fileName, int _stepNumber = -1, double _dt = -1, double _timeElapsed = -1, int _bodyCount = -1);
 
     // Generate body setup commands
   	void GenerateRandomShell(int _bodyCount);
