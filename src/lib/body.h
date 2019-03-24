@@ -47,6 +47,8 @@ class Body {
 		double GetZVelocity() { return velocity.GetZ(); };
 		Vector GetVelocity() { return velocity; };
 
+		Vector GetMomentum() { return velocity.Multiply(mass); }
+
 		Body * GetNext() { return next; };
 		int GetID() { return id; };
 

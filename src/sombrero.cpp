@@ -515,8 +515,8 @@ void Simulation::CombineBodies(Body * bodyA, Body * bodyB, double t) {
 	double newMass = bodyA->GetMass() + bodyB->GetMass();
 
 	// Conservation of linear momentum (assuming bodies will combine)
-	Vector aMomentum = bodyA->GetVelocity() * bodyA->GetMass();
-	Vector bMomentum = bodyB->GetVelocity() * bodyB->GetMass();
+	Vector aMomentum = bodyA->GetMomentum();
+	Vector bMomentum = bodyB->GetMomentum();
 	Vector newVelocity = (aMomentum + bMomentum) / newMass;
 
 	// Calculate position of new body
