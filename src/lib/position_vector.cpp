@@ -26,10 +26,18 @@ Vector Vector::Add(Vector other) {
 	return result;
 }
 
+Vector Vector::operator+(Vector other) {
+	return Add(other);
+}
+
 Vector Vector::Subtract(Vector other) {
 	// Subtract other from self
 	Vector result = Vector(x - other.GetX(), y - other.GetY(), z - other.GetZ());
 	return result;
+}
+
+Vector Vector::operator-(Vector other) {
+	return Subtract(other);
 }
 
 Vector Vector::Multiply(double scalar) {
@@ -38,10 +46,18 @@ Vector Vector::Multiply(double scalar) {
 	return result;
 }
 
+Vector Vector::operator*(double scalar) {
+	return Multiply(scalar);
+}
+
 Vector Vector::Divide(double scalar) {
 	// Divide self by a scalar value
 	Vector result = Vector(x / scalar, y / scalar, z / scalar);
 	return result;
+}
+
+Vector Vector::operator/(double scalar) {
+	return Divide(scalar);
 }
 
 double Vector::DotProduct(Vector other) {

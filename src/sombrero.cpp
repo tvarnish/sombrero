@@ -292,16 +292,16 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 
 			while (bodyB != NULL) {
 				// Calculate distance between objects
-				Vector separation_vector = bodyA->GetPosition().Subtract(bodyB->GetPosition());
+				Vector separation_vector = bodyA->GetPosition() - bodyB->GetPosition();
 				double totalDistance = separation_vector.Magnitude();
-				separation_vector = separation_vector.Divide(totalDistance);
+				separation_vector = separation_vector / totalDistance;
 
 				// Calculate force
 				double force_magnitude = -1.0 * gravConst * ((bodyA->GetMass() * bodyB->GetMass()) / (pow(totalDistance, 2)));
 
 				// Add forces to totals
-				bodyA->AddForce(separation_vector.Multiply(force_magnitude));
-				bodyB->AddForce(separation_vector.Multiply(-force_magnitude));
+				bodyA->AddForce(separation_vector * force_magnitude);
+				bodyB->AddForce(separation_vector * -force_magnitude);
 
 				// Advance pointer
 				bodyB = bodyB->GetNext();
@@ -332,8 +332,8 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 				Vector bodyANextPosition = bodyA->GetNextPosition();
 				Vector bodyBNextPosition = bodyB->GetNextPosition();
 
-				Vector lambda = bodyBPosition.Subtract(bodyAPosition);
-				Vector mu = bodyBNextPosition.Subtract(bodyANextPosition).Add(bodyAPosition).Subtract(bodyBPosition);
+				Vector lambda = bodyBPosition - bodyAPosition;
+				Vector mu = bodyBNextPosition - bodyANextPosition + bodyAPosition - bodyBPosition;
 
 				// Quadratic coefficients => at^2 + bt + c = 0
 				double a = pow(mu.Magnitude(), 2);
@@ -346,7 +346,7 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 				bool t1Valid = (t1 >= 0 && t1 <= 1);
 				bool t2Valid = (t2 >= 0 && t2 <= 1);
 
-				double separation = bodyBPosition.Subtract(bodyAPosition).Magnitude();
+				double separation = (bodyBPosition - bodyAPosition).Magnitude();
 				double radiiSum = bodyA->GetRadius() + bodyB->GetRadius();
 				
 				// Select the first valid (0 <= t <= 1) collision time (smallest t)
@@ -515,9 +515,9 @@ void Simulation::CombineBodies(Body * bodyA, Body * bodyB, double t) {
 	double newMass = bodyA->GetMass() + bodyB->GetMass();
 
 	// Conservation of linear momentum (assuming bodies will combine)
-	Vector aMomentum = bodyA->GetVelocity().Multiply(bodyA->GetMass());
-	Vector bMomentum = bodyB->GetVelocity().Multiply(bodyB->GetMass());
-	Vector newVelocity = (aMomentum.Add(bMomentum)).Divide(newMass);
+	Vector aMomentum = bodyA->GetVelocity() * bodyA->GetMass();
+	Vector bMomentum = bodyB->GetVelocity() * bodyB->GetMass();
+	Vector newVelocity = (aMomentum + bMomentum) / newMass;
 
 	// Calculate position of new body
 	// Average the centres of the bodies at their collision positions
@@ -527,7 +527,7 @@ void Simulation::CombineBodies(Body * bodyA, Body * bodyB, double t) {
 	Vector bodyAPosition = bodyA->GetNextPosition();
 	Vector bodyBPosition = bodyB->GetNextPosition();
 
-	Vector newPosition = (bodyAPosition.Add(bodyBPosition)).Divide(2.0);
+	Vector newPosition = (bodyAPosition + bodyBPosition) / 2.0;
 
 	// Calculate new radius - use volumes of the two materials
 	double volumeA = (4.0/3.0) * PI * pow(bodyA->GetRadius(), 3);
@@ -559,8 +559,8 @@ void Simulation::CollideBodies(Body * bodyA, Body * bodyB, double t, double e) {
 	double mT = mA + mB;
 
 	// Calculate direction vector connecting centers of the bodies
-	Vector centerLineAB = bodyB->GetPosition().Subtract(bodyA->GetPosition());
-	centerLineAB = centerLineAB.Divide(centerLineAB.Magnitude());
+	Vector centerLineAB = bodyB->GetPosition() - bodyA->GetPosition();
+	centerLineAB = centerLineAB / centerLineAB.Magnitude();
 
 	// Calculate velocities along center line (problem is 1D)
 	double uA = bodyA->GetVelocity().DotProduct(centerLineAB);
@@ -570,8 +570,8 @@ void Simulation::CollideBodies(Body * bodyA, Body * bodyB, double t, double e) {
 	double vA = (totalMomentum + (mB * e * (uB - uA))) / mT;
 	double vB = (totalMomentum + (mA * e * (uA - uB))) / mT;
 	
-	bodyA->AddVelocity(centerLineAB.Multiply(vA - uA));
-	bodyB->AddVelocity(centerLineAB.Multiply(vB - uB));
+	bodyA->AddVelocity(centerLineAB * (vA - uA));
+	bodyB->AddVelocity(centerLineAB * (vB - uB));
 
 	// Move the bodies to the end of the time-step
 	bodyA->Update((1 - t) * dt);

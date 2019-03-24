@@ -32,9 +32,13 @@ class Vector {
 
 	// Calculation Methods
 	Vector Add(Vector other);
+	Vector operator+(Vector other);
 	Vector Subtract(Vector other);
+	Vector operator-(Vector other);
 	Vector Multiply(double scalar);
+	Vector operator*(double scalar);
 	Vector Divide(double scalar);
+	Vector operator/(double scalar);
 	double DotProduct(Vector other);
 	double Magnitude();
 
