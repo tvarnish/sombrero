@@ -1,7 +1,13 @@
-# Directories used for building/running
+# Ignore directories used for building/running
 data/
 images/
 build/
 
 # Ignore compiled executable
 sombrero
+
+# Ignore editor-specific files
+.vscode
+
+# Ignore any generated videos
+*.avi
