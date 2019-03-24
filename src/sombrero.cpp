@@ -292,19 +292,16 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 
 			while (bodyB != NULL) {
 				// Calculate distance between objects
-				Vector distance = bodyA->GetPosition().Subtract(bodyB->GetPosition());
-				double totalDistance = distance.Magnitude();
-
-				// Calculate angles
-				double phiAngle = atan2(distance.GetZ(), sqrt(pow(distance.GetX(), 2) + pow(distance.GetY(), 2)));
-				double thetaAngle = atan2(distance.GetY(), distance.GetX());
+				Vector separation_vector = bodyA->GetPosition().Subtract(bodyB->GetPosition());
+				double totalDistance = separation_vector.Magnitude();
+				separation_vector = separation_vector.Divide(totalDistance);
 
 				// Calculate force
-				double force = -1 * gravConst * ((bodyA->GetMass() * bodyB->GetMass()) / (pow(totalDistance, 2)));
+				double force_magnitude = -1.0 * gravConst * ((bodyA->GetMass() * bodyB->GetMass()) / (pow(totalDistance, 2)));
 
 				// Add forces to totals
-				bodyA->AddForce(force, phiAngle, thetaAngle);
-				bodyB->AddForce(-force, phiAngle, thetaAngle);
+				bodyA->AddForce(separation_vector.Multiply(force_magnitude));
+				bodyB->AddForce(separation_vector.Multiply(-force_magnitude));
 
 				// Advance pointer
 				bodyB = bodyB->GetNext();

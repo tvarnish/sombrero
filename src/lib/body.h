@@ -67,7 +67,6 @@ class Body {
 		void SetName(string _name) { name = _name; }
 
 		// Calculation Methods
-		void AddForce(double _force, double phi, double theta);
 		void AddForce(Vector _force) { force = force.Add(_force); };
 		void ResetForce();
 

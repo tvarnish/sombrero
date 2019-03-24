@@ -48,11 +48,6 @@ void Body::Step() {
 	position = nextPosition;
 }
 
-void Body::AddForce(double _force, double phi, double theta) {
-	// Add the supplied force to the net force acting on the body
-	force = force.Add(Vector(_force * cos(phi) * cos(theta), _force * cos(phi) * sin(theta), _force * sin(phi)));
-}
-
 void Body::ResetForce() {
 	// Reset the "net force" on the body (after each "frame")
 	force.Set(0.0, 0.0, 0.0);
