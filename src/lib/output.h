@@ -12,15 +12,15 @@
 using namespace std;
 
 class Output {
-		string fileName;
-		string fileContents;
+		string file_name;
+		string file_contents;
 
 	public:
-		Output(string _fileName);
+		Output(string _file_name);
 
 		void AddBody(Body * body);
-		void AddAllBodies(List bodyList);
-		void AddParameters(int stepNumber, double dt, double timeElapsed, int bodyCount);
+		void AddAllBodies(List body_list);
+		void AddParameters(int step_number, double dt, double time_elapsed, int body_count);
 		void Save();
 };
 

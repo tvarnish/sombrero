@@ -16,7 +16,7 @@ class Body {
 		string name;
 
 		// Used for calculations
-		Vector nextPosition;
+		Vector next_position;
 		Vector force;
 
 		// Used for linked list
@@ -25,8 +25,10 @@ class Body {
 
 	public:
 		// Constructors
-		Body(double _x, double _y, double _z, double _mass, double _radius, double _xVelocity, double _yVelocity, double _zVelocity, string _name = "");
-		Body(Vector position, double _mass, double _radius, Vector velocity, string _name = "");
+		Body(double _x, double _y, double _z, double _mass, double _radius, double _x_velocity, 
+			 double _y_velocity, double _z_velocity, string _name = "");
+		Body(Vector position, double _mass, double _radius, Vector velocity,
+			 string _name = "");
 
 		// Get Methods
 		double GetMass() { return mass; };
@@ -37,10 +39,10 @@ class Body {
 		double GetZ() { return position.GetZ(); };
 		Vector GetPosition() { return position; };
 
-		double GetNextX() { return nextPosition.GetX(); };
-		double GetNextY() { return nextPosition.GetY(); };
-		double GetNextZ() { return nextPosition.GetZ(); };
-		Vector GetNextPosition() { return nextPosition; };
+		double GetNextX() { return next_position.GetX(); };
+		double GetNextY() { return next_position.GetY(); };
+		double GetNextZ() { return next_position.GetZ(); };
+		Vector GetNextPosition() { return next_position; };
 
 		double GetXVelocity() { return velocity.GetX(); };
 		double GetYVelocity() { return velocity.GetY(); };
@@ -57,19 +59,19 @@ class Body {
 		// Set Methods
 		void SetPosition(double _x, double _y, double _z) { position.Set(_x, _y, _z); };
 		void SetPosition(Vector _position) { position = _position; };
-		void SetNextPosition(Vector _nextPosition) { nextPosition = _nextPosition; };
+		void SetNextPosition(Vector _next_position) { next_position = _next_position; };
 
-		void SetVelocity(double _xVelocity, double _yVelocity, double _zVelocity) { velocity.Set(_xVelocity, _yVelocity, _zVelocity); };
+		void SetVelocity(double _x_velocity, double _y_velocity, double _z_velocity) 
+						{ velocity.Set(_x_velocity, _y_velocity, _z_velocity); };
 		void SetVelocity(Vector _velocity) { velocity = _velocity; };
 		void AddVelocity(Vector _velocity) { velocity += _velocity; };
 
 		void SetNext(Body * _next) { next = _next; };
 		void SetID(int _id) { id = _id; };
 
-		void SetName(string _name) { name = _name; }
+		void SetName(string _name) { name = _name; };
 
 		// Calculation Methods
-		// TODO: OVERLOAD += OPERATOR!
 		void AddForce(Vector _force) { force += _force; };
 		void ResetForce();
 

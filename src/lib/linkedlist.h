@@ -9,7 +9,7 @@
 class List {
 	int length;
 	Body * head;
-	int nextId;
+	int next_id;
 
 	public:
 		List();

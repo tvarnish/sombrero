@@ -22,48 +22,48 @@ using namespace std;
 int main(int argc, char *argv[]) {
 	Simulation sim = Simulation();
 
-	string bodyFile;
+	string body_file;
 	double timestep;
-	int stepCount;
+	int step_count;
 
-	int requiredFlagCount = 3;
-	int validFlagCount = 0;
+	int required_flag_count = 3;
+	int valid_flag_count = 0;
 
 	if (argc > 1) {
 		// Parse command line arguments
-		string currentFlag = "";
+		string current_flag = "";
     
-		for (int argumentIndex = 1; argumentIndex < argc; argumentIndex++) {
-			string currentArgument = argv[argumentIndex];
+		for (int argument_index = 1; argument_index < argc; argument_index++) {
+			string current_argument = argv[argument_index];
 
-			if (currentArgument[0] == '-') {
-				currentFlag = currentArgument.substr(1);
+			if (current_argument[0] == '-') {
+				current_flag = current_argument.substr(1);
         
         // Show usage message
-        if (currentFlag == "h") {
+        if (current_flag == "h") {
           cout << "Usage: ./sombrero -i init_filename.csv -s step_count -dt time_step" << endl;
           return 0;
         }
 			}
-			else if (currentFlag != "") { 
-				if (currentFlag == "i") {         
-					bodyFile = currentArgument;
-					validFlagCount++;
+			else if (current_flag != "") { 
+				if (current_flag == "i") {         
+					body_file = current_argument;
+					valid_flag_count++;
 				}
-				else if (currentFlag == "s") {
+				else if (current_flag == "s") {
 					try {
-						stepCount = stoi(currentArgument);
-						validFlagCount++;
+						step_count = stoi(current_argument);
+						valid_flag_count++;
 					}
 					catch (...) {
 						cout << "ERROR: Simulation step count value is invalid." << endl;
 						return 1;
 					}
 				}
-				else if (currentFlag == "dt") {
+				else if (current_flag == "dt") {
 					try {
-						timestep = stod(currentArgument);
-						validFlagCount++;
+						timestep = stod(current_argument);
+						valid_flag_count++;
 					}
 					catch (...) {
 						cout << "ERROR: Simulation time step value (dt) is invalid." << endl;
@@ -75,31 +75,31 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Check all required flags set
-	if (validFlagCount != requiredFlagCount) {
+	if (valid_flag_count != required_flag_count) {
 		cout << "ERROR: Not all required flags have been set." << endl;
     cout << "Usage: ./sombrero -i init_filename.csv -s step_count -dt time_step" << endl;
 		return 1;
 	}
 	
-	if (sim.LoadBodiesFromFile(bodyFile) == false) {
+	if (sim.LoadBodiesFromFile(body_file) == false) {
 		cout << "ERROR: Bodies count not be loaded from supplied filepath." << endl;
 		return 1;
 	}
 
 	sim.SetTimestep(timestep);
-	sim.Run(0, stepCount);
+	sim.Run(0, step_count);
 
 	return 0;
 }
 
 Simulation::Simulation() {
 	// Constructor for Simulation object with default parameters
-	bodyList = List();
+	body_list = List();
 }
 
 Simulation::Simulation(int _width, int _height, double _dt) {
 	// Constructor for Simulation object - key parameters defined
-	bodyList = List();
+	body_list = List();
 
 	width = _width;
 	height = _height;
@@ -108,7 +108,7 @@ Simulation::Simulation(int _width, int _height, double _dt) {
 
 Simulation::Simulation(string _name, int _width, int _height, double _dt) {
 	// Constructor for Simulation object - key parameters defined (except simulation name)
-	bodyList = List();
+	body_list = List();
 
 	name = _name;
 	width = _width;
@@ -116,95 +116,97 @@ Simulation::Simulation(string _name, int _width, int _height, double _dt) {
 	dt = _dt;
 }
 
-bool Simulation::LoadBodiesFromFile(string _fileName) {
-	// Load a simulation set-up from a body .csv file, into the bodyList
-	regex validParameterLine("\\s*[0-9]*,(\\s*([+\\-]?[0-9]+(.[0-9]+)?([eE][+\\-]?[0-9]+)?)\\s*,){2}\\s*[0-9]*\r?");
-	regex validLine("(\\s*([+\\-]?[0-9]+(.[0-9]+)?([eE][+\\-]?[0-9]+)?)\\s*,){7}\\s*[+\\-]?[0-9]+(.[0-9]+)?([eE][+\\-]?[0-9]+)?,?([0-9a-zA-Z]*)?\\s*(//(\\s*\\S*)*)?\r?");
-	regex validCommentLine("\\s*//(\\s*\\S*)*\r?");
+bool Simulation::LoadBodiesFromFile(string _file_name) {
+	// Load a simulation set-up from a body .csv file, into the body_list
+	regex valid_parameter_line("\\s*[0-9]*,(\\s*([+\\-]?[0-9]+(.[0-9]+)?([eE][+\\-]?[0-9]+)?)\\s*,){2}\\s*[0-9]*\r?");
+	regex valid_line("(\\s*([+\\-]?[0-9]+(.[0-9]+)?([eE][+\\-]?[0-9]+)?)\\s*,){7}\\s*[+\\-]?[0-9]+(.[0-9]+)?([eE][+\\-]?[0-9]+)?,?([0-9a-zA-Z]*)?\\s*(//(\\s*\\S*)*)?\r?");
+	regex valid_comment_line("\\s*//(\\s*\\S*)*\r?");
 
-	ifstream inputFile(_fileName);
-	string fileLine, parameter;
+	ifstream input_file(_file_name);
+	string file_line, parameter;
 	int i;
 
 	// Return false if the file does not exist (raise error)
-	if (!FileExists(_fileName)) {
+	if (!FileExists(_file_name)) {
 		return false;
 	}
 
-	bool bodyLineReached = false;
+	bool body_line_reached = false;
 
 	// Iterate through lines in the file
-	while (getline(inputFile, fileLine))
+	while (getline(input_file, file_line))
 	{
-		if (regex_match(fileLine, validCommentLine)) {
+		if (regex_match(file_line, valid_comment_line)) {
 			// Ignore line if it is a comment line
 			continue;
 		}
-		else if (regex_match(fileLine, validParameterLine)) {
+		else if (regex_match(file_line, valid_parameter_line)) {
 			// Parameters must be specified before any bodies
-			if (bodyLineReached) {
+			if (body_line_reached) {
 				return false;
 			}
 			else {
-				stringstream parameters(fileLine);
-				string parameterArray [4];
+				stringstream parameters(file_line);
+				string parameter_array [4];
 				i = 0;
 
 				while (getline(parameters, parameter, ','))
 				{
-					parameterArray[i] = parameter;
+					parameter_array[i] = parameter;
 					i++;
 				}
 
 
 				// TODO: Set simulation parameters from entered parameters
-				// int lastFrame = stoi(parameterArray[0]);
-				// double timestep = stod(parameterArray[1]);
+				// int last_frame = stoi(parameter_array[0]);
+				// double timestep = stod(parameter_array[1]);
 
 			}
 		}
-		else if (!regex_match(fileLine, validLine)) {
+		else if (!regex_match(file_line, valid_line)) {
 			// Return false if the line is not valid (raise error)
 			return false;
 		}
 		else {
-			bodyLineReached = true;
-			stringstream bodyDetails(fileLine);
-			string detailArray [9];
+			body_line_reached = true;
+			stringstream body_details(file_line);
+			string detail_array [9];
 			i = 0;
 
-			// Iterate through each comma separated value, and store each in the detailArray (for easy access later)
-			while (getline(bodyDetails, parameter, ','))
+			// Iterate through each comma separated value, and store each in the 
+			// detail_array (for easy access later)
+			while (getline(body_details, parameter, ','))
 			{
-				detailArray[i] = parameter;
+				detail_array[i] = parameter;
 				i++;
 			}
 
-			double x = stod(detailArray[0]);
-			double y = stod(detailArray[1]);
-			double z = stod(detailArray[2]);
-			double mass = stod(detailArray[3]);
-			double radius = stod(detailArray[4]);
-			double xVelocity = stod(detailArray[5]);
-			double yVelocity = stod(detailArray[6]);
-			double zVelocity = stod(detailArray[7]);
-			string bodyName = detailArray[8];
-			// string bodyName = "";
+			double x = stod(detail_array[0]);
+			double y = stod(detail_array[1]);
+			double z = stod(detail_array[2]);
+			double mass = stod(detail_array[3]);
+			double radius = stod(detail_array[4]);
+			double x_velocity = stod(detail_array[5]);
+			double y_velocity = stod(detail_array[6]);
+			double z_velocity = stod(detail_array[7]);
+			string body_name = detail_array[8];
+			// string body_name = "";
 
-			bodyList.Append(new Body(x, y, z, mass, radius, xVelocity, yVelocity, zVelocity, bodyName));
-			bodyCount += 1;
+			body_list.Append(new Body(x, y, z, mass, radius, x_velocity, y_velocity, z_velocity, body_name));
+			body_count += 1;
 		}
 	}
 
 	return true;
 }
 
-void Simulation::GenerateRandomShell(int _bodyCount) {
-	// Generate a set up of bodies, in a randomly spaced shell (equidistant to the centre) around a central heavy body
+void Simulation::GenerateRandomShell(int _body_count) {
+	// Generate a set up of bodies, in a randomly spaced shell (equidistant to the centre) 
+	// around a central heavy body.
 	srand(time(NULL));
-	bodyList = List();
+	body_list = List();
 
-	for (int i = 0; i < _bodyCount - 1; i++) {
+	for (int i = 0; i < _body_count - 1; i++) {
 		// Generate the body's location with spherical coordinates
 		double r = 0.5e11;
 		double theta = Random(0, 2 * PI);
@@ -217,21 +219,21 @@ void Simulation::GenerateRandomShell(int _bodyCount) {
 
 		double mass = Random(1e23, 1e24);
 
-		bodyList.Append(new Body(x, y, z, mass, Random(1e6, 9e6), 0, 0, 0));
+		body_list.Append(new Body(x, y, z, mass, Random(1e6, 9e6), 0, 0, 0));
 	}
 
 	// Add the central heavy body to the body list
-	bodyList.Append(new Body(0.0, 0.0, 0.0, 1e30, 1e8, 0.0, 0.0, 0.0));
+	body_list.Append(new Body(0.0, 0.0, 0.0, 1e30, 1e8, 0.0, 0.0, 0.0));
 
 	// Save bodies to file
-	SaveOutputFile(outputFolder + name + ".csv");
+	SaveOutputFile(output_folder + name + ".csv");
 }
 
-void Simulation::GenerateRandomDistribution(int _bodyCount) {
+void Simulation::GenerateRandomDistribution(int _body_count) {
 	srand(time(NULL));
-	bodyList = List();
+	body_list = List();
 
-	for (int i = 0; i < _bodyCount; i++) {
+	for (int i = 0; i < _body_count; i++) {
 		double x = Random(-3e11, 3e11);
 		double y = Random(-3e11, 3e11);
 		double z = Random(-3e11, 3e11);
@@ -239,44 +241,46 @@ void Simulation::GenerateRandomDistribution(int _bodyCount) {
 		double mass = Random(1e26, 1e27);
 		double radius = Random(1e6, 1e8);
 
-		bodyList.Append(new Body(x, y, z, mass, radius, 0, 0, 0));
+		body_list.Append(new Body(x, y, z, mass, radius, 0, 0, 0));
 	}
 
 	// Save bodies to file
-	SaveOutputFile(outputFolder + name + ".csv");
+	SaveOutputFile(output_folder + name + ".csv");
 }
 
-void Simulation::GenerateRandomDistribution(int _bodyCount, double _width, double _bodyMassMin, double _bodyMassMax, double _radiusMin, double _radiusMax) {
+void Simulation::GenerateRandomDistribution(int _body_count, double _width, double _body_mass_min, 
+											double _body_mass_max, double _radius_min, 
+											double _radius_max) {
 	srand(time(NULL));
-	bodyList = List();
+	body_list = List();
 
-	for (int i = 0; i < _bodyCount; i++) {
+	for (int i = 0; i < _body_count; i++) {
 		double x = Random(-_width / 2.0, _width / 2.0);
 		double y = Random(-_width / 2.0, _width / 2.0);
 		double z = Random(-_width / 2.0, _width / 2.0);
 
-		double mass = Random(_bodyMassMin, _bodyMassMax);
-		double radius = Random(_radiusMin, _radiusMax);
+		double mass = Random(_body_mass_min, _body_mass_max);
+		double radius = Random(_radius_min, _radius_max);
 
-		bodyList.Append(new Body(x, y, z, mass, radius, 0, 0, 0));
+		body_list.Append(new Body(x, y, z, mass, radius, 0, 0, 0));
 	}
 
 	// Save bodies to file
-	SaveOutputFile(outputFolder + name + ".csv");
+	SaveOutputFile(output_folder + name + ".csv");
 }
 
-void Simulation::Run(int startingFrame, int framesToSimulate) {
+void Simulation::Run(int starting_frame, int frames_to_simulate) {
 	// TODO: Enable starting from a different frame number
-	// int currentFrames = 0;
+	// int current_frames = 0;
 
-	double elapsedTime = startingFrame * dt;
+	double elapsed_time = starting_frame * dt;
 
 	// Simulate the next frames
 	// <=, as it simulates 0->1, 1->2 therefore needs to simulate up to n.
-	for (int f = startingFrame; f <= framesToSimulate + startingFrame; f++) {
+	for (int f = starting_frame; f <= frames_to_simulate + starting_frame; f++) {
 		// Reset force counter on each body
 		// (as force is used to count the net force on the body for that frame)
-		body = bodyList.GetHead();
+		body = body_list.GetHead();
 		while (body != NULL) {
 			body->ResetForce();
 			body = body->GetNext();
@@ -284,34 +288,35 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 
 		// n-body algorithm (optimised)
 		// i.e. (1: 2,3,4,5; 2: 3,4,5; etc)
-		bodyA = bodyList.GetHead();
-		bodyB = NULL;
+		body_a = body_list.GetHead();
+		body_b = NULL;
 
-		while (bodyA != NULL) {
-			bodyB = bodyA->GetNext();
+		while (body_a != NULL) {
+			body_b = body_a->GetNext();
 
-			while (bodyB != NULL) {
+			while (body_b != NULL) {
 				// Calculate distance between objects
-				Vector separation_vector = bodyA->GetPosition() - bodyB->GetPosition();
-				double totalDistance = separation_vector.Magnitude();
-				separation_vector = separation_vector / totalDistance;
+				Vector separation_vector = body_a->GetPosition() - body_b->GetPosition();
+				double total_distance = separation_vector.Magnitude();
+				separation_vector = separation_vector / total_distance;
 
 				// Calculate force
-				double force_magnitude = -1.0 * gravConst * ((bodyA->GetMass() * bodyB->GetMass()) / (pow(totalDistance, 2)));
+				double force_magnitude = (-1.0 * grav_const * ((body_a->GetMass() 
+										  * body_b->GetMass()) / (pow(total_distance, 2))));
 
 				// Add forces to totals
-				bodyA->AddForce(separation_vector * force_magnitude);
-				bodyB->AddForce(separation_vector * -force_magnitude);
+				body_a->AddForce(separation_vector * force_magnitude);
+				body_b->AddForce(separation_vector * -force_magnitude);
 
 				// Advance pointer
-				bodyB = bodyB->GetNext();
+				body_b = body_b->GetNext();
 			}
 
-			bodyA = bodyA->GetNext();
+			body_a = body_a->GetNext();
 		}
 
 		// Calculate next position for each body
-		body = bodyList.GetHead();
+		body = body_list.GetHead();
 		while (body != NULL) {
 			body->Update(dt);
 
@@ -319,103 +324,106 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 		}
 
 		// Collision Physics
-		bodyA = bodyList.GetHead();
-		bodyB = NULL;
+		body_a = body_list.GetHead();
+		body_b = NULL;
 
-		while (bodyA != NULL) {
-			bodyB = bodyA->GetNext();
+		while (body_a != NULL) {
+			body_b = body_a->GetNext();
 
-			while (bodyB != NULL) {
+			while (body_b != NULL) {
 				// Check for collision
-				Vector bodyAPosition = bodyA->GetPosition();
-				Vector bodyBPosition = bodyB->GetPosition();
-				Vector bodyANextPosition = bodyA->GetNextPosition();
-				Vector bodyBNextPosition = bodyB->GetNextPosition();
+				Vector body_a_position = body_a->GetPosition();
+				Vector body_b_position = body_b->GetPosition();
+				Vector body_a_next_position = body_a->GetNextPosition();
+				Vector body_b_next_position = body_b->GetNextPosition();
 
-				Vector lambda = bodyBPosition - bodyAPosition;
-				Vector mu = bodyBNextPosition - bodyANextPosition + bodyAPosition - bodyBPosition;
+				Vector lambda = body_b_position - body_a_position;
+				Vector mu = body_b_next_position - body_a_next_position 
+							+ body_a_position - body_b_position;
 
 				// Quadratic coefficients => at^2 + bt + c = 0
 				double a = pow(mu.Magnitude(), 2);
 				double b = 2 * lambda.DotProduct(mu);
-				double c = pow(lambda.Magnitude(), 2) - pow(bodyA->GetRadius() + bodyB->GetRadius(), 2);
+				double c = pow(lambda.Magnitude(), 2)
+						   - pow(body_a->GetRadius() + body_b->GetRadius(), 2);
 
 				double t1 = ((-1 * b) + (sqrt(pow(b, 2) - (4 * a * c))))/(2 * a);
 				double t2 = ((-1 * b) - (sqrt(pow(b, 2) - (4 * a * c))))/(2 * a);
 
-				bool t1Valid = (t1 >= 0 && t1 <= 1);
-				bool t2Valid = (t2 >= 0 && t2 <= 1);
+				bool t1_valid = (t1 >= 0 && t1 <= 1);
+				bool t2_valid = (t2 >= 0 && t2 <= 1);
 
-				double separation = (bodyBPosition - bodyAPosition).Magnitude();
-				double radiiSum = bodyA->GetRadius() + bodyB->GetRadius();
+				double separation = (body_b_position - body_a_position).Magnitude();
+				double radii_sum = body_a->GetRadius() + body_b->GetRadius();
 				
 				// Select the first valid (0 <= t <= 1) collision time (smallest t)
-				if (separation <= radiiSum) {
+				if (separation <= radii_sum) {
 					// TODO: Determine if bodies should combine or bounce.
 					//		 Currently, default: combine (true), (e = 1.0)
-					HandleCollision(bodyA, bodyB, 0);
+					HandleCollision(body_a, body_b, 0);
 
 					// Update the body pointers 
-					// 		(as both bodyA and bodyB have been deleted 
+					// 		(as both body_a and body_b have been deleted 
 					//		from the list of bodies)
-					bodyA = bodyList.GetHead();
-					bodyB = bodyA->GetNext();
+					body_a = body_list.GetHead();
+					body_b = body_a->GetNext();
 				}
-				else if ((t1 <= t2 && t1Valid)) {
+				else if ((t1 <= t2 && t1_valid)) {
 					// TODO: Determine if bodies should combine or bounce.
 					//		 Currently, default: combine (true), (e = 1.0)
-					HandleCollision(bodyA, bodyB, t1);
+					HandleCollision(body_a, body_b, t1);
 
 					// Update the body pointers
-					bodyA = bodyList.GetHead();
-					bodyB = bodyA->GetNext();
+					body_a = body_list.GetHead();
+					body_b = body_a->GetNext();
 				}
-				else if (t2Valid) {
+				else if (t2_valid) {
 					// TODO: Determine if bodies should combine or bounce.
 					//		 Currently, default: combine (true), (e = 1.0)
-					HandleCollision(bodyA, bodyB, t2);
+					HandleCollision(body_a, body_b, t2);
 					
 					// Update the body pointers
-					bodyA = bodyList.GetHead();
-					bodyB = bodyA->GetNext();
+					body_a = body_list.GetHead();
+					body_b = body_a->GetNext();
 				}
 				else {
-					bodyB = bodyB->GetNext();
+					body_b = body_b->GetNext();
 				}
 			}
 
-			bodyA = bodyA->GetNext();
+			body_a = body_a->GetNext();
 		}
 
 		/*
 		// Format elapsed time (for image output)
-		string elapsedTimeString;
-		string timeUnits = GetTimeUnits(elapsedTime);
+		string elapsed_timeString;
+		string time_units = GetTimeUnits(elapsed_time);
 
-		if (timeUnits == "YEARS") {
-			elapsedTimeString = RemoveTrailingZeroes(to_string(elapsedTime / (double)YR));
+		if (time_units == "YEARS") {
+			elapsed_timeString = RemoveTrailingZeroes(to_string(elapsed_time / (double)YR));
 		}
-		else if (timeUnits == "DAYS ") {
-			elapsedTimeString = RemoveTrailingZeroes(to_string(elapsedTime / (double)DAY));
+		else if (time_units == "DAYS ") {
+			elapsed_timeString = RemoveTrailingZeroes(to_string(elapsed_time / (double)DAY));
 		}
-		else if (timeUnits == "HOURS") {
-			elapsedTimeString = RemoveTrailingZeroes(to_string(elapsedTime / (double)HOUR));
+		else if (time_units == "HOURS") {
+			elapsed_timeString = RemoveTrailingZeroes(to_string(elapsed_time / (double)HOUR));
 		}
-		else if (timeUnits == "MINS ") {
-			elapsedTimeString = RemoveTrailingZeroes(to_string(elapsedTime / (double)MINUTE));
+		else if (time_units == "MINS ") {
+			elapsed_timeString = RemoveTrailingZeroes(to_string(elapsed_time / (double)MINUTE));
 		}
-		else if (timeUnits == "SECS ") {
-			elapsedTimeString = RemoveTrailingZeroes(to_string(elapsedTime));
+		else if (time_units == "SECS ") {
+			elapsed_timeString = RemoveTrailingZeroes(to_string(elapsed_time));
 		}
 		*/
 
 		// Create _output.csv
 		// TODO: This only creates an output file if the folder structure exists!
-		string dataFileName = outputFolder + "data/bodyData_" + PadWithZeroes(f - startingFrame, framesToSimulate) + ".csv";
-		SaveOutputFile(dataFileName, f, dt, f * dt, bodyCount);
+		string data_file_name = output_folder + "data/bodyData_"
+							    + PadWithZeroes(f - starting_frame, frames_to_simulate) + ".csv";
+		SaveOutputFile(data_file_name, f, dt, f * dt, body_count);
 
 		// Move each body to their new positions
-		body = bodyList.GetHead();
+		body = body_list.GetHead();
 		while (body != NULL) {
 			body->Step();
 
@@ -423,80 +431,81 @@ void Simulation::Run(int startingFrame, int framesToSimulate) {
 		}
 
 		// Update the elapsed time
-		elapsedTime += dt;
+		elapsed_time += dt;
 	}
 }
 
-void Simulation::SaveOutputFile(string _fileName, int _stepNumber, double _dt, double _timeElapsed, int _bodyCount) {
+void Simulation::SaveOutputFile(string _file_name, int _step_number, double _dt,
+								double _time_elapsed, int _body_count) {
 	// Save bodies to output.csv
-	string outputFileName = outputFolder + name + "_output.csv";
+	string output_file_name = output_folder + name + "_output.csv";
 
-	if (_fileName != "") {
-		outputFileName = _fileName;
+	if (_file_name != "") {
+		output_file_name = _file_name;
 	}
 
-	Output output(outputFileName);
-	output.AddParameters(_stepNumber, _dt, _timeElapsed, _bodyCount);
-	output.AddAllBodies(bodyList);
+	Output output(output_file_name);
+	output.AddParameters(_step_number, _dt, _time_elapsed, _body_count);
+	output.AddAllBodies(body_list);
 	output.Save();
 }
 
 void Simulation::AddBody(Body * body) {
-	bodyList.Append(body);
+	body_list.Append(body);
 }
 
 void Simulation::ClearBodyList() {
-	bodyList = List();
+	body_list = List();
 }
 
-void Simulation::SetOutputDirectory(string _outputFolder) {
-	outputFolder = _outputFolder;
-	string command = "mkdir -p " + outputFolder;
+void Simulation::SetOutputDirectory(string _output_folder) {
+	output_folder = _output_folder;
+	string command = "mkdir -p " + output_folder;
 	system(command.c_str());
 
 	// Deal with final slash
-	if (outputFolder[outputFolder.length() - 1] != '/') {
-		outputFolder += '/';
+	if (output_folder[output_folder.length() - 1] != '/') {
+		output_folder += '/';
 	}
 }
 
 string Simulation::GetTimeUnits(double time) {
 	// Determine, and return, the time units (Seconds, Days, Years) for the given time.
-	regex validInteger("[1-9][0-9]*");
-	string timeUnits;
+	regex valid_integer("[1-9][0-9]*");
+	string time_units;
 
 	// Note: space included for "DAYS " purely for spacing when output
 	if (time < DAY) {
-			if (regex_match(to_string(1 / (time / DAY)), validInteger)) {
+			if (regex_match(to_string(1 / (time / DAY)), valid_integer)) {
 				// Check if the time is in the form DAY / n, where n is an integer
-				timeUnits = "DAYS ";
+				time_units = "DAYS ";
 			}
 			else if (time >= HOUR) {
-				timeUnits = "HOURS";
+				time_units = "HOURS";
 			}
 			else if (time >= 2 * MINUTE) {
-				timeUnits = "MINS ";
+				time_units = "MINS ";
 			}
 			else {
-				timeUnits = "SECS ";
+				time_units = "SECS ";
 			}
 	}
 	else if (time > DAY) {
 		if (time < 2 * YR) {
-			timeUnits = "DAYS ";
+			time_units = "DAYS ";
 		}
 		else {
-			timeUnits = "YEARS";
+			time_units = "YEARS";
 		}
 	}
 	else if (time == DAY) {
-		timeUnits = "DAYS ";
+		time_units = "DAYS ";
 	}
 
-	return timeUnits;
+	return time_units;
 }
 
-void Simulation::HandleCollision(Body * bodyA, Body * bodyB, double t, double e, bool combine) {
+void Simulation::HandleCollision(Body * body_a, Body * body_b, double t, double e, bool combine) {
 	// TODO: Improve this function to include a dynamic combine/collide 
 	//		 functionality (depending on certain conditions).
 
@@ -504,76 +513,76 @@ void Simulation::HandleCollision(Body * bodyA, Body * bodyB, double t, double e,
 	// ("bouncing" off one another) bodies, depending on arguments.
 	
 	if (combine == true) {
-		CombineBodies(bodyA, bodyB, t);
+		CombineBodies(body_a, body_b, t);
 	} else {
-		CollideBodies(bodyA, bodyB, t, e);
+		CollideBodies(body_a, body_b, t, e);
 	}
 }
 
-void Simulation::CombineBodies(Body * bodyA, Body * bodyB, double t) {
+void Simulation::CombineBodies(Body * body_a, Body * body_b, double t) {
 	// Calculate new Mass (sum of original bodies)
-	double newMass = bodyA->GetMass() + bodyB->GetMass();
+	double new_mass = body_a->GetMass() + body_b->GetMass();
 
 	// Conservation of linear momentum (assuming bodies will combine)
-	Vector aMomentum = bodyA->GetMomentum();
-	Vector bMomentum = bodyB->GetMomentum();
-	Vector newVelocity = (aMomentum + bMomentum) / newMass;
+	Vector a_momentum = body_a->GetMomentum();
+	Vector b_momentum = body_b->GetMomentum();
+	Vector new_velocity = (a_momentum + b_momentum) / new_mass;
 
 	// Calculate position of new body
 	// Average the centres of the bodies at their collision positions
-	bodyA->Update(t * dt);
-	bodyB->Update(t * dt);
+	body_a->Update(t * dt);
+	body_b->Update(t * dt);
 
-	Vector bodyAPosition = bodyA->GetNextPosition();
-	Vector bodyBPosition = bodyB->GetNextPosition();
+	Vector body_a_position = body_a->GetNextPosition();
+	Vector body_b_position = body_b->GetNextPosition();
 
-	Vector newPosition = (bodyAPosition + bodyBPosition) / 2.0;
+	Vector new_position = (body_a_position + body_b_position) / 2.0;
 
 	// Calculate new radius - use volumes of the two materials
-	double volumeA = (4.0/3.0) * PI * pow(bodyA->GetRadius(), 3);
-	double volumeB = (4.0/3.0) * PI * pow(bodyB->GetRadius(), 3);
-	double newVolume = volumeA + volumeB;
+	double a_volume = (4.0/3.0) * PI * pow(body_a->GetRadius(), 3);
+	double b_volume = (4.0/3.0) * PI * pow(body_b->GetRadius(), 3);
+	double new_volume = a_volume + b_volume;
 
-	double newRadius = pow(newVolume / ((4.0/3.0) * PI), (1.0/3.0));
+	double new_radius = pow(new_volume / ((4.0/3.0) * PI), (1.0/3.0));
 
 	// Create a new (combined) body, and remove A and B
-	Body * newBody = new Body(newPosition, newMass, newRadius, newVelocity);
-	newBody->Update((1 - t) * dt);
+	Body * new_body = new Body(new_position, new_mass, new_radius, new_velocity);
+	new_body->Update((1 - t) * dt);
 
-	bodyList.Append(newBody);
+	body_list.Append(new_body);
 	
-	bodyList.Remove(bodyA->GetID());
-	bodyList.Remove(bodyB->GetID());
+	body_list.Remove(body_a->GetID());
+	body_list.Remove(body_b->GetID());
 
 	// Update body count
-	bodyCount -= 1;
+	body_count -= 1;
 }
 
-void Simulation::CollideBodies(Body * bodyA, Body * bodyB, double t, double e) {
+void Simulation::CollideBodies(Body * body_a, Body * body_b, double t, double e) {
 	// Move bodies to point of collision
-	bodyA->Update(t * dt);
-	bodyB->Update(t * dt);
+	body_a->Update(t * dt);
+	body_b->Update(t * dt);
 
-	double mA = bodyA->GetMass();
-	double mB = bodyB->GetMass();
-	double mT = mA + mB;
+	double m_a = body_a->GetMass();
+	double m_b = body_b->GetMass();
+	double m = m_a + m_b;
 
 	// Calculate direction vector connecting centers of the bodies
-	Vector centerLineAB = bodyB->GetPosition() - bodyA->GetPosition();
-	centerLineAB = centerLineAB / centerLineAB.Magnitude();
+	Vector center_line_ab = body_b->GetPosition() - body_a->GetPosition();
+	center_line_ab = center_line_ab / center_line_ab.Magnitude();
 
 	// Calculate velocities along center line (problem is 1D)
-	double uA = bodyA->GetVelocity().DotProduct(centerLineAB);
-	double uB = bodyB->GetVelocity().DotProduct(centerLineAB);
+	double u_a = body_a->GetVelocity().DotProduct(center_line_ab);
+	double u_b = body_b->GetVelocity().DotProduct(center_line_ab);
 
-	double totalMomentum = (mA * uA) + (mB * uB);
-	double vA = (totalMomentum + (mB * e * (uB - uA))) / mT;
-	double vB = (totalMomentum + (mA * e * (uA - uB))) / mT;
+	double total_momentum = (m_a * u_a) + (m_b * u_b);
+	double v_a = (total_momentum + (m_b * e * (u_b - u_a))) / m_b;
+	double v_b = (total_momentum + (m_a * e * (u_a - u_b))) / m;
 	
-	bodyA->AddVelocity(centerLineAB * (vA - uA));
-	bodyB->AddVelocity(centerLineAB * (vB - uB));
+	body_a->AddVelocity(center_line_ab * (v_a - u_a));
+	body_b->AddVelocity(center_line_ab * (v_b - u_b));
 
 	// Move the bodies to the end of the time-step
-	bodyA->Update((1 - t) * dt);
-	bodyB->Update((1 - t) * dt);
+	body_a->Update((1 - t) * dt);
+	body_b->Update((1 - t) * dt);
 }

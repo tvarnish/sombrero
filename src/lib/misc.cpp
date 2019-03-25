@@ -15,61 +15,61 @@ int GetLengthOfNumber(int number) {
 	// Get the length of a number (for padding)
 	// e.g. 100 has length 3, 37 has length 2
 
-	string numberString = to_string(number);
-	return numberString.length();
+	string number_string = to_string(number);
+	return number_string.length();
 }
 
-string PadWithZeroes(int frameNumber, int maxFrames) {
+string PadWithZeroes(int frame_number, int max_frames) {
 	// Pad a value with zeroes to match a final length
 	// Used for image filenames, e.g. image_001.png, image_042.png, etc.
 
 	// Get Lengths of numbers
-	int maxFramesLength = GetLengthOfNumber(maxFrames - 1);
-	int frameGetLengthOfNumber = GetLengthOfNumber(frameNumber);
+	int max_frame_num_length = GetLengthOfNumber(max_frames - 1);
+	int frame_num_length = GetLengthOfNumber(frame_number);
 
-	string paddedValue = to_string(frameNumber);
+	string padded_value = to_string(frame_number);
 
 	// Only add zeroes to the number if it is required
-	if (frameGetLengthOfNumber < maxFramesLength)
+	if (frame_num_length < max_frame_num_length)
 	{
-		int difference = maxFramesLength - frameGetLengthOfNumber;
-		paddedValue = "";
+		int difference = max_frame_num_length - frame_num_length;
+		padded_value = "";
 		for (int i = 0; i < difference; i++)
 		{
-			paddedValue += "0";
+			padded_value += "0";
 		}
-		paddedValue += to_string(frameNumber);
+		padded_value += to_string(frame_number);
 	}
 
-	return paddedValue;
+	return padded_value;
 }
 
-string RemoveTrailingZeroes(string inputString) {
+string RemoveTrailingZeroes(string input_string) {
 	// Remove zeroes from a number (converted to a string)
 	// e.g. 1.4000000000 -> 1.4
 
-	int i = inputString.length() - 1;
-	int lastNotZero;
+	int i = input_string.length() - 1;
+	int last_not_zero;
 
 	while (i >= 0) {
-		if (inputString[i] != '0') {
-			lastNotZero = i;
+		if (input_string[i] != '0') {
+			last_not_zero = i;
 			break;
 		}
 
 		i--;
 	}
 
-	if (inputString[lastNotZero] == '.') lastNotZero++;
+	if (input_string[last_not_zero] == '.') last_not_zero++;
 
-	string outputString = inputString.substr(0, lastNotZero + 1);
+	string outputString = input_string.substr(0, last_not_zero + 1);
 	return outputString;
 }
 
 string ToStandardForm(double value) {
 	// Convert a double to a standard form string
 	// e.g. 12857 -> 1.2857e4
-	string standardForm = "";
+	string standard_form = "";
 	bool negative = false;
 
 	// Calculate the power
@@ -94,32 +94,32 @@ string ToStandardForm(double value) {
 		power --;
 	}
 
-	string valueString = to_string(v);
+	string value_string = to_string(v);
 
 	// Create standard form string
 	if (power != 0) {
 		// Deal with the negative sign at the front of negative numbers
 		if (negative) {
-			standardForm = "-";
+			standard_form = "-";
 		}
 
-		standardForm += RemoveTrailingZeroes(valueString);
+		standard_form += RemoveTrailingZeroes(value_string);
 
 		// Append exponent
-		standardForm += "e";
-		standardForm += to_string(power);
+		standard_form += "e";
+		standard_form += to_string(power);
 	}
 	else {
 		// Doesn't need to be put into standard form if number is e0
 		// e.g. 1.8793e0 = 1.8793, so standard form not required
 		if (negative) {
-			standardForm = "-";
+			standard_form = "-";
 		}
 
-		standardForm += RemoveTrailingZeroes(valueString);
+		standard_form += RemoveTrailingZeroes(value_string);
 	}
 
-	return standardForm;
+	return standard_form;
 }
 
 double Random(double min, double max) {
@@ -131,10 +131,10 @@ double Random(double min, double max) {
 	return rnd;
 }
 
-bool FileExists(string fileName) {
+bool FileExists(string file_name) {
 	// Determine whether the file at fileName exists
 	// Try to read file, return .good()
-	ifstream file(fileName.c_str());
+	ifstream file(file_name.c_str());
 	return file.good();
 }
 

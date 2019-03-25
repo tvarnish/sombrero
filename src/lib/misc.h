@@ -9,13 +9,13 @@
 using namespace std;
 
 int GetLengthOfNumber(int number);
-string PadWithZeroes(int frameNumber, int maxFrames);
-string RemoveTrailingZeroes(string inputString);
+string PadWithZeroes(int frame_number, int max_frames);
+string RemoveTrailingZeroes(string input_string);
 string ToStandardForm(double value);
 
 double Random(double min, double max);
 
-bool FileExists(string fileName);
+bool FileExists(string file_name);
 
 double ToRadians(double angle);
 

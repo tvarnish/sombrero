@@ -10,7 +10,7 @@ List::List() {
 	// Constructor - set default parameter values (for empty list)
 	head = NULL;
 	length = 0;
-	nextId = 0;
+	next_id = 0;
 }
 
 void List::Append(Body * node) {
@@ -18,8 +18,8 @@ void List::Append(Body * node) {
 	// This is the only function that adds a body to the list as order is irrelevant
 
 	// Give the new node an id
-	node->SetID(nextId);
-	nextId++;
+	node->SetID(next_id);
+	next_id++;
 
 	// Follow pointers through list until you reach a NULL pointer
 	Body * pointer = head;

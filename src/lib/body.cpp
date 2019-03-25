@@ -6,14 +6,15 @@
 
 #include <cmath>
 
-Body::Body(double _x, double _y, double _z, double _mass, double _radius, double _xVelocity, double _yVelocity, double _zVelocity, string _name) {
+Body::Body(double _x, double _y, double _z, double _mass, double _radius, 
+		   double _x_velocity, double _y_velocity, double _z_velocity, string _name) {
 	// Constructor (when cartesian components are supplied)
 	position = Vector(_x, _y, _z);
 
 	mass = _mass;
 	radius = _radius;
 
-	velocity = Vector(_xVelocity, _yVelocity, _zVelocity);
+	velocity = Vector(_x_velocity, _y_velocity, _z_velocity);
 
 	force = Vector();
 
@@ -40,12 +41,12 @@ void Body::Update(double dt) {
 	velocity = velocity.Add(force.Divide(mass).Multiply(dt));
 
 	// Calculate next position
-	nextPosition = position.Add(velocity.Multiply(dt));
+	next_position = position.Add(velocity.Multiply(dt));
 }
 
 void Body::Step() {
 	// Move to the calculated position
-	position = nextPosition;
+	position = next_position;
 }
 
 void Body::ResetForce() {

@@ -23,26 +23,26 @@ using namespace std;
 class Simulation {
   // Parameters initialised with defaults
   string name = "simulation";
-  string outputFolder = "";
-  int bodyCount = 0;
+  string output_folder = "";
+  int body_count = 0;
   int width = 640;
   int height = 480;
   double scale = (AU / 100);
   double dt = DAY / 2;
   int framerate = 60;
-  double gravConst = GR;
+  double grav_const = GR;
 
-  List bodyList;
+  List body_list;
   Body * body;
-  Body * bodyA;
-  Body * bodyB;
+  Body * body_a;
+  Body * body_b;
 
   string GetTimeUnits(double time);
 
   // Private Simulation Methods
-  void HandleCollision(Body * bodyA, Body * bodyB, double t, double e = 1.0, bool combine = true);
-  void CollideBodies(Body * bodyA, Body * bodyB, double t, double e);
-  void CombineBodies(Body * bodyA, Body * bodyB, double t);
+  void HandleCollision(Body * body_a, Body * body_b, double t, double e = 1.0, bool combine = true);
+  void CollideBodies(Body * body_a, Body * body_b, double t, double e);
+  void CombineBodies(Body * body_a, Body * body_b, double t);
 
   public:
     // Constructors
@@ -52,27 +52,29 @@ class Simulation {
 
   	// Set Methods
   	void SetTimestep(double _dt) { dt = _dt; };
-  	void SetOutputDirectory(string _outputFolder);
+  	void SetOutputDirectory(string _output_folder);
   	void SetSimulationName(string _name) { name = _name; };
-  	void SetGravitationalConstant(double _gravConst) { gravConst = _gravConst; };
+  	void SetGravitationalConstant(double _grav_const) { grav_const = _grav_const; };
 
     // Get Methods
-  	int GetNumberOfBodies() { return bodyList.GetLength(); };
+  	int GetNumberOfBodies() { return body_list.GetLength(); };
 
-  	bool LoadBodiesFromFile(string _fileName);
-	  void SaveOutputFile(string _fileName, int _stepNumber = -1, double _dt = -1, double _timeElapsed = -1, int _bodyCount = -1);
+  	bool LoadBodiesFromFile(string _file_name);
+	  void SaveOutputFile(string _file_name, int _step_number = -1, double _dt = -1,
+                        double _time_elapsed = -1, int _body_count = -1);
 
     // Generate body setup commands
-  	void GenerateRandomShell(int _bodyCount);
-  	void GenerateRandomDistribution(int _bodyCount);
-    void GenerateRandomDistribution(int _bodyCount, double _width, double _bodyMassMin, double _bodyMassMax, double _radiusMin, double _radiusMax);
+  	void GenerateRandomShell(int _body_count);
+  	void GenerateRandomDistribution(int _body_count);
+    void GenerateRandomDistribution(int _body_count, double _width, double _body_mass_min,
+                                    double _body_mass_max, double _radius_min, double _radius_max);
 
     void AddBody(Body * body);
     void ClearBodyList();
-    List GetBodyList() { return bodyList; };
+    List GetBodyList() { return body_list; };
 
     // Simulation Methods
-  	void Run(int startingFrame, int framesToSimulate);
+  	void Run(int starting_frame, int frames_to_simulate);
 };
 
 #endif

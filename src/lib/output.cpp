@@ -12,48 +12,48 @@
 
 using namespace std;
 
-Output::Output(string _fileName) {
-	// Constructor - set the fileName for the output file
-	fileName = _fileName;
-	fileContents = "";
+Output::Output(string _file_name) {
+	// Constructor - set the file_name for the output file
+	file_name = _file_name;
+	file_contents = "";
 }
 
 void Output::AddBody(Body * body) {
 	// Add the parameters of a body to the output file (in standard form)
-	fileContents += ToStandardForm( body->GetX() ) + ",";
-	fileContents += ToStandardForm( body->GetY() ) + ",";
-	fileContents += ToStandardForm( body->GetZ() ) + ",";
-	fileContents += ToStandardForm( body->GetMass() ) + ",";
-	fileContents += ToStandardForm( body->GetRadius() ) + ",";
-	fileContents += ToStandardForm( body->GetXVelocity() ) + ",";
-	fileContents += ToStandardForm( body->GetYVelocity() ) + ",";
-	fileContents += ToStandardForm( body->GetZVelocity() );
-	string bodyName = body->GetName();
-	if (bodyName != "") {
-		fileContents += "," + bodyName;
+	file_contents += ToStandardForm( body->GetX() ) + ",";
+	file_contents += ToStandardForm( body->GetY() ) + ",";
+	file_contents += ToStandardForm( body->GetZ() ) + ",";
+	file_contents += ToStandardForm( body->GetMass() ) + ",";
+	file_contents += ToStandardForm( body->GetRadius() ) + ",";
+	file_contents += ToStandardForm( body->GetXVelocity() ) + ",";
+	file_contents += ToStandardForm( body->GetYVelocity() ) + ",";
+	file_contents += ToStandardForm( body->GetZVelocity() );
+	string body_name = body->GetName();
+	if (body_name != "") {
+		file_contents += "," + body_name;
 	}
-	fileContents += "\n";
+	file_contents += "\n";
 }
 
-void Output::AddParameters(int stepNumber, double dt, double timeElapsed, int bodyCount) {
+void Output::AddParameters(int step_number, double dt, double time_elapsed, int body_count) {
 	// Write parameters to the output file
-	fileContents += to_string(stepNumber) + ",";
-	fileContents += ToStandardForm(dt) + ",";
-	fileContents += ToStandardForm(timeElapsed) + ",";
-	fileContents += to_string(bodyCount);
-	fileContents += "\n";
+	file_contents += to_string(step_number) + ",";
+	file_contents += ToStandardForm(dt) + ",";
+	file_contents += ToStandardForm(time_elapsed) + ",";
+	file_contents += to_string(body_count);
+	file_contents += "\n";
 }
 
 void Output::Save() {
 	// Write the output file to disk
-	ofstream outputFile(fileName, ios::out);
-	outputFile << fileContents;
-	outputFile.close();
+	ofstream output_file(file_name, ios::out);
+	output_file << file_contents;
+	output_file.close();
 }
 
-void Output::AddAllBodies(List bodyList) {
-	// Iterate through the bodyList and add the parameters for each body to the output
-	Body * body = bodyList.GetHead();
+void Output::AddAllBodies(List body_list) {
+	// Iterate through the body_list and add the parameters for each body to the output
+	Body * body = body_list.GetHead();
 
 	while (body != NULL) {
 		AddBody(body);

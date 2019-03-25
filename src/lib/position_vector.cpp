@@ -78,39 +78,39 @@ double Vector::Magnitude() {
 	return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
 }
 
-Vector Vector::Transform(Matrix transformationMatrix) {
-	// Transform the vector with transformationMatrix
+Vector Vector::Transform(Matrix transformation_matrix) {
+	// Transform the vector with transformation_matrix
 	Vector transformed;
 
 	// X
-	transformed.SetX(x * transformationMatrix.GetAt(0, 0) +
-					 y * transformationMatrix.GetAt(0, 1) +
-					 z * transformationMatrix.GetAt(0, 2));
+	transformed.SetX(x * transformation_matrix.GetAt(0, 0) +
+					 y * transformation_matrix.GetAt(0, 1) +
+					 z * transformation_matrix.GetAt(0, 2));
 	// Y
-	transformed.SetY(x * transformationMatrix.GetAt(1, 0) +
-					 y * transformationMatrix.GetAt(1, 1) +
-					 z * transformationMatrix.GetAt(1, 2));
+	transformed.SetY(x * transformation_matrix.GetAt(1, 0) +
+					 y * transformation_matrix.GetAt(1, 1) +
+					 z * transformation_matrix.GetAt(1, 2));
 	// Z
-	transformed.SetZ(x * transformationMatrix.GetAt(2, 0) +
-					 y * transformationMatrix.GetAt(2, 1) +
-					 z * transformationMatrix.GetAt(2, 2));
+	transformed.SetZ(x * transformation_matrix.GetAt(2, 0) +
+					 y * transformation_matrix.GetAt(2, 1) +
+					 z * transformation_matrix.GetAt(2, 2));
 
 	return transformed;
 }
 
 Vector Vector::RotateY(double angle) {
 	// Rotate the vector about the y-axis by angle (using rotation matrix)
-	Matrix rotateMatrix = Matrix(3, 3);
+	Matrix rotate_matrix = Matrix(3, 3);
 
-	double angleRadians = ToRadians(angle);
+	double angle_radians = ToRadians(angle);
 
-	rotateMatrix.SetAt(0, 0, cos(angleRadians));
-	rotateMatrix.SetAt(0, 2, sin(angleRadians));
-	rotateMatrix.SetAt(1, 1, 1.0);
-	rotateMatrix.SetAt(2, 0, -1.0 * sin(angleRadians));
-	rotateMatrix.SetAt(2, 2, cos(angleRadians));
+	rotate_matrix.SetAt(0, 0, cos(angle_radians));
+	rotate_matrix.SetAt(0, 2, sin(angle_radians));
+	rotate_matrix.SetAt(1, 1, 1.0);
+	rotate_matrix.SetAt(2, 0, -1.0 * sin(angle_radians));
+	rotate_matrix.SetAt(2, 2, cos(angle_radians));
 
-	Vector transformed = Transform(rotateMatrix);
+	Vector transformed = Transform(rotate_matrix);
 
 	return transformed;
 }

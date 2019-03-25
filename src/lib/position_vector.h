@@ -47,7 +47,7 @@ class Vector {
 	double Magnitude();
 
 	// Transformation Methods
-	Vector Transform(Matrix transformationMatrix);
+	Vector Transform(Matrix transformation_matrix);
 	Vector RotateY(double angle);
 	Vector RoundValues();
 };
