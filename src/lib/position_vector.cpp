@@ -26,8 +26,10 @@ Vector Vector::Add(Vector other) {
 	return result;
 }
 
-Vector Vector::operator+(Vector other) {
-	return Add(other);
+void Vector::operator+=(Vector other) {
+	SetX(x + other.GetX());
+	SetY(y + other.GetY());
+	SetZ(z + other.GetZ());
 }
 
 Vector Vector::Subtract(Vector other) {
@@ -36,8 +38,10 @@ Vector Vector::Subtract(Vector other) {
 	return result;
 }
 
-Vector Vector::operator-(Vector other) {
-	return Subtract(other);
+void Vector::operator-=(Vector other) {
+	SetX(x - other.GetX());
+	SetY(y - other.GetY());
+	SetZ(z - other.GetZ());
 }
 
 Vector Vector::Multiply(double scalar) {
@@ -46,18 +50,21 @@ Vector Vector::Multiply(double scalar) {
 	return result;
 }
 
-Vector Vector::operator*(double scalar) {
-	return Multiply(scalar);
+void Vector::operator*=(double scalar) {
+	SetX(x * scalar);
+	SetY(y * scalar);
+	SetZ(z * scalar);
 }
-
 Vector Vector::Divide(double scalar) {
 	// Divide self by a scalar value
 	Vector result = Vector(x / scalar, y / scalar, z / scalar);
 	return result;
 }
 
-Vector Vector::operator/(double scalar) {
-	return Divide(scalar);
+void Vector::operator/=(double scalar) {
+	SetX(x / scalar);
+	SetY(y / scalar);
+	SetZ(z / scalar);
 }
 
 double Vector::DotProduct(Vector other) {

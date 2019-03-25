@@ -61,7 +61,7 @@ class Body {
 
 		void SetVelocity(double _xVelocity, double _yVelocity, double _zVelocity) { velocity.Set(_xVelocity, _yVelocity, _zVelocity); };
 		void SetVelocity(Vector _velocity) { velocity = _velocity; };
-		void AddVelocity(Vector _velocity) { velocity = velocity.Add(_velocity); };
+		void AddVelocity(Vector _velocity) { velocity += _velocity; };
 
 		void SetNext(Body * _next) { next = _next; };
 		void SetID(int _id) { id = _id; };
@@ -69,7 +69,8 @@ class Body {
 		void SetName(string _name) { name = _name; }
 
 		// Calculation Methods
-		void AddForce(Vector _force) { force = force.Add(_force); };
+		// TODO: OVERLOAD += OPERATOR!
+		void AddForce(Vector _force) { force += _force; };
 		void ResetForce();
 
 		void Update(double dt);
