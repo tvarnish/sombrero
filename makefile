@@ -9,11 +9,15 @@ MAKEDIR_IMAGE = mkdir -p images
 MAKEDIR_DATA = mkdir -p data
 
 # Build executable
-sombrero: build/sombrero.o build/body.o build/output.o build/misc.o build/matrix.o build/position_vector.o build/linkedlist.o
-	$(CXX) $(CXXFLAGS) -g -o $(EXEC) build/sombrero.o build/body.o build/output.o build/misc.o build/matrix.o build/position_vector.o build/linkedlist.o
+sombrero: build/sombrero.o build/body.o build/output.o build/misc.o build/matrix.o \
+		  build/position_vector.o build/linkedlist.o
+	$(CXX) $(CXXFLAGS) -g -o $(EXEC) build/sombrero.o build/body.o build/output.o \
+	build/misc.o build/matrix.o build/position_vector.o build/linkedlist.o
 
 # Build sombrero.o
-build/sombrero.o: src/sombrero.cpp src/sombrero.h src/lib/body.h src/lib/output.h src/lib/misc.h src/lib/units.h src/lib/position_vector.h src/lib/matrix.h
+build/sombrero.o: src/sombrero.cpp src/sombrero.h src/lib/body.h src/lib/output.h \
+				  src/lib/misc.h src/lib/units.h src/lib/position_vector.h src/lib/matrix.h \
+				  src/lib/argparse.h
 	$(CXX) $(CXXFLAGS) -c src/sombrero.cpp -o build/sombrero.o
 
 # Build body.o
@@ -29,7 +33,8 @@ build/misc.o: src/lib/misc.cpp src/lib/misc.h
 	$(CXX) $(CXXFLAGS) -c src/lib/misc.cpp -o build/misc.o
 
 # Build position_vector.o
-build/position_vector.o: src/lib/position_vector.cpp src/lib/position_vector.h src/lib/matrix.h src/lib/misc.h
+build/position_vector.o: src/lib/position_vector.cpp src/lib/position_vector.h \
+						 src/lib/matrix.h src/lib/misc.h
 	$(CXX) $(CXXFLAGS) -c src/lib/position_vector.cpp -o build/position_vector.o
 
 # Build matrix.o

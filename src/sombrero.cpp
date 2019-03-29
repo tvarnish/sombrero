@@ -15,81 +15,77 @@
 #include "lib/linkedlist.h"
 #include "lib/units.h"
 
+#include "lib/argparse.h"  // Edited version of argparse.h (by Jesse Laning, jamolnng)
+// argparse.h - https://github.com/jamolnng/argparse
+
 #include "sombrero.h"
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
-	Simulation sim = Simulation();
+	ArgumentParser parser("Argument parser example");
+	parser.add_argument("-i", "Initialisation filepath [string]", true);
+	parser.add_argument("-s", "Number of steps to simulate [integer]", true);
+	parser.add_argument("-t", "Timestep length (seconds) [double]", true);
 
-	string body_file;
+	// Parse command line arguments, and check for required flags.
+	try {
+			parser.parse(argc, argv);
+	} catch (const ArgumentParser::ArgumentNotFound &ex) {
+			cout << ex.what() << endl << endl;
+			parser.print_help(argv[0]);
+			return 1;
+	}
+
+	// Exit cleanly if help flag used (-h, --help)
+	if (parser.is_help()) return 0;
+
+	Simulation sim = Simulation();
 	double timestep;
 	int step_count;
+	string body_file;
 
-	int required_flag_count = 3;
-	int valid_flag_count = 0;
-
-	if (argc > 1) {
-		// Parse command line arguments
-		string current_flag = "";
-    
-		for (int argument_index = 1; argument_index < argc; argument_index++) {
-			string current_argument = argv[argument_index];
-
-			if (current_argument[0] == '-') {
-				current_flag = current_argument.substr(1);
-        
-        // Show usage message
-        if (current_flag == "h") {
-          cout << "Usage: ./sombrero -i init_filename.csv -s step_count -dt time_step" << endl;
-          return 0;
-        }
-			}
-			else if (current_flag != "") { 
-				if (current_flag == "i") {         
-					body_file = current_argument;
-					valid_flag_count++;
-				}
-				else if (current_flag == "s") {
-					try {
-						step_count = stoi(current_argument);
-						valid_flag_count++;
-					}
-					catch (...) {
-						cout << "ERROR: Simulation step count value is invalid." << endl;
-						return 1;
-					}
-				}
-				else if (current_flag == "dt") {
-					try {
-						timestep = stod(current_argument);
-						valid_flag_count++;
-					}
-					catch (...) {
-						cout << "ERROR: Simulation time step value (dt) is invalid." << endl;
-						return 1;
-					}
-				}
-			}
-		}
-	}
-
-	// Check all required flags set
-	if (valid_flag_count != required_flag_count) {
-		cout << "ERROR: Not all required flags have been set." << endl;
-    cout << "Usage: ./sombrero -i init_filename.csv -s step_count -dt time_step" << endl;
+	// Read argument values (check types are correct)
+	try {
+		timestep = parser.get<double>("t");
+		step_count = parser.get<int>("s");
+		body_file = parser.get<string>("i");
+	} catch (ArgumentParser::BadTypeException &ex) {
+		cout << ex.what() << endl << endl;
+		parser.print_help(argv[0]);
 		return 1;
 	}
-	
-	if (sim.LoadBodiesFromFile(body_file) == false) {
-		cout << "ERROR: Bodies count not be loaded from supplied filepath." << endl;
+
+	// Validate arguments
+	bool invalid_arg = false;
+	if (step_count <= 0) {
+		cout << "Step count (s) must be greater than 0." << endl;
+		invalid_arg = true;
+	} if (timestep == 0.0) {
+		cout << "Timestep duration (t) must not equal 0.0" << endl;
+		invalid_arg = true;
+	} if (sim.LoadBodiesFromFile(body_file) == false) {
+		cout << "Bodies could not be loaded from supplied filepath." << endl;
+		invalid_arg = true;
+	} if (invalid_arg == true) {
 		return 1;
 	}
+
+    // Display simulation parameters.
+    cout << "Running Simulation with..." << endl;
+    cout << " > Timestep:   \t" << timestep << endl;
+	cout << " > Step Count: \t" << step_count << endl;
+	cout << " > Init. File: \t" << body_file << endl << endl;
 
 	sim.SetTimestep(timestep);
 	sim.Run(0, step_count);
 
+    cout << "Simulation completed successfully!" << endl;
+    
 	return 0;
+
+	// TODO: Some sort of setup wizard?
+	// Enable changing of parameters, etc.
 }
 
 Simulation::Simulation() {
