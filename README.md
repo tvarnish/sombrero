@@ -60,21 +60,23 @@ where `[filepath]` is the path to a valid initialisation file. See the section
 on initialisation files for further information about these.
 
 Currently, simple simulation parameters can be supplied using the `-s` and 
-`-dt` flags. The `-s` flag specifies the number of "frames" or "time steps" 
+`-t` flags. The `-s` flag specifies the number of "frames" or "time steps" 
 that the simulation should be run for. Each "frame" or "time step" will be 
-equivalent to `-dt` seconds. The argument passed via the `-s` flag should be 
-an integer, and the argument passed via the `-dt` flag should be an integer or 
+equivalent to `-t` seconds. The argument passed via the `-s` flag should be 
+an integer, and the argument passed via the `-t` flag should be an integer or 
 a floating point number.
+
+Use the `-h` or `--help` flags to display usage information.
 
 ### Example Simulation
 An example initialisation file has been included with the repository. To run a 
 simulation using this file, run the following command:
 ```
-./sombrero -i init/realsolarsystem.csv -s 365 -dt 86400
+./sombrero -i init/realsolarsystem.csv -s 365 -t 86400
 ```
 
 This command will simulate the inner planets of the solar system, over a 
-period of 365 time-steps (`-s`), where each time step (`-dt`) lasts 86400 
+period of 365 time-steps (`-s`), where each time step (`-t`) lasts 86400 
 seconds (1 day).
 
 
@@ -131,3 +133,6 @@ subsequent integration steps (or "frames"), and `time_elapsed` is the
 total elapsed time (within the simulation, in seconds) since the start 
 of the simulation (`step_number * dt`). Lastly, `body_count` is the 
 number of bodies currently in the situation.
+
+## Acknowledgements
+Sombrero uses `cxxopts` for parsing command line options, so thanks go to ...
