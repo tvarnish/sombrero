@@ -2,6 +2,15 @@
   <img width="250" src="https://i.imgur.com/lDOrYA1.png">
 </p>
 
+Sombrero is a simple n-body simulator, written in C++, which enables users to 
+simulate gravitational interactions between massive, spherical, rigid bodies. 
+Sombrero is a command line tool, that generates a `.mp4` video of the simulation, 
+given an initialisation file containing the initial states of the bodies. It was 
+originally written for my, A-Level Computer Science project and has been 
+expanded since. 
+
+*Sombrero is currently under development, and is not in a finished state!*
+
 Currently, Sombrero is capable of:
 - Simulating **gravitational interactions** between non-rotating 
   spherical bodies.
@@ -135,4 +144,4 @@ of the simulation (`step_number * dt`). Lastly, `body_count` is the
 number of bodies currently in the situation.
 
 ## Acknowledgements
-Sombrero uses `cxxopts` for parsing command line options, so thanks go to ...
+Sombrero uses [`cxxopts`](https://github.com/jarro2783/cxxopts) for parsing command line options.
