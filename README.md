@@ -135,4 +135,4 @@ of the simulation (`step_number * dt`). Lastly, `body_count` is the
 number of bodies currently in the situation.
 
 ## Acknowledgements
-Sombrero uses `cxxopts` for parsing command line options, so thanks go to ...
+Sombrero uses [`cxxopts`](https://github.com/jarro2783/cxxopts) for parsing command line options.
